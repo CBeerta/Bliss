@@ -1,0 +1,21 @@
+<html>
+	<head>
+		<title>rssReader</title>
+		<link rel="stylesheet" href="templates/index.css" />
+	</head>
+	<body>
+		<table border="0" cellspacing="2" cellpadding="5" align="center" width="98%">
+		{section name=daily_idx loop=$daily}
+			<tr><td colspan="3" align="left" bgcolor="#000000"><font color="ffffff">{$daily[daily_idx].date}</font></td></tr>
+			{section name=time_idx loop=$entry[daily_idx]}
+			<tr>
+				<td width="32">&nbsp;</td>
+				<td colspan="2" bgcolor="#efefef">{$entry[daily_idx][time_idx].rsstitle}: <a href="{$entry[daily_idx][time_idx].entrylink}">{$entry[daily_idx][time_idx].entrytitle}</a></td>
+			</tr>
+			<tr><td>&nbsp;</td><td>&nbsp;</td><td><div id="entrycontent">{$entry[daily_idx][time_idx].entrycontent}</div></td></tr>	
+			<tr><td colspan="3"><div id="entrydate">{$entry[daily_idx][time_idx].entrytime}</div></td></tr>
+			{/section}
+		{/section}
+		</table>
+	</body>
+</html>

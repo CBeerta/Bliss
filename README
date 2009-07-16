@@ -1,0 +1,60 @@
+NAME:
+	rssReader
+
+Version: 0.9.0
+
+AUTHORS:
+	Claus Beerta <claus@beerta.de>
+
+
+DESCRIPTION:
+
+	rssReader is a simple application which can be used to gather a set of RSS/RDF feeds, 
+	and compile them into one single Page ordered by Date.
+	I build it because i liked PlanetGnome (http://www.gnome.org/~jdub/planetgnome/) alot, but
+	didn't like the Python Spycyroll (http://spycyroll.sourceforge.net/).
+
+
+REQUIREMENTS:
+
+	Smarty (It is included under 'libs/' you don't need to bring your own version)
+	XML_RSS from Pear (It is now included also, you don't need the pear version anymore)
+	PHP 4.0.6 or later
+	
+	
+INSTALLATION:
+	
+	Untar the archive into your webservers directory. 
+	Open the 'config.inc.php' in you favorite editor and follow the instructions in that file.
+	You need to set '$datadir' and '$smartyCompileDir' and, of course, the '$sources'.
+	Then open 'rssFetch.php' with either the CLI version of php (php -q rssFetch.php), or call 
+	fhe file in your webbrowser.
+	After you've called rssFetch.php once, you can now open rssReader.php in your webbrowser and
+	see the results.
+	For automatic updates of the feed sources, setup a cron-job to either call 'rssFetch.php' with
+	the CLI version of PHP, or simply via wget to your webserver.
+	
+CUSTOMIZATION:
+	
+	If you are familiar with Smarty (http://smarty.php.net) you can open 'templates/index.tpl.html' and
+	edit it to your likings. You should leave the two '{sections}' intact though, otherwise you won't see
+	anything.
+	
+TODO:
+	
+	Tell me!
+
+
+BUGS:
+	
+	Probably alot. This is the first version. Tested with a couple of feeds, but there are probably alot
+	that don't work correct. Patches welcome.
+
+
+COPYRIGHT:
+	Copyright (c) 2003 Claus Beerta, Inc. All rights reserved.
+	This software is released under the GNU General Public License.
+
+
+THANKS:
+	Fabian Gruemer for adding OPML Support.
