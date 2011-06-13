@@ -1,10 +1,14 @@
-# rssReader
+# Bliss
+
+Because reading my private, mostly NSFW RSS Feeds makes me a happy puppy.
+
+fka rssReader. see [link](http://claus.beerta.de/blog/09ce5c79e6426fcb5cbacf2b714c4edf) for my first release.
 
 Version: 2.0.0
 
 # DESCRIPTION:
 
-rssReader is a simple application which can be used to gather a set of RSS/RDF feeds, 
+Bliss is a simple application which can be used to gather a set of RSS/RDF feeds, 
 and compile them into one single Page ordered by Date.
 
 I build it because i liked PlanetGnome (http://www.gnome.org/~jdub/planetgnome/) alot, but
@@ -34,12 +38,9 @@ Recently it got a slight update (as in complete rewrite) to something a bit more
 * You need to set `data_dir` and `cache_dir` and, of course, your `sources`.
 * Then run `php index.php --update` from the commandline
 * After you've run the update you can open the page in your browser.
-For automatic updates of the feed sources, setup a cron-job to either call 'rssFetch.php' with
-the CLI version of PHP, or simply via wget to your webserver.
 	
 # TODO:
 	
-* **A Better, fancier Name** Suggestions Very Welcome
 * A Simple way to add new feeds
 * Keyboard navigation to hop between articles (prev and next atleast)
 * Load posts that are pulled via update while site is opened
@@ -62,3 +63,4 @@ Probably alot more. Tested with a couple of feeds, but there are probably alot t
 # LICENSE:
 
 Released under the [MIT License](http://www.opensource.org/licenses/mit-license.php)
+

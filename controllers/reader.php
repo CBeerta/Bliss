@@ -1,10 +1,10 @@
 <?php 
 /**
-* RssReader
+* Bliss
 *
 * PHP Version 5.3
 *
-* Copyright (C) <year> by <copyright holders>
+* Copyright (C) 2011 by Claus Beerta
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -24,8 +24,8 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
 *
-* @category RssReader
-* @package  RssReader
+* @category RSS_Reader
+* @package  Bliss
 * @author   Claus Beerta <claus@beerta.de>
 * @license  http://www.opensource.org/licenses/mit-license.php MIT License
 * @link     http://claus.beerta.de/
@@ -34,8 +34,8 @@
 /**
 * Reader
 *
-* @category RssReader
-* @package  RssReader
+* @category RSS_Reader
+* @package  Bliss
 * @author   Claus Beerta <claus@beerta.de>
 * @license  http://www.opensource.org/licenses/mit-license.php MIT License
 * @link     http://claus.beerta.de/
@@ -173,7 +173,6 @@ class Reader
         }
        
         $data = array(
-            'title' => 'RssReader',
             'entries' => $entries,
         );
         
