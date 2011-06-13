@@ -58,25 +58,28 @@ spl_autoload_register("autoloader");
 * Options with defaults, overridable in config.ini
 **/
 $options = array (
-    'smarty_templates_c' => '/var/tmp/',
-    'data_dir' => __DIR__ . 'data/',
+    'items_to_display' => 5,
+    'opml' => null,
+    'cache_dir' => '/var/tmp/',
+    'data_dir' => __DIR__ . '/data/',
 );
 
 /**
 * Load config file and override default options
 **/    
-$config = parse_ini_file(__DIR__."/config.ini");
+$config = parse_ini_file(__DIR__."/config.ini", true);
 foreach ( $options as $k => $v ) {
     $v = isset($config[$k]) ? $config[$k] : $options[$k];
     Flight::set($k, $v);
 }
+Flight::set('config', $config);
 
 Flight::register(
     'view', 'Smarty', array(), function($smarty)
     {
-        $smarty->compile_dir = Flight::get('smarty_templates_c');
+        $smarty->compile_dir = Flight::get('cache_dir');
         $smarty->template_dir = __DIR__ . '/views/';
-        $smarty->debugging = true;
+        $smarty->debugging = false;
     }
 );
 
@@ -88,6 +91,7 @@ Flight::map(
     }
 );
 
+Flight::route('/load_next/@offset', array('Reader', 'next'));
 Flight::route('/', array('Reader', 'index'));
 
 if (PHP_SAPI == 'cli') {

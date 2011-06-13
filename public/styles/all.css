@@ -3,7 +3,7 @@
 html{ background: #FFF; }
 body{
 	color: #555555;
-	font: 12px/20px Helvetica, Arial, Verdana, sans-serif;
+	font: 12px/20px Lato, Helvetica, Arial, Verdana, sans-serif;
 }
 h1, h2, h3, h4, h5, h6, ol, ul, dl, p, blockquote, form{ margin: 0 0 20px 0; }
 sup, sub{
@@ -15,3 +15,37 @@ sup, sub{
 }
 sup{ bottom: 1ex; }
 sub{ top: .5ex; }
+
+#main {
+	width: 90%;
+	margin: 0 auto;
+	padding-top: 30px;
+}
+#content {
+}
+
+
+article header p {
+    margin: 0 0 5px 0;
+}
+article header a {
+    font-size: 169%;
+    margin: 0 0 5px 0;
+    color: #333;
+    text-decoration: none;
+}
+article header em {
+    font-style: normal;
+    background-color: #eee;
+    padding: 2px;
+}
+article header {
+    margin: 0 0 15px 0;
+}
+article {
+    margin: 15px 0 20px 0;
+    border-bottom: 1px dotted #aaa;
+}
+article .content {
+    padding-left: 15px;
+}

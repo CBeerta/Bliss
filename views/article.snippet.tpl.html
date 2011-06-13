@@ -1,0 +1,12 @@
+<article id="{$entry->info->timestamp}">
+    <header>
+    <p>
+    From <em>{$entry->info->feed_info->title}</em> 
+    posted by: <em>{$entry->info->feed_info->author_name|default:'Unknown'}</em>
+    </p>
+    <h1><a href="{$entry->link}">{$entry->title}</a></h1>
+    </header>
+    <div class="content">
+        {$entry->content}
+    </div>
+</article>

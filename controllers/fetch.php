@@ -38,6 +38,9 @@ if ( PHP_SAPI != 'cli' ) {
 
 require_once __DIR__ . '/../vendor/simplepie/SimplePieAutoloader.php';
 
+// Simplepie throws notices on unreadalble feeds, dont want these
+error_reporting(E_ALL ^ E_USER_NOTICE);
+
 /**
 * Debugging shortcut function
 *
@@ -75,8 +78,6 @@ class Fetch
     private static $_commands = array(
             'update' => 'Load new Items from frrds',
             'help' => 'This Help',
-            'dry-run' => 'Don\'t apply',
-            'force' => 'Force Overwrites',
     );
         
     /**
@@ -101,8 +102,6 @@ class Fetch
     {
         $options = getopt('h', array_keys(self::$_commands));
         
-        $dryrun = false;
-        $force = false;
         $call = false;
         
         foreach ($options as $k => $v) {
@@ -112,25 +111,87 @@ class Fetch
             default:
                 self::_help();
                 exit;
-            case 'dry-run':
-                $dryrun = true;
-                break;
-            case 'force':
-                $force = true;
-                break;
+            case 'update':
+                self::update();
+                exit;
             }
         }
         
-        if ($call !== false) {
-            $ret = new $call();
-            $ret->setup($value, $dryrun, $force)->run();
-            exit;
-        } else {
-            self::_help();
-            exit;
-        }
+        self::_help();
     }
-
     
+    /**
+    * Update Feeds
+    *
+    * @return void
+    **/
+    public static function update()
+    {
+        $rss = new SimplePie();
+        
+        foreach (Reader::feeds() as $feed_uri) {
+            d("Fetching: {$feed_uri}");
+            
+            $rss->set_feed_url($feed_uri);
+            $rss->set_cache_location(Flight::get('cache_dir'));
+            $rss->set_cache_duration(12 * 60 * 60);
+            $rss->init();
+            $rss->handle_content_type();
+             
+            if ($rss->error()) {
+                d($rss->error());
+                continue;
+            }
+    
+            $dir = Flight::get('data_dir') . '/' .
+                Helpers::buildSlug(
+                    $rss->get_author() . ' ' . 
+                    $rss->get_title()
+                );
+
+            if (!is_dir($dir)) {
+                mkdir($dir, 0755, true);
+            }
+            
+            $feed_info = (object) array(
+                'title' => $rss->get_title(),
+                'feed_type' => $rss->get_type(),
+                'feed_encoding' => $rss->get_encoding(),
+                'description' => $rss->get_description(),
+                'author_name' => $rss->get_author()->name,
+                'author_email' => $rss->get_author()->email,
+            );
+            
+            file_put_contents("{$dir}/feed.info", serialize($feed_info), LOCK_EX);
+            
+            foreach ($rss->get_items() as $item) {
+                $outfile = "{$dir}/"
+                    . $item->get_date('U')
+                    . '-' 
+                    . Helpers::buildSlug($item->get_id())
+                    . '.item';
+                
+                $content = (object) array(
+                    'title' => $item->get_title(),
+                    'author' => $item->get_author(),
+                    'authors' => $item->get_authors(),
+                    'categories' => $item->get_categories(),
+                    'content' => $item->get_content(),
+                    'description' => $item->get_description(),
+                    'date' => $item->get_date(),
+                    'link' => $item->get_link(),
+                    'enclosures' => $item->get_enclosures(),
+                    'source' => $item->get_source(),
+                    'id' => $item->get_id(),
+                );
+                
+                file_put_contents($outfile, serialize($content));
+            }
+        }
+        // Sanity Check, load all files, anc check them
+        Reader::filelist(mktime(), $errors);
+        d($errors);
+    } // end update()
+
 }
 

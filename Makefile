@@ -1,4 +1,4 @@
-SOURCES = index.php controllers/*.php #lib/*.php
+SOURCES = index.php controllers/*.php lib/*.php
 
 all: csstidy phpcs
 
@@ -8,6 +8,7 @@ csstidy:
 
 phpcs:
 	phpcs $(SOURCES)
+	php index.php --update
     
 
 

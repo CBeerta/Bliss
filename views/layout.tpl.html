@@ -8,11 +8,20 @@
         <link rel="stylesheet" href="public/styles/reset.css" media="all"/>
         <link rel="stylesheet" href="public/styles/all.css" media="all"/>
         <link rel="stylesheet" href="public/styles/print.css" media="print"/>
+        <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Lato:regular,regularitalic,italic,bold,bolditalic" type="text/css">
+        <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Amaranth:regular,regularitalic,italic,bold,bolditalic" type="text/css">
+        <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Maven+Pro:regular,bold,italic,bolditalic" type="text/css">
         <script src="public/scripts/modernizr-1.7.min.js"></script>
     </head>
     <body>
-        {block name=body}{/block}
+        <div id="main" role="main">
+            <div id="content">
+            {block name=body}{/block}
+            </div>
+        </div>        
+        <footer>&nbsp;</footer>
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
+        <script src="public/scripts/jquery.endless-scroll.js"></script>
         <script src="public/scripts/setup.js"></script>
     </body>
 </html>

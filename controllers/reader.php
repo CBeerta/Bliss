@@ -42,6 +42,85 @@
 **/
 class Reader
 {
+    /**
+    * The configured Feed Uris
+    *
+    * @return array
+    **/
+    public static function feeds()
+    {
+        $feeds = array();
+        $config = Flight::get('config');
+        
+        if (!is_array($config['feeds']['sources'])) {
+            $config['feeds']['sources'] = array();
+        }
+
+        $opml = array();        
+        if (Flight::get('opml')) {
+            $fh = file_get_contents(Flight::get('opml'));
+            preg_match_all("=<outline (.+)/>=sU", $fh, $items);
+            foreach ($items[1] as $item) {
+                preg_match("#xmlUrl=\"(.+)\"#U", $item, $matches);
+                $opml[] = $matches[1];
+            }
+        }
+
+        $feeds = array_merge($opml, $config['feeds']['sources']);
+        
+        return $feeds;
+    }
+    
+    /**
+    * Gather a list of all available files
+    *
+    * @param int   $offset  Offset timestamp where to start pulling articles
+    * @param array &$errors Errors will be put into that array
+    *
+    * @return array
+    **/
+    public static function filelist($offset = 0, &$errors = array())
+    {
+        $files = array();
+        $data_dir = rtrim(Flight::get('data_dir'), '/');
+        $feed_infos = array();
+        
+        foreach (glob($data_dir . '/*/*.item') as $file) {
+            $fname = trim(str_replace($data_dir, '', $file), '/');
+            list($dir, $fname) = explode('/', $fname);
+            $dir = $data_dir . '/' . $dir; 
+            list($timestamp) = explode('-', $fname);
+            
+            if ($timestamp >= $offset) {
+                continue;
+            }
+
+            if (!file_exists($dir . '/feed.info')) {
+                $errors[] = "No {$dir}/feed.info File";
+                continue;
+            }
+            
+            if (!isset($feed_infos[$dir])) {
+                $info = unserialize(file_get_contents($dir . '/feed.info'));
+                if ($info === false) {
+                    $errors[] = "{$dir}/feed.info Unreadable";
+                    continue;
+                }
+                $feed_infos[$dir] = $info;
+            }
+                
+            $files[$timestamp] = array(
+                'timestamp' => $timestamp,
+                'dir' => $dir,
+                'file' => $file,
+                'feed_info' => $feed_infos[$dir],
+            );
+        }
+        krsort($files);
+        $errors = array_unique($errors);        
+        
+        return $files;
+    }
 
     /**
     * Landing Page
@@ -50,11 +129,60 @@ class Reader
     **/
     public static function index()
     {
-    
-    
-        Flight::render('index.tpl.html', array('title' => 'RssReader'));
+        $entries = array();
+        $offset = mktime();
+        for ($i=1;$i<=Flight::get('items_to_display');$i++) {
+            $entry = self::LoadNext($offset);
+            $entries[] = $entry;
+            $offset = $entry->info->timestamp;
+        }
+       
+        $data = array(
+            'title' => 'RssReader',
+            'entries' => $entries,
+        );
+        
+        return Flight::render('index.tpl.html', $data);
     }
-    
+
+    /**
+    * Ajax load_next to pull new item
+    *
+    * @param int $offset Article Offset
+    *
+    * @return html
+    **/
+    public static function next($offset)
+    {
+        $data = array('entry' => self::loadNext($offset));
+        return Flight::render('article.snippet.tpl.html', $data);
+    }
+
+    /**
+    * Load Next item
+    *
+    * @param int $offset Article Offset
+    *
+    * @return array
+    **/
+    public static function loadNext($offset)
+    {
+        $files = self::filelist($offset);
+
+        $info = array_pop(array_slice($files, 0, 1));
+        $item = unserialize(file_get_contents($info['file']));
+
+        if ($item === false) {
+            self::loadNext($info['timestamp']);
+        }
+        $item->info = (object) $info;
+        
+        if ($info['timestamp'] == $offset) {
+            // We are at the last article
+            return;
+        }
+        return $item;
+    }
     
 }
 

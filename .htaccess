@@ -1,0 +1,21 @@
+Options +FollowSymlinks
+Options -Indexes
+RewriteEngine on
+
+<IfModule php5_module>
+php_value session.cookie_httponly true
+php_value short_open_tag off
+</IfModule>
+
+
+# test string is a valid files
+RewriteCond %{SCRIPT_FILENAME} !-f
+# test string is a valid directory
+RewriteCond %{SCRIPT_FILENAME} !-d
+
+RewriteRule ^(.*)$   index.php?uri=/$1    [NC,L,QSA]
+# with QSA flag (query string append),
+# forces the rewrite engine to append a query string part of the
+# substitution string to the existing string, instead of replacing it.
+
+
