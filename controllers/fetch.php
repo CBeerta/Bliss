@@ -135,8 +135,11 @@ class Fetch
             $rss->set_feed_url($feed_uri);
             $rss->set_cache_location(Flight::get('cache_dir'));
             $rss->set_cache_duration(12 * 60 * 60);
+            $rss->set_image_handler('image', 'i');
+
             $rss->init();
             $rss->handle_content_type();
+            
              
             if ($rss->error()) {
                 d($rss->error());

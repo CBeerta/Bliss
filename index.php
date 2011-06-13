@@ -91,7 +91,8 @@ Flight::map(
     }
 );
 
-Flight::route('/load_next/@offset', array('Reader', 'next'));
+Flight::route('POST /load_next', array('Reader', 'next'));
+Flight::route('/image', array('Reader', 'image'));
 Flight::route('/', array('Reader', 'index'));
 
 if (PHP_SAPI == 'cli') {

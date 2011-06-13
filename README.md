@@ -40,13 +40,16 @@ the CLI version of PHP, or simply via wget to your webserver.
 # TODO:
 	
 * **A Better, fancier Name** Suggestions Very Welcome
+* A Simple way to add new feeds
 * Keyboard navigation to hop between articles (prev and next atleast)
 * Load posts that are pulled via update while site is opened
 * and/or inform user about new posts (maybe easier, and less intrusive if you're reading something and content is popped to the top)
-* Local Image Caching
 * Article Expire (for now a little `find data/ -type f -mtime +32` will have to suffice)
 * Article Flagging / Starring
 * With the flagging or starring there needs to be a way to retrieve these. And obviously never expire them either.
+* An Archive page of some sort, for direct access to posts. Goes along with the starring/flagging.
+* Search?
+* Should probably cache `Reader::filelist()`. it goes over every file on every reload. For now though, the fs-cache does a good job.
 
 # BUGS
 

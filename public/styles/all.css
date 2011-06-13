@@ -3,7 +3,7 @@
 html{ background: #FFF; }
 body{
 	color: #555555;
-	font: 12px/20px Lato, Helvetica, Arial, Verdana, sans-serif;
+	font: 12px/20px Maven Pro, serif;
 }
 h1, h2, h3, h4, h5, h6, ol, ul, dl, p, blockquote, form{ margin: 0 0 20px 0; }
 sup, sub{
@@ -22,10 +22,6 @@ sub{ top: .5ex; }
 	padding-top: 30px;
 }
 #content {
-}
-
-.loading {
-    background: url(/public/indicator.gif) left no-repeat;
 }
 
 article header p {
@@ -53,6 +49,7 @@ article header {
 article {
     margin: 15px 0 20px 0;
     border-bottom: 1px dotted #aaa;
+    min-height: 200px;
 }
 article .content {
     padding-left: 15px;

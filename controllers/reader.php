@@ -123,6 +123,41 @@ class Reader
     }
 
     /**
+    * Load an Image from cache
+    *
+    * @return img
+    **/
+    public static function image()
+    {
+        if (!isset($_GET['i'])) {
+            return false;
+        }
+        $file = Flight::get('cache_dir') . '/' . basename($_GET['i']) . '.spi';
+        
+        if (!file_exists($file) || !is_readable($file)) {
+            return false;
+        }
+
+        $img = unserialize(file_get_contents($file));
+        
+        foreach (
+            array(
+                'content-type', 
+                'expires', 
+                'content-disposition',
+                'cache-control',
+            ) as $header ) {
+            
+            if (isset($img['headers'][$header])) {
+                header($header . ':' . $img['headers'][$header]);
+            }
+        }
+        
+        echo $img['body'];
+        exit;
+    }
+
+    /**
     * Landing Page
     *
     * @return html
@@ -148,13 +183,29 @@ class Reader
     /**
     * Ajax load_next to pull new item
     *
-    * @param int $offset Article Offset
-    *
     * @return html
     **/
-    public static function next($offset)
+    public static function next()
     {
-        $next = self::loadNext($offset);
+        $last_id = (isset($_POST['last_id']) && is_numeric($_POST['last_id']))
+            ? $_POST['last_id']
+            : null;
+
+        $idlist = (isset($_POST['idlist']) && is_array($_POST['idlist']))
+            ? $_POST['idlist']
+            : null;
+        
+        if ($last_id == null || $idlist == null) {
+            return;
+        }
+        $next = self::loadNext($last_id);
+        while (in_array($next->info->timestamp, $idlist)) {
+            $idlist[] = $next->info->timestamp;
+            $next = self::loadNext($last_id);
+            if (!$next) {
+                return;
+            }
+        }
         
         if (!$next) {
             return;
