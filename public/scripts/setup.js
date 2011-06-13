@@ -1,24 +1,15 @@
 (function ($) {
 
-
 $(document).endlessScroll({
-    fireOnce: true,
-    bottomPixels: 300,
+    fireOnce: false,
     fireDelay: 250,
-    loader: '<div class="loading"></div>',
-    callback: function(p){
-        console.log("Loading");
+    bottomPixels: 300,
+    callback: function(p) {
         var last_id = $('article').last().attr('id');
         $.get("load_next/" + last_id, function(data) {
-            //console.log(data);
-            $("#" + last_id).append(data);
-        
+            $("#" + last_id).after(data);
         });
     }
 });
 
-
-
 })(jQuery);
-
-

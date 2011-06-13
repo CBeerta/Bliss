@@ -24,9 +24,17 @@ sub{ top: .5ex; }
 #content {
 }
 
+.loading {
+    background: url(/public/indicator.gif) left no-repeat;
+}
 
 article header p {
     margin: 0 0 5px 0;
+}
+article header #date {
+    color: #888;
+    position: relative;
+    float: right;
 }
 article header a {
     font-size: 169%;

@@ -154,7 +154,13 @@ class Reader
     **/
     public static function next($offset)
     {
-        $data = array('entry' => self::loadNext($offset));
+        $next = self::loadNext($offset);
+        
+        if (!$next) {
+            return;
+        }
+
+        $data = array('entry' => $next);
         return Flight::render('article.snippet.tpl.html', $data);
     }
 
@@ -170,17 +176,13 @@ class Reader
         $files = self::filelist($offset);
 
         $info = array_pop(array_slice($files, 0, 1));
-        $item = unserialize(file_get_contents($info['file']));
-
-        if ($item === false) {
-            self::loadNext($info['timestamp']);
+        if (empty($info)) {
+            return false;
         }
+
+        $item = unserialize(file_get_contents($info['file']));
         $item->info = (object) $info;
         
-        if ($info['timestamp'] == $offset) {
-            // We are at the last article
-            return;
-        }
         return $item;
     }
     

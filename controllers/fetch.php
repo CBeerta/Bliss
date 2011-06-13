@@ -178,7 +178,7 @@ class Fetch
                     'categories' => $item->get_categories(),
                     'content' => $item->get_content(),
                     'description' => $item->get_description(),
-                    'date' => $item->get_date(),
+                    'date' => $item->get_date('r'),
                     'link' => $item->get_link(),
                     'enclosures' => $item->get_enclosures(),
                     'source' => $item->get_source(),
