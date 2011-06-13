@@ -14,6 +14,17 @@
         <script src="public/scripts/modernizr-1.7.min.js"></script>
     </head>
     <body>
+        <div class="pulldown">
+            <div id="options">
+            <img id="spinner" src="public/indicator.gif" />
+            <form method="POST" action="add_feed" id="options">
+                <input id="add_feed" type="url" size="40" name="add" placeholder="Add a new Feed">
+            </form>
+            </div>
+            <div id="lip"></div>
+            <div id="handle">Options</div>
+        </div>
+        <div class="feedback"></div>
         <div id="main" role="main">
             <div id="content">
             {block name=body}{/block}

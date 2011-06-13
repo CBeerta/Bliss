@@ -31,6 +31,8 @@
 * @link     http://claus.beerta.de/
 **/
 
+define('BLISS_VERSION', '2.0.0');
+
 require_once __DIR__ . '/vendor/Smarty/libs/Smarty.class.php';
 require_once __DIR__ . '/vendor/flight/flight/Flight.php';
 
@@ -58,9 +60,11 @@ spl_autoload_register("autoloader");
 * Options with defaults, overridable in config.ini
 **/
 $options = array (
+    // FIXME: This needs to DIAF, as i want everything loaded on demand
     'items_to_display' => 5,
     'opml' => null,
     'cache_dir' => '/var/tmp/',
+    'simplepie_cache_duration' => 2*60*60,
     'data_dir' => __DIR__ . '/data/',
 );
 
@@ -91,16 +95,19 @@ Flight::map(
     }
 );
 
+
 Flight::route('POST /load_next', array('Reader', 'next'));
+Flight::route('POST /add_feed', array('Config', 'add'));
+
 Flight::route('/image', array('Reader', 'image'));
+
 Flight::route('/', array('Reader', 'index'));
+
 
 if (PHP_SAPI == 'cli') {
     Fetch::parseArgs();
 } else {
     Flight::start();
 }
-
-
 
 

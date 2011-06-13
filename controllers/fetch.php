@@ -129,17 +129,22 @@ class Fetch
     {
         $rss = new SimplePie();
         
-        foreach (Reader::feeds() as $feed_uri) {
+        foreach (Config::feedlist() as $feed_uri) {
             d("Fetching: {$feed_uri}");
             
             $rss->set_feed_url($feed_uri);
+            $rss->set_useragent(
+                'Mozilla/4.0 (Bliss: ' 
+                . BLISS_VERSION
+                . '; https://github.com/CBeerta/Bliss'
+                . '; Allow like Gecko)'
+            );
             $rss->set_cache_location(Flight::get('cache_dir'));
-            $rss->set_cache_duration(12 * 60 * 60);
+            $rss->set_cache_duration(Flight::get('simplepie_cache_duration'));
             $rss->set_image_handler('image', 'i');
 
             $rss->init();
             $rss->handle_content_type();
-            
              
             if ($rss->error()) {
                 d($rss->error());

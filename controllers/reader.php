@@ -31,6 +31,10 @@
 * @link     http://claus.beerta.de/
 **/
 
+if ( !defined('BLISS_VERSION') ) {
+    die('No direct Script Access Allowed!');
+}
+
 /**
 * Reader
 *
@@ -42,35 +46,6 @@
 **/
 class Reader
 {
-    /**
-    * The configured Feed Uris
-    *
-    * @return array
-    **/
-    public static function feeds()
-    {
-        $feeds = array();
-        $config = Flight::get('config');
-        
-        if (!is_array($config['feeds']['sources'])) {
-            $config['feeds']['sources'] = array();
-        }
-
-        $opml = array();        
-        if (Flight::get('opml')) {
-            $fh = file_get_contents(Flight::get('opml'));
-            preg_match_all("=<outline (.+)/>=sU", $fh, $items);
-            foreach ($items[1] as $item) {
-                preg_match("#xmlUrl=\"(.+)\"#U", $item, $matches);
-                $opml[] = $matches[1];
-            }
-        }
-
-        $feeds = array_merge($opml, $config['feeds']['sources']);
-        
-        return $feeds;
-    }
-    
     /**
     * Gather a list of all available files
     *
@@ -167,7 +142,7 @@ class Reader
         $entries = array();
         $offset = mktime();
         for ($i=1;$i<=Flight::get('items_to_display');$i++) {
-            $entry = self::LoadNext($offset);
+            $entry = self::_loadNext($offset);
             $entries[] = $entry;
             $offset = $entry->info->timestamp;
         }
@@ -197,10 +172,13 @@ class Reader
         if ($last_id == null || $idlist == null) {
             return;
         }
-        $next = self::loadNext($last_id);
+        
+        // FIXME: This doesn't make much sense at all
+        // Should be done in the browser
+        $next = self::_loadNext($last_id);
         while (in_array($next->info->timestamp, $idlist)) {
             $idlist[] = $next->info->timestamp;
-            $next = self::loadNext($last_id);
+            $next = self::_loadNext($last_id);
             if (!$next) {
                 return;
             }
@@ -221,7 +199,7 @@ class Reader
     *
     * @return array
     **/
-    public static function loadNext($offset)
+    private static function _loadNext($offset)
     {
         $files = self::filelist($offset);
 
