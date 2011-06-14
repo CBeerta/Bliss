@@ -56,6 +56,7 @@ class Reader
     **/
     public static function filelist($offset = 0, &$errors = array())
     {
+        Helpers::bench();
         $files = array();
         $data_dir = rtrim(Flight::get('data_dir'), '/');
         $feed_infos = array();
@@ -76,7 +77,7 @@ class Reader
             }
             
             if (!isset($feed_infos[$dir])) {
-                $info = unserialize(file_get_contents($dir . '/feed.info'));
+                $info = json_decode(file_get_contents($dir . '/feed.info'));
                 if ($info === false) {
                     $errors[] = "{$dir}/feed.info Unreadable";
                     continue;
@@ -94,6 +95,7 @@ class Reader
         krsort($files);
         $errors = array_unique($errors);        
         
+        d("filelist took: " . Helpers::bench());
         return $files;
     }
 
@@ -175,7 +177,7 @@ class Reader
                 return;
             }
         }
-        
+
         if (!$next) {
             return;
         }
@@ -225,7 +227,7 @@ class Reader
             return false;
         }
 
-        $item = unserialize(file_get_contents($info['file']));
+        $item = json_decode(file_get_contents($info['file']));
         $item->info = (object) $info;
         
         return $item;

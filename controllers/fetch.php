@@ -150,7 +150,7 @@ class Fetch
                 'author_email' => $rss->get_author()->email,
             );
             
-            file_put_contents("{$dir}/feed.info", serialize($feed_info), LOCK_EX);
+            file_put_contents("{$dir}/feed.info", json_encode($feed_info), LOCK_EX);
             
             foreach ($rss->get_items() as $item) {
                 $outfile = "{$dir}/"
@@ -158,6 +158,38 @@ class Fetch
                     . '-' 
                     . Helpers::buildSlug($item->get_id())
                     . '.item';
+                    
+                $thumbnails = array();
+                $enclosures = array();
+                
+                foreach ($item->get_enclosures() as $enclosure) {
+
+                    if (!empty($enclosure->thumbnails)) {
+                    
+                        $thumbnails = $enclosure->thumbnails;
+                        
+                    } else if ($enclosure->medium == 'image') {
+                    
+                        // Assume image mediums to be thumbs
+                        $thumbnails = $enclosure->link;
+                        
+                    } else if (!empty($enclosure->link)) {
+                    
+                        $title = !empty($enclosure->title)
+                            ? $enclosure->title
+                            : basename($enclosure->link);
+                        
+                        $enclosures[$title] = array(
+                            'link' => $enclosure->link,
+                            'content-type' => $enclosure->type,
+                            'length' => $enclosure->length,
+                        );
+                        
+                    }
+
+                    $thumbnails = array_unique($thumbnails);
+
+                }
                 
                 $content = (object) array(
                     'title' => $item->get_title(),
@@ -168,12 +200,13 @@ class Fetch
                     'description' => $item->get_description(),
                     'date' => $item->get_date('r'),
                     'link' => $item->get_link(),
-                    'enclosures' => $item->get_enclosures(),
+                    'enclosures' => $enclosures,
                     'source' => $item->get_source(),
                     'id' => $item->get_id(),
+                    'thumbnails' => $thumbnails,
                 );
                 
-                file_put_contents($outfile, serialize($content));
+                file_put_contents($outfile, json_encode($content));
             }
         }
         // Sanity Check, load all files, anc check them

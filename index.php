@@ -119,6 +119,8 @@ Flight::route('POST /load_next', array('Reader', 'next'));
 Flight::route('POST /poll', array('Reader', 'poll'));
 Flight::route('POST /add_feed', array('Config', 'add'));
 
+Flight::route('/article_test/@id', array('Reader', 'test'));
+
 Flight::route('/image', array('Reader', 'image'));
 
 Flight::route('/', array('Reader', 'index'));

@@ -71,8 +71,22 @@ article {
     min-height: 200px;
 }
 article .content {
-    padding-left: 15px;
+    margin-left: 15px;
 }
+article .enclosures h1 {
+    font-weight: bold;
+    font-size: 140%;
+    padding: 10px 0 5px 0;
+    margin: 0px;
+}
+article .enclosures p {
+    margin-left: 15px;
+    background-color: #f4f4f4;
+    border: 1px solid #999;
+    font-size: 121%;
+    padding: 10px;
+}
+
 
 /* ########## Top Bar ##################################### */
 

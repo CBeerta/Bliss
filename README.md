@@ -42,7 +42,7 @@ Recently it got a slight update (as in complete rewrite) to something a bit more
 # TODO:
 	
 * A Simple way to add new feeds
-* Display of Attachements/Enclosures/Thumbnails
+* A Gallery of all cached images maybe?
 * Basic polling works. Only question remains, should we prepend these articles? Or is informing enough
 * Keyboard navigation to hop between articles (prev and next atleast)
 * With the flagging or starring there needs to be a way to retrieve these. And obviously never expire them either.

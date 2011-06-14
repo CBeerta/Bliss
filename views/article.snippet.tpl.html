@@ -10,4 +10,20 @@
     <div class="content">
         {$entry->content}
     </div>
+    <div class="enclosures">
+    {* foreach $entry->thumbnails as $thumb}
+        <img src="{$thumb}" />
+    {/foreach *}
+    {foreach $entry->enclosures as $enclosure}
+        {if $enclosure@first}
+        <h1>Attachements:</h1>
+        <p>
+        {/if}
+            <a href="{$enclosure->link}"><img src="public/file.png" width="64" height="64" name="{$enclosure@key}" title="{$enclosure@key}"></a>
+        {if $enclosure@last}
+        </p>
+        {/if}
+
+    {/foreach}
+    </div>
 </article>
