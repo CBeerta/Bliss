@@ -60,8 +60,6 @@ spl_autoload_register("autoloader");
 * Options with defaults, overridable in config.ini
 **/
 $options = array (
-    // FIXME: This needs to DIAF, as i want everything loaded on demand
-    'items_to_display' => 5,
     'opml' => null,
     'cache_dir' => '/var/tmp/',
     'simplepie_cache_duration' => 2*60*60,
@@ -95,8 +93,30 @@ Flight::map(
     }
 );
 
+/**
+* Debugging shortcut function
+*
+* @param string $message Message to log
+* 
+* @return void
+**/
+function d($message)
+{
+    if (!is_string($message)) {
+        $message = print_r($message, true);
+    }
+    
+    if ( class_exists("WebServer", false) ) {
+        WebServer::log($message);
+    } else {
+        error_log($message);
+    }
+}
+
+
 
 Flight::route('POST /load_next', array('Reader', 'next'));
+Flight::route('POST /poll', array('Reader', 'poll'));
 Flight::route('POST /add_feed', array('Config', 'add'));
 
 Flight::route('/image', array('Reader', 'image'));

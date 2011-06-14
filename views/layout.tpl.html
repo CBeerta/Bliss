@@ -16,6 +16,10 @@
     <body>
         <div class="pulldown">
             <div id="options">
+            <ul>
+                <li><a href="/feeds/manage">Manage Subscriptions</a></li>
+                <li><a href="/archive">Article Archive</a></li>
+            </ul>
             <img id="spinner" src="public/indicator.gif" />
             <form method="POST" action="add_feed" id="options">
                 <input id="add_feed" type="url" size="40" name="add" placeholder="Add a new Feed">
@@ -24,13 +28,16 @@
             <div id="lip"></div>
             <div id="handle">Options</div>
         </div>
+        <div class="updater">
+            New Articles Available!
+        </div>
         <div class="feedback"></div>
         <div id="main" role="main">
             <div id="content">
             {block name=body}{/block}
             </div>
         </div>        
-        <footer>&nbsp;</footer>
+        <footer><!-- this footer is important leave it intact, otherwise the initial load will fail --></footer>
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
         <script src="public/scripts/jquery.endless-scroll.js"></script>
         <script src="public/scripts/setup.js"></script>

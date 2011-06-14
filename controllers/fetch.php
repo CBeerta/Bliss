@@ -42,26 +42,6 @@ require_once __DIR__ . '/../vendor/simplepie/SimplePieAutoloader.php';
 error_reporting(E_ALL ^ E_USER_NOTICE);
 
 /**
-* Debugging shortcut function
-*
-* @param string $message Message to log
-* 
-* @return void
-**/
-function d($message)
-{
-    if (!is_string($message)) {
-        $message = print_r($message, true);
-    }
-    
-    if ( class_exists("WebServer", false) ) {
-        WebServer::log($message);
-    } else {
-        error_log($message);
-    }
-}
-
-/**
 * Fetch
 *
 * @category RSS_Reader

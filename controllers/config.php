@@ -136,6 +136,8 @@ class Config
             } else if (in_array($uri, $feeds)) {
                 $reply['message'] = 'Already pulling that feed.';
                 exit(json_encode($reply));
+            } else {
+                copy($save_file, $save_file . '.bak');
             }
         }
         
@@ -150,6 +152,7 @@ class Config
         $reply['message']
             = 'Feed Added Successfully!<br>
             New items will be pulled on the next regular run.';
+            
         exit(json_encode($reply));
     }
     

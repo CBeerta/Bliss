@@ -139,19 +139,11 @@ class Reader
     **/
     public static function index()
     {
-        $entries = array();
-        $offset = mktime();
-        for ($i=1;$i<=Flight::get('items_to_display');$i++) {
-            $entry = self::_loadNext($offset);
-            $entries[] = $entry;
-            $offset = $entry->info->timestamp;
-        }
-       
-        $data = array(
-            'entries' => $entries,
-        );
-        
-        return Flight::render('index.tpl.html', $data);
+        /**
+        * We dont actually produce anything usefull on our initial load
+        * The page is filled with content by jquery
+        **/
+        return Flight::render('index.tpl.html');
     }
 
     /**
@@ -167,9 +159,9 @@ class Reader
 
         $idlist = (isset($_POST['idlist']) && is_array($_POST['idlist']))
             ? $_POST['idlist']
-            : null;
+            : array();
         
-        if ($last_id == null || $idlist == null) {
+        if ($last_id == null) {
             return;
         }
         
@@ -190,6 +182,31 @@ class Reader
 
         $data = array('entry' => $next);
         return Flight::render('article.snippet.tpl.html', $data);
+    }
+
+    /**
+    * Check if updates exist for the user
+    *
+    * @return html
+    **/
+    public static function poll()
+    {
+        $first_id = (isset($_POST['first_id']) && is_numeric($_POST['first_id']))
+            ? $_POST['first_id']
+            : null;
+            
+        if (is_null($first_id)) {
+            exit ("Invalid POST");
+        }
+        
+        $first = self::_loadNext(mktime());
+        
+        if ($first->info->timestamp > $first_id) {
+            echo json_encode(array('updates_available' => true));
+        } else {
+            echo json_encode(array('updates_available' => false));
+        }
+        return;
     }
 
     /**
