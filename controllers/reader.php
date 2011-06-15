@@ -144,7 +144,7 @@ class Reader
         }
         */
 
-        if (!$next) {
+        if (!$next || in_array($next->info->timestamp, $idlist)) {
             return;
         }
 
@@ -167,7 +167,7 @@ class Reader
             exit ("Invalid POST");
         }
         
-        $first = self::_loadNext(mktime());
+        $first = Feeds::next(mktime());
         
         if ($first->info->timestamp > $first_id) {
             echo json_encode(array('updates_available' => true));

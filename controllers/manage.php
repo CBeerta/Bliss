@@ -54,10 +54,9 @@ class Manage
     public static function edit()
     {
         $data = array(
-            'feedlist' => Feeds::feedlist(),
-            'feedinfo' => Feeds::feedinfo(),
+            'feedinfo' => Feeds::feedinfo(true),
         );
-    
+        
         return Flight::render('manage.tpl.html', $data);
     }
 
@@ -68,7 +67,7 @@ class Manage
     **/
     public static function add()
     {
-        $save_file = Flight::get('data_dir') . '/feeds.json';
+        $save_file = Feeds::option('data_dir') . '/feeds.json';
         
         $uri = (isset($_POST['uri']) && is_string($_POST['uri']))
             ? $_POST['uri']
@@ -127,5 +126,58 @@ class Manage
             
         exit(json_encode($reply));
     }
+
+    /**
+    * Remove a Feed
+    *
+    * FIXME: This will leave the archive intact, and thus
+    * The Feed will still happily show up on the archives page
+    *
+    * @return json
+    **/
+    public static function remove()
+    {
+        $save_file = Feeds::option('data_dir') . '/feeds.json';
+        
+        $uri = (isset($_POST['uri']) && is_string($_POST['uri']))
+            ? $_POST['uri']
+            : null;
+
+        $reply = array('status' => 'FAIL');
+            
+        if (is_null($uri)) {        
+            $reply['message'] = 'Not a Valid Feed to Remove!';
+            exit(json_encode($reply));
+        }
+        
+        $feeds = json_decode(file_get_contents($save_file));
+        
+        if (!$feeds) {
+            $reply['message'] = 'Can not load feeds.json file!';
+            exit(json_encode($reply));
+        }
+        
+        if (($found = array_search($uri, $feeds)) === false) {
+            $reply['message'] 
+                = 'Can not Delete that Feed!<br/>
+                This can happen if the feed has been added to the `config.ini`
+                or part of an OPML file.';
+            exit(json_encode($reply));
+        }
+        
+        unset($feeds[$found]);
+
+        copy($save_file, $save_file . '.bak');
+        if (!file_put_contents($save_file, json_encode($feeds), LOCK_EX)) {
+            $reply['message'] = 'Unable to save feed info.';
+            exit(json_encode($reply));
+        }
+
+        $reply['status'] = 'OK';
+        $reply['message'] = 'Feed removed!';
+            
+        exit(json_encode($reply));
+    }
+
 
 }

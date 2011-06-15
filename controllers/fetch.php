@@ -127,7 +127,7 @@ class Fetch
             $rss->handle_content_type();
              
             if ($rss->error()) {
-                d($rss->error());
+                Helpers::d($rss->error());
                 continue;
             }
     

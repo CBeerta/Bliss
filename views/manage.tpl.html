@@ -6,12 +6,12 @@
 <ul>
 <li id="title">Current Subscriptions</li>
 {foreach $feedinfo as $feed}
-<li>
+<li id="{$feed@index}">
+    <img src="{$base_uri}public/x_7x7.png" height="7" width="7" onclick="delete_feed('{$feed->feed_uri}', {$feed@index});">
     <a href="{$feed->link}">{$feed->title}</a>
     <p class="date">Last Update {$feed->newest_article|date_format:"%B %e, %Y %H:%M"|default:"Never"}</p>
 </li>
 {/foreach}
 </ul>
-
 </div>
 {/block}

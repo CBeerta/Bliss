@@ -90,7 +90,6 @@ Flight::view()->assign('base_uri', $base_uri);
 /* ######### Ajax requests ################################ */
 Flight::route('POST /load_next', array('Reader', 'next'));
 Flight::route('POST /poll', array('Reader', 'poll'));
-Flight::route('POST /add_feed', array('Manage', 'add'));
 
 /* ######### Access to the image cache #################### */
 Flight::route('GET /image', array('Reader', 'image'));
@@ -100,6 +99,8 @@ Flight::route('GET /archive', array('Reader', 'archive'));
 
 /* ######### Config Stuff ################################# */
 Flight::route('GET /manage', array('Manage', 'edit'));
+Flight::route('POST /add_feed', array('Manage', 'add'));
+Flight::route('POST /remove_feed', array('Manage', 'remove'));
 
 /* ######### The Main Page ################################ */
 Flight::route('GET /', array('Reader', 'index'));

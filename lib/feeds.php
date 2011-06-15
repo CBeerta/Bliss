@@ -111,17 +111,28 @@ class Feeds
     /**
     * Load and return avaialable feed info files
     *
+    * @param bool $only_subscribed Filter any non subscribed feeds
+    *
     * @return array
     **/
-    public static function feedinfo()
+    public static function feedinfo($only_subscribed = false)
     {
+        if ($only_subscribed) {
+            $subscribed = self::feedlist();
+        }
         $data_dir = rtrim(self::$config['data_dir'], '/');
         $feedinfo = array();
         foreach (glob($data_dir . '/*/feed.info') as $file) {        
             $ret = json_decode(file_get_contents($file));
-            if (is_object($ret)) {
-                $feedinfo[strtolower($ret->title)] = $ret;
+            
+            if (!is_object($ret)) {
+                continue;
             }
+            if ($only_subscribed && !in_array($ret->feed_uri, $subscribed)) {
+                continue;
+            }
+
+            $feedinfo[strtolower($ret->title)] = $ret;
         }
         ksort($feedinfo, SORT_STRING);
         return $feedinfo;        

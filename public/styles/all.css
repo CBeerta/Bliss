@@ -1,5 +1,9 @@
 /* ########## Core Elements ############################### */
-html{ background: #FFF; overflow-y: scroll;}
+html{ 
+    background: #FFF; 
+    overflow: -moz-scrollbars-vertical;
+    overflow: scroll;
+}
 body{
 	color: #555555;
 	font: 12px/20px Maven Pro, serif;
@@ -136,6 +140,7 @@ article .enclosures p {
     right: 30px;
     margin: 0 0 0 0;
     padding: 2px 8px 2px 8px;
+    cursor: default;
 }
 
 /* ########## Feedback #################################### */
@@ -238,5 +243,4 @@ article .enclosures p {
 .clearfix:after { clear: both; }
 /* Fix clearfix: blueprintcss.lighthouseapp.com/projects/15318/tickets/5-extra-margin-padding-bottom-of-page */
 .clearfix { zoom: 1; }
-
 
