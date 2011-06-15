@@ -1,0 +1,17 @@
+{extends file='layout.tpl.html'}
+
+{block name=body}
+<div class="manage">
+<div class="home"><a href="{$base_uri}">Home<a></div>
+<ul>
+<li id="title">Current Subscriptions</li>
+{foreach $feedinfo as $feed}
+<li>
+    <a href="{$feed->link}">{$feed->title}</a>
+    <p class="date">Last Update {$feed->newest_article|date_format:"%B %e, %Y %H:%M"|default:"Never"}</p>
+</li>
+{/foreach}
+</ul>
+
+</div>
+{/block}

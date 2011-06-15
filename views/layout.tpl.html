@@ -14,11 +14,16 @@
         <script src="public/scripts/modernizr-1.7.min.js"></script>
     </head>
     <body>
+{if $demo_install}
+        <a href="http://github.com/CBeerta">
+            <img style="position: fixed; top: 0; left: 0; border: 0;" src="https://d3nwyuy0nl342s.cloudfront.net/img/ce742187c818c67d98af16f96ed21c00160c234a/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677261795f3664366436642e706e67" alt="Fork me on GitHub">
+        </a>
+{/if}
         <div class="pulldown">
             <div id="options">
             <ul>
-                <li><a href="/feeds/manage">Manage Subscriptions</a></li>
-                <li><a href="/archive">Article Archive</a></li>
+                <li><a href="{$base_uri}manage">Manage Subscriptions</a></li>
+                <li><a href="{$base_uri}archive">Article Archive</a></li>
             </ul>
             <img id="spinner" src="public/indicator.gif" />
             <form method="POST" action="add_feed" id="options">
@@ -33,13 +38,14 @@
         </div>
         <div class="feedback"></div>
         <div id="main" role="main">
-            <div id="content">
-            {block name=body}{/block}
-            </div>
+{block name=body}{/block}
         </div>        
         <footer><!-- this footer is important leave it intact, otherwise the initial load will fail --></footer>
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
-        <script src="public/scripts/jquery.endless-scroll.js"></script>
         <script src="public/scripts/setup.js"></script>
+{if $is_index}
+        <script src="public/scripts/jquery.endless-scroll.js"></script>
+        <script src="public/scripts/index.js"></script>
+{/if}
     </body>
 </html>

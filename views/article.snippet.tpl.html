@@ -1,6 +1,6 @@
 <article id="{$entry->info->timestamp}">
     <header>
-    <div id="date">{$entry->date|date_format:"D jS F Y H:i"}</div>
+    <div class="date">{$entry->date|date_format:"D jS F Y H:i"}</div>
     <p>
     From <em>{$entry->info->feed_info->title}</em> 
     posted by: <em>{$entry->info->feed_info->author_name|default:'Unknown'}</em>
@@ -11,9 +11,6 @@
         {$entry->content}
     </div>
     <div class="enclosures">
-    {* foreach $entry->thumbnails as $thumb}
-        <img src="{$thumb}" />
-    {/foreach *}
     {foreach $entry->enclosures as $enclosure}
         {if $enclosure@first}
         <h1>Attachements:</h1>
@@ -23,7 +20,7 @@
         {if $enclosure@last}
         </p>
         {/if}
-
     {/foreach}
     </div>
+    <div class="clearfix"></div>
 </article>

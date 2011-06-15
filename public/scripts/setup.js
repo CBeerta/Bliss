@@ -1,14 +1,3 @@
-(function ($) {
-
-/**
-* Show spinner when we do ajaxy stuff
-**/
-$('.pulldown #spinner').ajaxStart(function() {
-    $(this).show();
-}).ajaxStop(function() {
-    $(this).hide();
-});
-
 /**
 * Like PHP's in_array
 *
@@ -23,84 +12,30 @@ function in_array (string, array) {
 };
 
 /**
-* Figure out what articles we have, and load the next available after that
-*
-* return void
+* Initialy Page Load completed
 **/
-function loadNext() {
-    var idlist = [];
-    $('article').each(function(article) {
-        idlist.push($(this).attr('id'));
+$(document).ready(function() {
+
+    /**
+    * Show spinner when we do ajaxy stuff
+    **/
+    $('.pulldown #spinner').ajaxStart(function() {
+        $(this).show();
+    }).ajaxStop(function() {
+        $(this).hide();
     });
 
-    var last_id = $('article').last().attr('id');
-    if ( !last_id ) {
-        last_id = Math.round(Date.now() / 1000);
-    }
-
-    $.ajax({
-        type: "POST",
-        url: "load_next",
-        async: false,
-        data: { 'last_id': last_id, 'idlist': idlist },
-        success: function(data) {
-            if ($("#" + last_id).length == 0) {
-                // First item, insert into content
-                $("#content").html(data);
-            } else {
-                // append
-                $("#" + last_id).after(data);
-            }
-        }
+    /**
+    * Show or Hide the "Options" panel
+    **/
+    $('.pulldown #handle').click(function() {
+        $('.pulldown #options').slideToggle('fast');
     });
-}
 
-/**
-* Continuously poll for updates
-*
-* return void
-**/
-function poll() {
-    first_id = $('article').first().attr('id');
-
-    $.ajax({
-        type: "POST",
-        url: "poll",
-        async: false,
-        dataType: 'json',
-        data: { 'first_id': first_id },
-        success: function(data) {
-            if (data['updates_available'] == true) {
-                $('.updater').html('New Articles Available!');
-                $('.updater').fadeIn('slow');
-            }
-        }
-    })
-}
-
-/**
-* Setup endlessScroll
-**/
-$(document).endlessScroll({
-    fireOnce: true,
-    fireDelay: 250,
-    bottomPixels: 100,
-    callback: function(p) {
-        loadNext();
-    }
-});
-
-/**
-* Show or Hide the "Options" panel
-**/
-$('.pulldown #handle').click(function() {
-    $('.pulldown #options').slideToggle('fast');
-});
-
-/**
-* Submit a new Feed Url
-**/
-$("#options").submit(function() {
+    /**
+    * Submit a new Feed Url
+    **/
+    $("#options").submit(function() {
         var uri = $('form #add_feed').attr('value');  
         
         $.ajax({  
@@ -130,26 +65,7 @@ $("#options").submit(function() {
         });          
         
         return false;
-});
+    });
 
-/**
-* Initialy Page Load completed
-**/
-$(document).ready(function() {
-    /**
-    * Lets initially load the first items
-    * Halt at 10 items to prevent an endless loop
-    **/
-    for (var i=0 ; i<= 10 ; i ++) {
-        var footer = $('footer').offset();
-        loadNext();
-        // Check if the footer scrolled outside viewport, and break initial load.
-        // the rest is done by endless scroll
-        if (footer.top > $(window).height()) break;
-    }
     
-    /* Setup the poller */
-    window.setInterval(poll, 60000);
 });
-
-})(jQuery);

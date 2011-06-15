@@ -47,57 +47,34 @@ if ( !defined('BLISS_VERSION') ) {
 class Reader
 {
     /**
-    * Gather a list of all available files
+    * Landing Page
     *
-    * @param int   $offset  Offset timestamp where to start pulling articles
-    * @param array &$errors Errors will be put into that array
-    *
-    * @return array
+    * @return html
     **/
-    public static function filelist($offset = 0, &$errors = array())
+    public static function index()
     {
-        Helpers::bench();
-        $files = array();
-        $data_dir = rtrim(Flight::get('data_dir'), '/');
-        $feed_infos = array();
-        
-        foreach (glob($data_dir . '/*/*.item') as $file) {
-            $fname = trim(str_replace($data_dir, '', $file), '/');
-            list($dir, $fname) = explode('/', $fname);
-            $dir = $data_dir . '/' . $dir; 
-            list($timestamp) = explode('-', $fname);
-            
-            if ($timestamp >= $offset) {
-                continue;
-            }
-
-            if (!file_exists($dir . '/feed.info')) {
-                $errors[] = "No {$dir}/feed.info File";
-                continue;
-            }
-            
-            if (!isset($feed_infos[$dir])) {
-                $info = json_decode(file_get_contents($dir . '/feed.info'));
-                if ($info === false) {
-                    $errors[] = "{$dir}/feed.info Unreadable";
-                    continue;
-                }
-                $feed_infos[$dir] = $info;
-            }
-                
-            $files[$timestamp] = array(
-                'timestamp' => $timestamp,
-                'dir' => $dir,
-                'file' => $file,
-                'feed_info' => $feed_infos[$dir],
-            );
-        }
-        krsort($files);
-        $errors = array_unique($errors);        
-        
-        d("filelist took: " . Helpers::bench());
-        return $files;
+        /**
+        * We dont actually produce anything usefull on our initial load
+        * The page is filled with content by jquery
+        **/
+        Flight::view()->assign('is_index', true);
+        return Flight::render('index.tpl.html');
     }
+
+    /**
+    * Archive Page
+    *
+    * @return html
+    **/
+    public static function archive()
+    {
+        $data = array(
+            'archives' => Feeds::filelist(mktime())
+        );
+        
+        return Flight::render('archive.tpl.html', $data);
+    }
+
 
     /**
     * Load an Image from cache
@@ -109,7 +86,7 @@ class Reader
         if (!isset($_GET['i'])) {
             return false;
         }
-        $file = Flight::get('cache_dir') . '/' . basename($_GET['i']) . '.spi';
+        $file = Feeds::option('cache_dir') . '/' . basename($_GET['i']) . '.spi';
         
         if (!file_exists($file) || !is_readable($file)) {
             return false;
@@ -135,20 +112,6 @@ class Reader
     }
 
     /**
-    * Landing Page
-    *
-    * @return html
-    **/
-    public static function index()
-    {
-        /**
-        * We dont actually produce anything usefull on our initial load
-        * The page is filled with content by jquery
-        **/
-        return Flight::render('index.tpl.html');
-    }
-
-    /**
     * Ajax load_next to pull new item
     *
     * @return html
@@ -166,10 +129,12 @@ class Reader
         if ($last_id == null) {
             return;
         }
+
+        $next = Feeds::next($last_id);
         
         // FIXME: This doesn't make much sense at all
         // Should be done in the browser
-        $next = self::_loadNext($last_id);
+        /*
         while (in_array($next->info->timestamp, $idlist)) {
             $idlist[] = $next->info->timestamp;
             $next = self::_loadNext($last_id);
@@ -177,6 +142,7 @@ class Reader
                 return;
             }
         }
+        */
 
         if (!$next) {
             return;
@@ -211,27 +177,6 @@ class Reader
         return;
     }
 
-    /**
-    * Load Next item
-    *
-    * @param int $offset Article Offset
-    *
-    * @return array
-    **/
-    private static function _loadNext($offset)
-    {
-        $files = self::filelist($offset);
-
-        $info = array_pop(array_slice($files, 0, 1));
-        if (empty($info)) {
-            return false;
-        }
-
-        $item = json_decode(file_get_contents($info['file']));
-        $item->info = (object) $info;
-        
-        return $item;
-    }
     
 }
 

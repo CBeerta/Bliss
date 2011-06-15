@@ -57,34 +57,25 @@ function autoloader($class)
 spl_autoload_register("autoloader");
 
 /**
-* Options with defaults, overridable in config.ini
-**/
-$options = array (
-    'opml' => null,
-    'cache_dir' => '/var/tmp/',
-    'simplepie_cache_duration' => 2*60*60,
-    'data_dir' => __DIR__ . '/data/',
-);
-
-/**
 * Load config file and override default options
 **/    
 $config = parse_ini_file(__DIR__."/config.ini", true);
-foreach ( $options as $k => $v ) {
-    $v = isset($config[$k]) ? $config[$k] : $options[$k];
-    Flight::set($k, $v);
+foreach ( $config as $k => $v ) {
+    Feeds::option($k, $v);
 }
-Flight::set('config', $config);
+Feeds::option('sources', $config['feeds']['sources']);
 
+/**
+* Register Smarty as View for Flight
+**/
 Flight::register(
     'view', 'Smarty', array(), function($smarty)
     {
-        $smarty->compile_dir = Flight::get('cache_dir');
+        $smarty->compile_dir = Feeds::option('cache_dir');
         $smarty->template_dir = __DIR__ . '/views/';
         $smarty->debugging = false;
     }
 );
-
 Flight::map(
     'render', function($template, $data)
     {
@@ -93,37 +84,25 @@ Flight::map(
     }
 );
 
-/**
-* Debugging shortcut function
-*
-* @param string $message Message to log
-* 
-* @return void
-**/
-function d($message)
-{
-    if (!is_string($message)) {
-        $message = print_r($message, true);
-    }
-    
-    if ( class_exists("WebServer", false) ) {
-        WebServer::log($message);
-    } else {
-        error_log($message);
-    }
-}
+$base_uri = "//{$_SERVER['HTTP_HOST']}" . dirname($_SERVER['SCRIPT_NAME']);
+Flight::view()->assign('base_uri', $base_uri);
 
-
-
+/* ######### Ajax requests ################################ */
 Flight::route('POST /load_next', array('Reader', 'next'));
 Flight::route('POST /poll', array('Reader', 'poll'));
-Flight::route('POST /add_feed', array('Config', 'add'));
+Flight::route('POST /add_feed', array('Manage', 'add'));
 
-Flight::route('/article_test/@id', array('Reader', 'test'));
+/* ######### Access to the image cache #################### */
+Flight::route('GET /image', array('Reader', 'image'));
 
-Flight::route('/image', array('Reader', 'image'));
+/* ######### Archives ##################################### */
+Flight::route('GET /archive', array('Reader', 'archive'));
 
-Flight::route('/', array('Reader', 'index'));
+/* ######### Config Stuff ################################# */
+Flight::route('GET /manage', array('Manage', 'edit'));
+
+/* ######### The Main Page ################################ */
+Flight::route('GET /', array('Reader', 'index'));
 
 
 if (PHP_SAPI == 'cli') {

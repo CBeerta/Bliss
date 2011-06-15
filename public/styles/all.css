@@ -1,5 +1,5 @@
 /* ########## Core Elements ############################### */
-html{ background: #FFF; }
+html{ background: #FFF; overflow-y: scroll;}
 body{
 	color: #555555;
 	font: 12px/20px Maven Pro, serif;
@@ -24,32 +24,27 @@ sub{ top: .5ex; }
 }
 #content {
 }
-
 form, input, textarea {
     padding: 0;
     margin: 0;
 }
-
 input {
     border: 1px solid #aaa;
     padding: 5px;
     color: #333;
 }
-
 img { 
-/*
-    float: left; 
-*/
+}
+.date {
+    position: relative;
+    float: right;
+    margin: 0 auto;
+    color: #888;
 }
 
 /* ########## Article ##################################### */
 article header p {
     margin: 0 0 5px 0;
-}
-article header #date {
-    color: #888;
-    position: relative;
-    float: right;
 }
 article header a {
     font-size: 169%;
@@ -169,5 +164,79 @@ article .enclosures p {
     color: #222;
     display: none;
 }
+/* ########## Back Home ################################### */
+.home {
+	background-color: rgba(223, 234, 147, 0.7);
+    border-radius: 0px 0px 10px 10px;
+    padding: 2px 10px 2px 10px;
+    position: fixed;
+    text-align: center;
+    top: 0px;
+    left: 5px;
+}
+.home a {
+    color: #222;
+    text-decoration: none;
+    font-size: 120%;
+}
+/* ########## Archives #################################### */
+.archive ul {
+    margin-top: 30px;
+    margin-left: 5px
+}
+.archive li#title {
+	font: 16px/26px Lato, serif;
+    color: #444;
+}
+.archive li {
+    list-style: none;
+    color: #222;
+	vertical-align: middle;
+	line-height: 16px;
+	margin: 5px;
+	padding-bottom: 5px;
+}
+.archive img {
+    float: left;
+    margin: 0 auto;
+    margin-left: -24px;
+}
+/* ########## Manage ###################################### */
+.manage ul {
+    margin-top: 30px;
+    margin-left: 5px
+}
+.manage li#title {
+	font: 16px/26px Lato, serif;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    color: #444;
+}
+.manage li {
+    list-style: none;
+    color: #222;
+	vertical-align: middle;
+	line-height: 16px;
+	padding: 5px;
+	padding-bottom: 5px;
+	border-bottom: 1px solid #ccc;
+	border-left: 1px solid #ccc;
+	border-right: 1px solid #ccc;
+	background-color: #f9f9f9;
+}
+.manage a {
+    color: #111;
+    text-decoration: none;
+}
+
+
+
+
+/* The Magnificent Clearfix: Updated to prevent margin-collapsing on child elements.
+   j.mp/bestclearfix */
+.clearfix:before, .clearfix:after { content: "\0020"; display: block; height: 0; overflow: hidden; }
+.clearfix:after { clear: both; }
+/* Fix clearfix: blueprintcss.lighthouseapp.com/projects/15318/tickets/5-extra-margin-padding-bottom-of-page */
+.clearfix { zoom: 1; }
 
 

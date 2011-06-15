@@ -44,55 +44,27 @@ if ( !defined('BLISS_VERSION') ) {
 * @license  http://www.opensource.org/licenses/mit-license.php MIT License
 * @link     http://claus.beerta.de/
 **/
-class Config
+class Manage
 {
     /**
-    * The configured Feed Uris
+    * Manage current subscriptions
     *
-    * @return array
+    * @return htmls
     **/
-    public static function feedlist()
+    public static function edit()
     {
-        $feeds = array();
-        
-        // First: Feeds from config.ini
-        $config = Flight::get('config');
-        
-        if (!is_array($config['feeds']['sources'])) {
-            $config['feeds']['sources'] = array();
-        }
-
-        // Second: Feeds from opml source
-        $opml = array();        
-        if (Flight::get('opml')) {
-            $fh = file_get_contents(Flight::get('opml'));
-            preg_match_all("=<outline (.+)/>=sU", $fh, $items);
-            foreach ($items[1] as $item) {
-                preg_match("#xmlUrl=\"(.+)\"#U", $item, $matches);
-                $opml[] = $matches[1];
-            }
-        }
-        
-        //Third: Feeds subitted through the site
-        $fe_feeds = array();
-        $save_file = Flight::get('data_dir') . '/feeds.json';
-        if (is_file($save_file) && is_readable($save_file)) {
-            $ret = json_decode(file_get_contents($save_file));
-            if (is_array($ret)) {
-                $fe_feeds = $ret;
-            }
-        }
-
-        // Finally: Merge all sources
-        $feeds = array_merge($opml, $config['feeds']['sources'], $fe_feeds);
-        
-        return $feeds;
+        $data = array(
+            'feedlist' => Feeds::feedlist(),
+            'feedinfo' => Feeds::feedinfo(),
+        );
+    
+        return Flight::render('manage.tpl.html', $data);
     }
 
     /**
     * Add a new Feed
     *
-    * @return void
+    * @return json
     **/
     public static function add()
     {
@@ -155,8 +127,5 @@ class Config
             
         exit(json_encode($reply));
     }
-    
-
-
 
 }

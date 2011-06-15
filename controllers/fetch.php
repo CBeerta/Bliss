@@ -109,8 +109,8 @@ class Fetch
     {
         $rss = new SimplePie();
         
-        foreach (Config::feedlist() as $feed_uri) {
-            d("Fetching: {$feed_uri}");
+        foreach (Feeds::feedlist() as $feed_uri) {
+            error_log("Fetching: {$feed_uri}");
             
             $rss->set_feed_url($feed_uri);
             $rss->set_useragent(
@@ -119,8 +119,8 @@ class Fetch
                 . '; https://github.com/CBeerta/Bliss'
                 . '; Allow like Gecko)'
             );
-            $rss->set_cache_location(Flight::get('cache_dir'));
-            $rss->set_cache_duration(Flight::get('simplepie_cache_duration'));
+            $rss->set_cache_location(Feeds::option('cache_dir'));
+            $rss->set_cache_duration(Feeds::option('simplepie_cache_duration'));
             $rss->set_image_handler('image', 'i');
 
             $rss->init();
@@ -131,7 +131,7 @@ class Fetch
                 continue;
             }
     
-            $dir = Flight::get('data_dir') . '/' .
+            $dir = Feeds::option('data_dir') . '/' .
                 Helpers::buildSlug(
                     $rss->get_author() . ' ' . 
                     $rss->get_title()
@@ -143,6 +143,9 @@ class Fetch
             
             $feed_info = (object) array(
                 'title' => $rss->get_title(),
+                'feed_uri' => $feed_uri,
+                'last_update' => mktime(),
+                'link' => $rss->get_link(),
                 'feed_type' => $rss->get_type(),
                 'feed_encoding' => $rss->get_encoding(),
                 'description' => $rss->get_description(),
@@ -150,8 +153,8 @@ class Fetch
                 'author_email' => $rss->get_author()->email,
             );
             
-            file_put_contents("{$dir}/feed.info", json_encode($feed_info), LOCK_EX);
-            
+            $title_list = array();
+
             foreach ($rss->get_items() as $item) {
                 $outfile = "{$dir}/"
                     . $item->get_date('U')
@@ -163,18 +166,12 @@ class Fetch
                 $enclosures = array();
                 
                 foreach ($item->get_enclosures() as $enclosure) {
-
                     if (!empty($enclosure->thumbnails)) {
-                    
                         $thumbnails = $enclosure->thumbnails;
-                        
                     } else if ($enclosure->medium == 'image') {
-                    
                         // Assume image mediums to be thumbs
                         $thumbnails = $enclosure->link;
-                        
                     } else if (!empty($enclosure->link)) {
-                    
                         $title = !empty($enclosure->title)
                             ? $enclosure->title
                             : basename($enclosure->link);
@@ -184,11 +181,8 @@ class Fetch
                             'content-type' => $enclosure->type,
                             'length' => $enclosure->length,
                         );
-                        
                     }
-
                     $thumbnails = array_unique($thumbnails);
-
                 }
                 
                 $content = (object) array(
@@ -206,12 +200,23 @@ class Fetch
                     'thumbnails' => $thumbnails,
                 );
                 
+                if (!isset($newest)) {
+                    $newest = $content;
+                    $feed_info->newest_article = $content->date;
+                }
+                
+                //$title_list[
+                
                 file_put_contents($outfile, json_encode($content));
-            }
+            } // items foreach 
+
+            // Save feed info
+            file_put_contents("{$dir}/feed.info", json_encode($feed_info), LOCK_EX);
+            unset($newest);
         }
         // Sanity Check, load all files, anc check them
-        Reader::filelist(mktime(), $errors);
-        d($errors);
+        Feeds::filelist(mktime(), $errors);
+        error_log(print_r($errors, true));
     } // end update()
 
 }

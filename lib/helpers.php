@@ -31,7 +31,6 @@
 * @link     http://claus.beerta.de/
 **/
 
-
 /**
 * Helpers
 *
@@ -84,5 +83,26 @@ class Helpers
         }    
         return microtime(true) - $microtime_start; 
     }
+
+    /**
+    * Debugging shortcut function
+    *
+    * @param string $message Message to log
+    * 
+    * @return void
+    **/
+    function d($message)
+    {
+        if (!is_string($message)) {
+            $message = print_r($message, true);
+        }
+        
+        if ( PHP_SAPI == 'cli' ) {
+            echo $message . "\n";
+        } else {
+            error_log($message);
+        }
+    }
+
 }
 
