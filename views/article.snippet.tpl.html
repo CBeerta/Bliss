@@ -2,25 +2,32 @@
     <header>
     <div class="date">{$entry->date|date_format:"D jS F Y H:i"}</div>
     <p>
-    From <em>{$entry->info->feed_info->title}</em> 
-    posted by: <em>{$entry->info->feed_info->author_name|default:'Unknown'}</em>
+    From <em>{$entry->info->title}</em> 
+    posted by: <em>{$entry->author->name|default:'Unknown'}</em>
     </p>
+    <img 
+        name="{$entry->info->relative}" 
+        class="flag" 
+        src="{$base_uri}public/{if $flagged}tag_fill{else}tag_stroke{/if}_24x24.png" 
+        width="24" 
+        height="24"
+    >
     <h1><a href="{$entry->link}">{$entry->title}</a></h1>
     </header>
     <div class="content">
         {$entry->content}
     </div>
     <div class="enclosures">
-    {foreach $entry->enclosures as $enclosure}
-        {if $enclosure@first}
+{foreach $entry->enclosures as $enclosure}
+{if $enclosure@first}
         <h1>Attachements:</h1>
         <p>
-        {/if}
+{/if}
             <a href="{$enclosure->link}"><img src="public/file.png" width="64" height="64" name="{$enclosure@key}" title="{$enclosure@key}"></a>
-        {if $enclosure@last}
+{if $enclosure@last}
         </p>
-        {/if}
-    {/foreach}
+{/if}
+{/foreach}
     </div>
     <div class="clearfix"></div>
 </article>

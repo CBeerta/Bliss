@@ -38,18 +38,29 @@ Recently it got a slight update (as in complete rewrite) to something a bit more
 * You need to set `data_dir` and `cache_dir` and, of course, your `sources`.
 * Then run `php index.php --update` from the commandline
 * After you've run the update you can open the page in your browser.
+
+# ADDING FEEDS:
+
+There is 3 ways to do add feeds to Bliss:
+
+* Add them to `config.ini`
+* Create an OPML File, and add that to `config.ini`
+* Add them via the Options Menu pulldown
+
+Bliss uses SimplePie for feed retrieval. SimplePie has Feed autodetection, so you shouldn't have to 
+worry about adding the RSS Feed as URL. Usually just adding a Page that has a Feed is sufficient.
 	
 # TODO:
 	
-* A Simple way to add new feeds
+* With the flagging or starring there needs to be a way to retrieve these. And obviously never expire them either.
+* An Archive page of some sort, for direct access to posts. Goes along with the starring/flagging.
 * A Gallery of all cached images maybe?
 * Basic polling works. Only question remains, should we prepend these articles? Or is informing enough
 * Keyboard navigation to hop between articles (prev and next atleast)
 * With the flagging or starring there needs to be a way to retrieve these. And obviously never expire them either.
-* An Archive page of some sort, for direct access to posts. Goes along with the starring/flagging.
 * Search?
 * Should probably cache `Reader::filelist()`. it goes over every file on every reload. For now though, the fs-cache does a good job.
-* Export all feeds to opml
+* Export all feeds to OPML
 
 # BUGS
 

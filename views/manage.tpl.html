@@ -4,12 +4,18 @@
 <div class="manage">
 <div class="home"><a href="{$base_uri}">Home<a></div>
 <ul>
-<li id="title">Current Subscriptions</li>
+<li id="title">Currently active Subscriptions</li>
 {foreach $feedinfo as $feed}
 <li id="{$feed@index}">
+{if $feed->source == 'json'}
     <img src="{$base_uri}public/x_7x7.png" height="7" width="7" onclick="delete_feed('{$feed->feed_uri}', {$feed@index});">
+{/if}
+{if $feed->last_update}
     <a href="{$feed->link}">{$feed->title}</a>
-    <p class="date">Last Update {$feed->newest_article|date_format:"%B %e, %Y %H:%M"|default:"Never"}</p>
+{else}
+    {$feed->title}
+{/if}
+    <p class="date">Last Update: {$feed->newest_article|date_format:"%B %e, %Y %H:%M"|default:"Never"}</p>
 </li>
 {/foreach}
 </ul>

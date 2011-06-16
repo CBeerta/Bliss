@@ -147,9 +147,35 @@ class Reader
         if (!$next || in_array($next->info->timestamp, $idlist)) {
             return;
         }
+        
+        $data = array(
+            'entry' => $next,
+            'flagged' => in_array($next->info->relative, Feeds::flag()),
+        );
 
-        $data = array('entry' => $next);
         return Flight::render('article.snippet.tpl.html', $data);
+    }
+
+    /**
+    * Flag or unflag a item
+    *
+    * @return json
+    **/
+    public static function flag()
+    {
+        $name = (!empty($_POST['name']) && is_string($_POST['name']))
+            ? $_POST['name']
+            : null;
+            
+        $flagged = Feeds::flag($name);
+        
+        if (!in_array($name, $flagged)) {
+            $ret = Flight::get('base_uri') . 'public/tag_stroke_24x24.png';
+        } else {
+            $ret = Flight::get('base_uri') . 'public/tag_fill_24x24.png';
+        }
+
+        echo json_encode($ret);
     }
 
     /**

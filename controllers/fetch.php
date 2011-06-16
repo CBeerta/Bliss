@@ -109,7 +109,7 @@ class Fetch
     {
         $rss = new SimplePie();
         
-        foreach (Feeds::feedlist() as $feed_uri) {
+        foreach (Feeds::feedlist()->feeds as $feed_uri) {
             error_log("Fetching: {$feed_uri}");
             
             $rss->set_feed_url($feed_uri);
@@ -168,9 +168,11 @@ class Fetch
                 foreach ($item->get_enclosures() as $enclosure) {
                     if (!empty($enclosure->thumbnails)) {
                         $thumbnails = $enclosure->thumbnails;
-                    } else if ($enclosure->medium == 'image') {
-                        // Assume image mediums to be thumbs
-                        $thumbnails = $enclosure->link;
+                        /*    
+                        } else if ($enclosure->medium == 'image') {
+                            // Assume image mediums to be thumbs
+                            $thumbnails = $enclosure->link;
+                        */
                     } else if (!empty($enclosure->link)) {
                         $title = !empty($enclosure->title)
                             ? $enclosure->title

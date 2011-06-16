@@ -85,6 +85,10 @@ article .enclosures p {
     font-size: 121%;
     padding: 10px;
 }
+article header img {
+    float: left;
+    padding-right: 5px;
+}
 
 
 /* ########## Top Bar ##################################### */

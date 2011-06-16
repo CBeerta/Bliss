@@ -54,6 +54,7 @@ function poll() {
     })
 }
 
+
 /**
 * Initialy Page Load completed
 **/
@@ -67,6 +68,22 @@ $(document).ready(function() {
         bottomPixels: 100,
         callback: function(p) {
             loadNext();
+        }
+    });
+
+    $('body').click(function(event) {
+        if ($(event.target).is('article header .flag')) {
+            var id = $(event.target).attr('name');
+            $.ajax({
+                type: "POST",
+                url: "flag",
+                dataType: 'json',
+                async: true,
+                data: { 'name': id },
+                success: function(data) {
+                    $(event.target).attr('src', data);
+                }
+            });
         }
     });
 

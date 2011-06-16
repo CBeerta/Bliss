@@ -80,7 +80,14 @@ class Feeds
     public static function feedlist()
     {
         $feeds = array();
-        
+        $sources = array();
+
+        // First: Feeds from config.ini
+        foreach (self::$config['sources'] as $source) {
+            $feeds[] = $source;
+            $sources[] = 'config';
+        }
+
         // Second: Feeds from opml source
         $opml = array();        
         if (self::$config['opml']) {
@@ -88,7 +95,8 @@ class Feeds
             preg_match_all("=<outline (.+)/>=sU", $fh, $items);
             foreach ($items[1] as $item) {
                 preg_match("#xmlUrl=\"(.+)\"#U", $item, $matches);
-                $opml[] = $matches[1];
+                $feeds[] = $matches[1];
+                $sources[] = 'opml';
             }
         }
         
@@ -97,15 +105,16 @@ class Feeds
         $save_file = self::$config['data_dir'] . '/feeds.json';
         if (is_file($save_file) && is_readable($save_file)) {
             $ret = json_decode(file_get_contents($save_file));
-            if (is_array($ret)) {
-                $fe_feeds = $ret;
+            if (!is_array($ret)) {
+                break;
+            }
+            foreach ($ret as $source) {
+                $feeds[] = $source;
+                $sources[] = 'json';
             }
         }
-
-        // Finally: Merge all sources
-        $feeds = array_merge($opml, self::$config['sources'], $fe_feeds);
         
-        return $feeds;
+        return (object) array('feeds' => $feeds, 'sources' => $sources);
     }
     
     /**
@@ -117,24 +126,55 @@ class Feeds
     **/
     public static function feedinfo($only_subscribed = false)
     {
-        if ($only_subscribed) {
-            $subscribed = self::feedlist();
-        }
+        $subscribed = self::feedlist();
+        
         $data_dir = rtrim(self::$config['data_dir'], '/');
         $feedinfo = array();
+         
         foreach (glob($data_dir . '/*/feed.info') as $file) {        
             $ret = json_decode(file_get_contents($file));
             
             if (!is_object($ret)) {
                 continue;
             }
-            if ($only_subscribed && !in_array($ret->feed_uri, $subscribed)) {
+            if ($only_subscribed && !in_array($ret->feed_uri, $subscribed->feeds)) {
+                continue;
+            }
+            
+            $key = md5($ret->feed_uri);
+            $feedinfo[$key] = $ret;
+
+            $nr = array_search($ret->feed_uri, $subscribed->feeds);
+            if ($nr !== false) {
+                $feedinfo[$key]->source = $subscribed->sources[$nr];
+            } else {
+                // This is possible if a feed was unsubscribed, but there are stil
+                // archived articles
+                $feedinfo[$key]->source = 'unknown';
+            }
+        }
+        
+        /**
+        * Add All feed uris that are only configured but never actually had
+        * a run, and dont have a 'feed.info' yet
+        **/
+        foreach ($subscribed->feeds as $feed) {
+            $key = md5($feed);
+            if (in_array($key, array_keys($feedinfo))) {
                 continue;
             }
 
-            $feedinfo[strtolower($ret->title)] = $ret;
+            $nr = array_search($feed, $subscribed->feeds);
+            $uri = parse_url($feed);
+            
+            $feedinfo[$key] = (object) array(
+                'title' => $uri['host'] . $uri['path'],
+                'feed_uri' => $feed,
+                'source' => $subscribed->sources[$nr],
+            );
         }
-        ksort($feedinfo, SORT_STRING);
+        
+        //ksort($feedinfo, SORT_STRING);
         return $feedinfo;        
     }
 
@@ -156,8 +196,9 @@ class Feeds
         foreach (glob($data_dir . '/*/*.item') as $file) {
             $fname = trim(str_replace($data_dir, '', $file), '/');
             list($dir, $fname) = explode('/', $fname);
-            $dir = $data_dir . '/' . $dir; 
             list($timestamp) = explode('-', $fname);
+            $relative = $dir . '/' . $fname;
+            $dir = $data_dir . '/' . $dir;
             
             if ($timestamp >= $offset) {
                 continue;
@@ -177,11 +218,14 @@ class Feeds
                 $feed_infos[$dir] = $info;
             }
                 
-            $files[$timestamp] = array(
-                'timestamp' => $timestamp,
-                'dir' => $dir,
-                'file' => $file,
-                'feed_info' => $feed_infos[$dir],
+            $files[$timestamp] = array_merge(
+                array(
+                    'timestamp' => $timestamp,
+                    'dir' => $dir,
+                    'file' => $file,
+                    'relative' => $relative,
+                ), 
+                (array) $feed_infos[$dir]
             );
         }
         krsort($files);
@@ -212,6 +256,44 @@ class Feeds
         
         return $item;
     }
-
+    
+    /**
+    * Flag a item
+    *
+    * @param string $file File to Flag
+    *
+    * @return array
+    **/
+    public static function flag($file = null)
+    {
+        $flag_file = self::$config['data_dir'] . '/flagged.json';
+        
+        if (is_file($flag_file) 
+            && ($ret = file_get_contents($flag_file)) !== false
+        ) {
+            $flagged = (array) json_decode($ret);
+        } else {
+            $flagged = array();
+        }
+        
+        
+        if (is_null($file)) {
+            return $flagged;
+        }
+        
+        if (!in_array($file, $flagged)) {
+            // It's not set yet, so set it
+            $flagged[] = $file;
+        } else {
+            // it's set, so unset
+            $nr = array_search($file, $flagged);
+            unset($flagged[$nr]);
+            $flagged = array_merge($flagged); // this stupid merge makes sure we
+                                              // keep the numbered array numbered
+        }
+        file_put_contents($flag_file, json_encode($flagged), LOCK_EX);
+ 
+        return $flagged;    
+    }
 
 }
