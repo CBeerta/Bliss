@@ -34,6 +34,28 @@ function loadNext() {
 }
 
 /**
+* Lets initially load the first items
+* Halt at 10 items to prevent an endless loop
+*
+* return void
+**/
+function fillPage() {
+    for (var i=0 ; i<= 10 ; i ++) {
+
+        var footer = $('footer').offset();
+        loadNext();
+        
+        // Check if we actually loaded anything at all, and stop if we didn't
+        if (!$('article').last().attr('id')) break;
+        
+        // Check if the footer scrolled outside viewport, and break initial load.
+        // the rest is done by endless scroll
+        if (footer.top > $(window).height()) break;
+    }
+
+}
+
+/**
 * Continuously poll for updates
 *
 * return void
@@ -41,9 +63,11 @@ function loadNext() {
 function poll() {
     first_id = $('article').first().attr('id');
 
+    var filter = unescape(self.document.location.hash.substring(1));
+
     $.ajax({
         type: "POST",
-        url: "poll",
+        url: "poll/" + filter,
         async: false,
         dataType: 'json',
         data: { 'first_id': first_id },
@@ -94,23 +118,11 @@ $(document).ready(function() {
     **/
     window.onhashchange = function() {
         $('article').remove();
-        loadNext();
+        fillPage();
     };
 
-
-    /**
-    * Lets initially load the first items
-    * Halt at 10 items to prevent an endless loop
-    **/
-    for (var i=0 ; i<= 10 ; i ++) {
-        var footer = $('footer').offset();
-        loadNext();
-        // Check if we actually loaded anything at all, and stop
-        if (!$('article').last().attr('id')) break;
-        // Check if the footer scrolled outside viewport, and break initial load.
-        // the rest is done by endless scroll
-        if (footer.top > $(window).height()) break;
-    }
+    /* Fill the size initially */
+    fillPage();
     
     /* Setup the poller */
     window.setInterval(poll, 60000);

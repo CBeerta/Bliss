@@ -177,9 +177,11 @@ class Reader
     /**
     * Check if updates exist for the user
     *
+    * @param string $filter A filter to hand Feeds::next()
+    *
     * @return html
     **/
-    public static function poll()
+    public static function poll($filter)
     {
         $first_id = (isset($_POST['first_id']) && is_numeric($_POST['first_id']))
             ? $_POST['first_id']
@@ -188,8 +190,14 @@ class Reader
         if (is_null($first_id)) {
             exit ("Invalid POST");
         }
+
+        if (!preg_match('#select-(.*?)-articles#i', $filter, $matches)) {
+            $filter = 'all';
+        } else {
+            $filter = $matches[1];
+        }
         
-        $first = Feeds::next(mktime(), 'all');
+        $first = Feeds::next(mktime(), $filter);
         
         if ($first->info->timestamp > $first_id) {
             echo json_encode(array('updates_available' => true));

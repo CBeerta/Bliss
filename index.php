@@ -90,7 +90,7 @@ Flight::view()->assign('base_uri', $base_uri);
 
 /* ######### Ajax requests ################################ */
 Flight::route('POST /load_next/@filter', array('Reader', 'next'));
-Flight::route('POST /poll', array('Reader', 'poll'));
+Flight::route('POST /poll/@filter', array('Reader', 'poll'));
 Flight::route('POST /flag', array('Reader', 'flag'));
 
 /* ######### Access to the image cache #################### */
