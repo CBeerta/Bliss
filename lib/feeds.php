@@ -54,6 +54,12 @@ class Feeds
         'cache_dir' => 'data/cache/',
         'simplepie_cache_duration' => 7200,
     );
+    
+    // Cache filelist for multiple "next" calls
+    protected static $filelist = null;
+
+    // Cache flagged
+    protected static $flagged = null;
 
     /**
     * Configure Feeds Class
@@ -188,7 +194,6 @@ class Feeds
     **/
     public static function filelist($offset = 0, &$errors = array())
     {
-        Helpers::bench();
         $files = array();
         $data_dir = rtrim(self::$config['data_dir'], '/');
         $feed_infos = array();
@@ -231,22 +236,37 @@ class Feeds
         krsort($files);
         $errors = array_unique($errors);        
         
-        Helpers::d("filelist took: " . Helpers::bench());
         return $files;
     }
 
     /**
     * Load Next item after $offset
     *
-    * @param int $offset Article Offset
+    * @param int    $offset Article Offset
+    * @param string $filter A Filter to apply. Currently only 'flagged'
     *
     * @return array
     **/
-    public static function next($offset)
+    public static function next($offset, $filter)
     {
-        $files = self::filelist($offset);
+        $filelist = self::filelist($offset);
+    
+        foreach ($filelist as $item) {
+        
+            if ($filter == 'flagged') {
+                if (in_array($item['relative'], self::flag())) {
+                    break;
+                } else {
+                    array_shift($filelist);
+                }
+            } else {
+                break;
+            }
+        
+        }
 
-        $info = array_pop(array_slice($files, 0, 1));
+        $info = array_shift($filelist);
+        
         if (empty($info)) {
             return false;
         }
@@ -269,31 +289,30 @@ class Feeds
         $flag_file = self::$config['data_dir'] . '/flagged.json';
         
         if (is_file($flag_file) 
+            && self::$flagged === null
             && ($ret = file_get_contents($flag_file)) !== false
         ) {
-            $flagged = (array) json_decode($ret);
-        } else {
-            $flagged = array();
+            self::$flagged = (array) json_decode($ret);
+        } else if (self::$flagged === null) {
+            self::$flagged = array();
         }
-        
         
         if (is_null($file)) {
-            return $flagged;
+            return self::$flagged;
         }
         
-        if (!in_array($file, $flagged)) {
+        if (!in_array($file, self::$flagged)) {
             // It's not set yet, so set it
-            $flagged[] = $file;
+            self::$flagged[] = $file;
         } else {
             // it's set, so unset
-            $nr = array_search($file, $flagged);
-            unset($flagged[$nr]);
-            $flagged = array_merge($flagged); // this stupid merge makes sure we
-                                              // keep the numbered array numbered
+            $nr = array_search($file, self::$flagged);
+            unset(self::$flagged[$nr]);
+            self::$flagged = array_merge(self::$flagged);
         }
-        file_put_contents($flag_file, json_encode($flagged), LOCK_EX);
+        file_put_contents($flag_file, json_encode(self::$flagged), LOCK_EX);
  
-        return $flagged;    
+        return self::$flagged;    
     }
 
 }

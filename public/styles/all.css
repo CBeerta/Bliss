@@ -24,7 +24,7 @@ sub{ top: .5ex; }
 #main {
 	width: 90%;
 	margin: 0 auto;
-	padding-top: 30px;
+	padding-top: 40px;
 }
 #content {
 }
@@ -44,6 +44,13 @@ img {
     float: right;
     margin: 0 auto;
     color: #888;
+}
+#spinner {
+    display: none;
+    position: fixed;
+    float: right;
+    left: 20px;
+    top: 5px;
 }
 
 /* ########## Article ##################################### */
@@ -86,6 +93,7 @@ article .enclosures p {
     padding: 10px;
 }
 article header img {
+    cursor: pointer;
     float: left;
     padding-right: 5px;
 }
@@ -97,54 +105,38 @@ article header img {
     font-family: Amaranth;
     position: fixed;
     top: 0px;
-    right: 50px;
+    right: 10px;
     z-index: 999;
-    min-width: 400px;
+    min-width: 200px;
 }
 .pulldown #options {
-	background-color: rgba(230, 230, 230, 0.9);
-    padding: 5px 10px 2px 10px;
+    border-radius: 0px 0px 0px 4px;
+	background-color: rgba(60, 60, 60, 1.0);
+    padding: 5px 10px 5px 10px;
     display: none;
     color: #333;
 }
 .pulldown img {
-    float: right;
+    margin-right: 5px;
+    cursor: pointer;
+}
+.pulldown input {
+    border-radius: 2px 2px 2px 2px;
+    border: 1px solid #aaa;
+    background-color: #888;
+    color: #fff;
+    padding: 5px;
     margin: 5px;
-    display: none;
-}
-.pulldown li{
-    list-style: none;
-    padding: 5px 10px 2px 10px;
-    margin: 0px;
-}
-.pulldown ul {
-    padding: 0px;
-    margin: 0px;
-}
-.pulldown a {
-    text-decoration: none;
-    color: #777;
-}
-.pulldown a:hover {
-    text-decoration: underline;
-    color: #333;
 }
 .pulldown #lip {
-    border-radius: 0px 0px 4px 4px;
-	background-color: rgba(230, 230, 230, 0.9);
-    padding: 2px 10px 4px 10px;
-    color: #333;
-}
-.pulldown #handle {
-	background-color: rgba(230, 230, 230, 0.9);
-    font-weight: bold;
-    color: black;
-    border-radius: 0px 0px 4px 4px;
+    white-space: nowrap;
     position: absolute;
-    right: 30px;
-    margin: 0 0 0 0;
-    padding: 2px 8px 2px 8px;
-    cursor: default;
+    right: 0px;
+    border-radius: 0px 0px 4px 4px;
+    margin: 0 auto;
+	background-color: rgba(60, 60, 60, 1.0);
+    padding: 4px 5px 2px 5px;
+    color: #333;
 }
 
 /* ########## Feedback #################################### */

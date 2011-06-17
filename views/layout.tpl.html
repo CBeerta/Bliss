@@ -21,18 +21,29 @@
 {/if}
         <div class="pulldown">
             <div id="options">
-            <ul>
-                <li><a href="{$base_uri}manage">Manage Subscriptions</a></li>
-                <li><a href="{$base_uri}archive">Article Archive</a></li>
-            </ul>
-            <img id="spinner" src="public/indicator.gif" />
-            <form method="POST" action="add_feed" id="options">
+            <form method="POST" action="add_feed">
                 <input id="add_feed" type="url" size="40" name="add" placeholder="Add a new Feed">
             </form>
             </div>
-            <div id="lip"></div>
-            <div id="handle">Options</div>
+            <div id="lip">
+            <a href="{$base_uri}#select-all-articles">
+                <img id="load-articles" title="All Articles" src="{$base_uri}public/home.png" width="32" height="32" />
+            </a>
+            <a href="{$base_uri}#select-flagged-articles">
+                <img id="load-articles" title="Flagged Articles" src="{$base_uri}public/tag.png" width="32" height="32" />
+            </a>
+            <a href="{$base_uri}archive">
+                <img id="archive" title="Archive" src="{$base_uri}public/calendar.png" width="32" height="32" />
+            </a>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <img id="handle" title="Add Feed" src="{$base_uri}public/rss.png" width="32" height="32" />
+            <a href="{$base_uri}manage">
+                <img id="manage" title="Manage Subscriptions" src="{$base_uri}public/configuration.png" width="32" height="32" />
+            </a>
+            </div>
+            <!--div id="handle">Options</div-->
         </div>
+        <img id="spinner" src="{$base_uri}public/indicator.gif" />
         <div class="updater">
             New Articles Available!
         </div>

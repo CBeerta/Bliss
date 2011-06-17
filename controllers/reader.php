@@ -114,9 +114,11 @@ class Reader
     /**
     * Ajax load_next to pull new item
     *
+    * @param string $filter A filter to hand Feeds::next()
+    *
     * @return html
     **/
-    public static function next()
+    public static function next($filter)
     {
         $last_id = (isset($_POST['last_id']) && is_numeric($_POST['last_id']))
             ? $_POST['last_id']
@@ -129,21 +131,15 @@ class Reader
         if ($last_id == null) {
             return;
         }
-
-        $next = Feeds::next($last_id);
         
-        // FIXME: This doesn't make much sense at all
-        // Should be done in the browser
-        /*
-        while (in_array($next->info->timestamp, $idlist)) {
-            $idlist[] = $next->info->timestamp;
-            $next = self::_loadNext($last_id);
-            if (!$next) {
-                return;
-            }
+        if (!preg_match('#select-(.*?)-articles#i', $filter, $matches)) {
+            $filter = 'all';
+        } else {
+            $filter = $matches[1];
         }
-        */
-
+        
+        $next = Feeds::next($last_id, $filter);
+        
         if (!$next || in_array($next->info->timestamp, $idlist)) {
             return;
         }
@@ -193,7 +189,7 @@ class Reader
             exit ("Invalid POST");
         }
         
-        $first = Feeds::next(mktime());
+        $first = Feeds::next(mktime(), 'all');
         
         if ($first->info->timestamp > $first_id) {
             echo json_encode(array('updates_available' => true));

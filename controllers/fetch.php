@@ -168,11 +168,9 @@ class Fetch
                 foreach ($item->get_enclosures() as $enclosure) {
                     if (!empty($enclosure->thumbnails)) {
                         $thumbnails = $enclosure->thumbnails;
-                        /*    
-                        } else if ($enclosure->medium == 'image') {
-                            // Assume image mediums to be thumbs
-                            $thumbnails = $enclosure->link;
-                        */
+                    } else if ($enclosure->medium == 'image') {
+                        // Assume image mediums to be thumbs
+                        $thumbnails = $enclosure->link;
                     } else if (!empty($enclosure->link)) {
                         $title = !empty($enclosure->title)
                             ? $enclosure->title

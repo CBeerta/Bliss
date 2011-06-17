@@ -1,3 +1,4 @@
+{if $entry}
 <article id="{$entry->info->timestamp}">
     <header>
     <div class="date">{$entry->date|date_format:"D jS F Y H:i"}</div>
@@ -31,3 +32,4 @@
     </div>
     <div class="clearfix"></div>
 </article>
+{/if}

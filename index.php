@@ -89,7 +89,7 @@ Flight::set('base_uri', $base_uri);
 Flight::view()->assign('base_uri', $base_uri);
 
 /* ######### Ajax requests ################################ */
-Flight::route('POST /load_next', array('Reader', 'next'));
+Flight::route('POST /load_next/@filter', array('Reader', 'next'));
 Flight::route('POST /poll', array('Reader', 'poll'));
 Flight::route('POST /flag', array('Reader', 'flag'));
 

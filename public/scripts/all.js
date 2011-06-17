@@ -61,14 +61,14 @@ $(document).ready(function() {
     $('.pulldown #spinner').ajaxStart(function() {
         $(this).show();
     }).ajaxStop(function() {
-        $(this).hide();
+        $(this).fadeOut("fast");
     });
-
+    
     /**
     * Show or Hide the "Options" panel
     **/
     $('.pulldown #handle').click(function() {
-        $('.pulldown #options').slideToggle('fast');
+        $('.pulldown #options').toggle();
     });
 
     /**

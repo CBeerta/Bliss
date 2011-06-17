@@ -13,10 +13,12 @@ function loadNext() {
     if ( !last_id ) {
         last_id = Math.round(Date.now() / 1000);
     }
-
+    
+    var filter = unescape(self.document.location.hash.substring(1));
+    
     $.ajax({
         type: "POST",
-        url: "load_next",
+        url: "load_next/" + filter,
         async: false,
         data: { 'last_id': last_id, 'idlist': idlist },
         success: function(data) {
@@ -86,6 +88,15 @@ $(document).ready(function() {
             });
         }
     });
+    
+    /**
+    * Fetch hash changes, and reload articles if needed
+    **/
+    window.onhashchange = function() {
+        $('article').remove();
+        loadNext();
+    };
+
 
     /**
     * Lets initially load the first items
@@ -94,6 +105,8 @@ $(document).ready(function() {
     for (var i=0 ; i<= 10 ; i ++) {
         var footer = $('footer').offset();
         loadNext();
+        // Check if we actually loaded anything at all, and stop
+        if (!$('article').last().attr('id')) break;
         // Check if the footer scrolled outside viewport, and break initial load.
         // the rest is done by endless scroll
         if (footer.top > $(window).height()) break;
