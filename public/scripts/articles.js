@@ -15,15 +15,13 @@ function loadNext() {
     }
     
     var filter = unescape(self.document.location.hash.substring(1));
-    
-    $.ajax({
+
+    var response = $.ajax({
         type: "POST",
         url: "load_next/" + filter,
         async: false,
         data: { 'last_id': last_id, 'idlist': idlist },
         success: function(data) {
-            if (!data) return false;
-            
             if ($("#" + last_id).length == 0) {
                 // First item, insert into content
                 $("#content").html(data);
@@ -31,10 +29,13 @@ function loadNext() {
                 // append
                 $("#" + last_id).after(data);
             }
-            
-            return true;
         }
-    });
+    }).responseText;
+    
+    if (!response) {
+        return false;
+    }
+    return true;
 }
 
 /**
