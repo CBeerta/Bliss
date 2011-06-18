@@ -35,7 +35,8 @@ input {
     padding: 5px;
     color: #333;
 }
-img { 
+img {
+    max-width: 600px;
 }
 .date {
     position: relative;

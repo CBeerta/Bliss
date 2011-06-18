@@ -5,7 +5,7 @@
 **/
 function loadNext() {
     var idlist = [];
-    $('article').each(function(article) {
+    $('article.bliss-article').each(function(article) {
         idlist.push($(this).attr('id'));
     });
 
@@ -31,7 +31,7 @@ function loadNext() {
             }
         }
     }).responseText;
-    
+        
     if (!response) {
         return false;
     }
@@ -48,20 +48,18 @@ function loadNext() {
 function fillPage() {
     // remove all articles, if any
     $('article').remove();
-    
-    for (var i=0 ; i<= 10 ; i ++) {
 
+    for (var i=0 ; i<= 10 ; i ++) {
         var footer = $('footer').offset();
         if (!loadNext()) break;
-        
+
         // Check if we actually loaded anything at all, and stop if we didn't
-        if (!$('article').last().attr('id')) break;
+        if (!$('article.bliss-article').last().attr('id')) break;
         
         // Check if the footer scrolled outside viewport, and break initial load.
         // the rest is done by endless scroll
         if (footer.top > $(window).height()) break;
     }
-
 }
 
 
@@ -98,6 +96,7 @@ $(document).ready(function() {
     /**
     * Setup endlessScroll
     **/
+
     $(document).endlessScroll({
         fireOnce: true,
         fireDelay: 250,
@@ -119,13 +118,13 @@ $(document).ready(function() {
 
         // Find current first article        
         var ele = document.elementFromPoint(150, 100);
-        var current_id = $(ele).closest('article');
+        var current_id = $(ele).closest('article.bliss-article');
 
         // finde article above and below
-        var prev = $(current_id).prev('article');
-        var next = $(current_id).next('article');
+        var prev = $(current_id).prev('article.bliss-article');
+        var next = $(current_id).next('article.bliss-article');
 
-        if (next && event.which == 110) {
+        if (next.length == 0 && event.which == 110) {
             // check if there is one to follow, if not, load one
             loadNext();
             var next = $(current_id).next('article');

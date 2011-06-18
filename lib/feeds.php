@@ -198,7 +198,6 @@ class Feeds
         $files = array();
         $data_dir = rtrim(self::$config['data_dir'], '/');
         $feed_infos = array();
-        $articles = array();
         
         if (is_null(self::$glob)) {
             // Cache the glob for multiple iterations
@@ -224,11 +223,9 @@ class Feeds
             $guid = $matches[5];
             $dir = $data_dir . '/' . $matches[2];
             
-            if ($timestamp >= $offset || in_array($guid, $articles)) {
+            if ($timestamp >= $offset) {
                 continue;
             }
-            
-            $articles[] = $guid;
 
             if (!file_exists($dir . '/feed.info')) {
                 $errors[] = "No {$dir}/feed.info File";
