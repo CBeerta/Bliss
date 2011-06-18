@@ -266,7 +266,7 @@ class Feeds
 
 
     /**
-    * Build the title cache for our archive
+    * Load all titles for all files
     *
     * FIXME: This might become to slow
     *
