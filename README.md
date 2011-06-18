@@ -52,9 +52,9 @@ worry about adding the RSS Feed as URL. Usually just adding a Page that has a Fe
 	
 # TODO:
 	
-* With the flagging or starring there needs to be a way to retrieve these. And obviously never expire them either.
 * An Archive page of some sort, for direct access to posts. Goes along with the starring/flagging.
 * A Gallery of all cached images maybe?
+* Filter Duplicate titles, show only newest
 * Basic polling works. Only question remains, should we prepend these articles? Or is informing enough
 * Keyboard navigation to hop between articles (prev and next atleast)
 * With the flagging or starring there needs to be a way to retrieve these. And obviously never expire them either.

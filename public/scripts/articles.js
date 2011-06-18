@@ -22,6 +22,8 @@ function loadNext() {
         async: false,
         data: { 'last_id': last_id, 'idlist': idlist },
         success: function(data) {
+            if (!data) return false;
+            
             if ($("#" + last_id).length == 0) {
                 // First item, insert into content
                 $("#content").html(data);
@@ -29,6 +31,8 @@ function loadNext() {
                 // append
                 $("#" + last_id).after(data);
             }
+            
+            return true;
         }
     });
 }
@@ -43,7 +47,7 @@ function fillPage() {
     for (var i=0 ; i<= 10 ; i ++) {
 
         var footer = $('footer').offset();
-        loadNext();
+        if (!loadNext()) break;
         
         // Check if we actually loaded anything at all, and stop if we didn't
         if (!$('article').last().attr('id')) break;

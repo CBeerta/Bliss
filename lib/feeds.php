@@ -194,6 +194,7 @@ class Feeds
     **/
     public static function filelist($offset = 0, &$errors = array())
     {
+        Helpers::bench();
         $files = array();
         $data_dir = rtrim(self::$config['data_dir'], '/');
         $feed_infos = array();
@@ -227,7 +228,9 @@ class Feeds
                 array(
                     'timestamp' => $timestamp,
                     'dir' => $dir,
+                    'feed' => basename($dir),
                     'file' => $file,
+                    'fname' => $fname,
                     'relative' => $relative,
                 ), 
                 (array) $feed_infos[$dir]
@@ -236,6 +239,7 @@ class Feeds
         krsort($files);
         $errors = array_unique($errors);        
         
+        Helpers::d('Filelist took : ' . Helpers::bench());
         return $files;
     }
 
@@ -250,19 +254,39 @@ class Feeds
     public static function next($offset, $filter)
     {
         $filelist = self::filelist($offset);
-    
+        
+        preg_match('#^select-(.*?)-(.*)$#i', $filter, $matches);
+        
         foreach ($filelist as $item) {
         
-            if ($filter == 'flagged') {
+            switch ($matches[1]) {
+            
+            case 'flagged':
                 if (in_array($item['relative'], self::flag())) {
-                    break;
-                } else {
-                    array_shift($filelist);
+                    break 2;
                 }
-            } else {
+                array_shift($filelist);
                 break;
-            }
-        
+
+            case 'feed':
+                if ($item['feed'] == $matches[2]) {
+                    break 2;
+                }
+                array_shift($filelist);
+                break;
+
+            case 'article':
+                if ($item['fname'] == $matches[2]) {
+                    break 2;
+                }
+                array_shift($filelist);
+                break;
+                
+            default:
+                break;
+            
+            }                                
+
         }
 
         $info = array_shift($filelist);

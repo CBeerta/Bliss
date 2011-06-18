@@ -30,7 +30,7 @@ function success_or_fail(status, msg) {
 
 
 function delete_feed(uri, id) {
-    var answer = confirm("You sure you want to Remove: \n" + uri);
+    var answer = confirm("Are You sure You want to Remove: \n" + uri);
     
     if (!answer) {
         return;
@@ -58,10 +58,13 @@ $(document).ready(function() {
     /**
     * Show spinner when we do ajaxy stuff
     **/
-    $('.pulldown #spinner').ajaxStart(function() {
+    $('#spinner')
+    .hide()  // hide it initially
+    .ajaxStart(function() {
         $(this).show();
-    }).ajaxStop(function() {
-        $(this).fadeOut("fast");
+    })
+    .ajaxStop(function() {
+        $(this).hide();
     });
     
     /**

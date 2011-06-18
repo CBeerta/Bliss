@@ -6,7 +6,8 @@
 <li id="title">Archives</li>
 {foreach $archives as $item}
 <li>
-    {$item.file}<p class="date">{$item.timestamp|date_format:"%A, %B %e, %Y %H:%M"}</p>
+    <a href="{$base_uri}#select-article-{$item.fname}">{$item.relative}</a>
+    <p class="date">{$item.timestamp|date_format:"%A, %B %e, %Y %H:%M"}</p>
     <!--img src="public/indicator.gif" width="16" height="16"-->
 </li>
 {/foreach}

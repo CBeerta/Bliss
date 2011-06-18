@@ -46,7 +46,6 @@ img {
     color: #888;
 }
 #spinner {
-    display: none;
     position: fixed;
     float: right;
     left: 20px;
@@ -58,10 +57,16 @@ article header p {
     margin: 0 0 5px 0;
 }
 article header a {
-    font-size: 169%;
-    margin: 0 0 5px 0;
     color: #333;
     text-decoration: none;
+}
+article header a:hover {
+    color: #333;
+    text-decoration: underline;
+}
+article header h1 a {
+    font-size: 169%;
+    margin: 0 0 5px 0;
 }
 article header em {
     font-style: normal;
@@ -188,6 +193,13 @@ article header img {
 .archive li#title {
 	font: 16px/26px Lato, serif;
     color: #444;
+}
+.archive a {
+    color: #333;
+    text-decoration: none;
+}
+.archive a:hover {
+    text-decoration: underline;
 }
 .archive li {
     list-style: none;

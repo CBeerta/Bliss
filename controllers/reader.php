@@ -132,12 +132,6 @@ class Reader
             return;
         }
         
-        if (!preg_match('#select-(.*?)-articles#i', $filter, $matches)) {
-            $filter = 'all';
-        } else {
-            $filter = $matches[1];
-        }
-        
         $next = Feeds::next($last_id, $filter);
         
         if (!$next || in_array($next->info->timestamp, $idlist)) {
@@ -191,12 +185,6 @@ class Reader
             exit ("Invalid POST");
         }
 
-        if (!preg_match('#select-(.*?)-articles#i', $filter, $matches)) {
-            $filter = 'all';
-        } else {
-            $filter = $matches[1];
-        }
-        
         $first = Feeds::next(mktime(), $filter);
         
         if ($first->info->timestamp > $first_id) {
@@ -206,7 +194,6 @@ class Reader
         }
         return;
     }
-
     
 }
 

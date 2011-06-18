@@ -3,7 +3,7 @@
     <header>
     <div class="date">{$entry->date|date_format:"D jS F Y H:i"}</div>
     <p>
-    From <em>{$entry->info->title}</em> 
+    From <a href="#select-feed-{$entry->info->feed}"><em>{$entry->info->title}</em></a>
     posted by: <em>{$entry->author->name|default:'Unknown'}</em>
     </p>
     <img 
