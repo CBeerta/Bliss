@@ -158,16 +158,23 @@ article header img {
 }
 /* ########## Updater Notifications ####################### */
 .updater {
-	background-color: rgba(223, 234, 147, 0.7);
+    font-family: Amaranth;
+    vertical-align: middle;
+    line-height: 32px;
+	background-color: rgba(60, 60, 60, 1.0);
     border-radius: 0px 0px 10px 10px;
     padding: 2px;
     position: fixed;
-    text-align: center;
     top: 0px;
     left: 10px;
 	min-width: 200px;
-    color: #222;
+    color: #fff;
+    cursor: pointer;
     display: none;
+}
+.updater img {
+    padding-right: 10px;
+    float: left;
 }
 /* ########## Back Home ################################### */
 .home {

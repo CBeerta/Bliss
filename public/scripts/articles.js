@@ -35,6 +35,7 @@ function loadNext() {
     if (!response) {
         return false;
     }
+
     return true;
 }
 
@@ -45,6 +46,9 @@ function loadNext() {
 * return void
 **/
 function fillPage() {
+    // remove all articles, if any
+    $('article').remove();
+    
     for (var i=0 ; i<= 10 ; i ++) {
 
         var footer = $('footer').offset();
@@ -59,6 +63,7 @@ function fillPage() {
     }
 
 }
+
 
 /**
 * Continuously poll for updates
@@ -102,6 +107,58 @@ $(document).ready(function() {
         }
     });
 
+    /**
+    * Handle Keyboard navigation
+    **/
+    $(window).keypress(function(event) {
+        
+        // Ignore keypresses when in input masks
+        if ($(event.target).is('input, textarea')) {
+            return;
+        }
+
+        // Find current first article        
+        var ele = document.elementFromPoint(150, 100);
+        var current_id = $(ele).closest('article');
+
+        // finde article above and below
+        var prev = $(current_id).prev('article');
+        var next = $(current_id).next('article');
+
+        if (next && event.which == 110) {
+            // check if there is one to follow, if not, load one
+            loadNext();
+            var next = $(current_id).next('article');
+        }
+            
+        // Find the positions of the next and previous articles        
+        var prev_pos = $(prev).position();
+        var next_pos = $(next).position();
+        
+        // check which key was pressed
+        switch (event.which) {
+        case 110: // 'n'
+            if (next_pos != null) {
+                $(window).scrollTop(next_pos.top);
+            }
+            break;
+        case 112: // 'p'
+            if (prev_pos != null) {
+                $(window).scrollTop(prev_pos.top);
+            }
+            break;
+        case 114: // 'r'
+            fillPage();
+            break;
+        /*
+        default:
+            console.log(event.which);
+            break;
+        */
+        }
+        
+    });
+    
     $('body').click(function(event) {
         if ($(event.target).is('article header .flag')) {
             var id = $(event.target).attr('name');
@@ -115,6 +172,9 @@ $(document).ready(function() {
                     $(event.target).attr('src', data);
                 }
             });
+        } else if ($(event.target).is('.updater')) {
+            fillPage();
+            $('.updater').fadeOut("slow");
         }
     });
     

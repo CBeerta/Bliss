@@ -47,6 +47,14 @@ There is 3 ways to do add feeds to Bliss:
 
 Bliss uses SimplePie for feed retrieval. SimplePie has Feed autodetection, so you shouldn't have to 
 worry about adding the RSS Feed as URL. Usually just adding a Page that has a Feed is sufficient.
+
+# KEYBOARD NAVIGATION:
+
+These Keyboard Commands exist currently:
+
+* `n` for Next Article
+* `p` for Previois Article
+* `r` to Reload all Articles
 	
 # TODO:
 	
@@ -54,7 +62,6 @@ worry about adding the RSS Feed as URL. Usually just adding a Page that has a Fe
 * A Gallery of all cached images maybe?
 * Filter Duplicate titles, show only newest. This basically works, but some feeds change their guid on edits, so it may be better to use the Title only?
 * Basic polling works. Only question remains, should we prepend these articles? Or is informing enough
-* Keyboard navigation to hop between articles (prev and next atleast)
 * Search?
 * Should probably cache `Reader::filelist()`. it goes over every file on every reload. For now though, the fs-cache does a good job.
 * Export all feeds to OPML
