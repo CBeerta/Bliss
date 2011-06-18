@@ -57,10 +57,10 @@ These Keyboard Commands exist currently:
 * `r` to Reload all Articles
 	
 # TODO:
-	
-* An Archive page of some sort, for direct access to posts. Goes along with the starring/flagging.
-* A Gallery of all cached images maybe?
-* Filter Duplicate titles, show only newest. This basically works, but some feeds change their guid on edits, so it may be better to use the Title only?
+
+* Keyboard Nav needs work. We need to make sure a loadNext event loads enough content to allow scrolling to the next item. Maybe we can trick with padding here?
+* A Gallery of all cached images?
+* Filter Duplicate titles, show only newest.
 * Basic polling works. Only question remains, should we prepend these articles? Or is informing enough
 * Search?
 * Should probably cache `Reader::filelist()`. it goes over every file on every reload. For now though, the fs-cache does a good job.

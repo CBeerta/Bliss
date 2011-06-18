@@ -132,7 +132,7 @@ class Reader
         if ($last_id == null) {
             return;
         }
-        
+
         $next = Feeds::next($last_id, $filter);
         
         if (!$next || in_array($next->info->timestamp, $idlist)) {

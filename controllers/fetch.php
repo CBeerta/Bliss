@@ -132,10 +132,9 @@ class Fetch
             }
             
             $feed = Helpers::buildSlug(
-                $rss->get_author() . ' ' . 
+                md5($feed_uri) . ' ' .
                 $rss->get_title()
             );
-
     
             $dir = Feeds::option('data_dir') . '/' . $feed;
 
