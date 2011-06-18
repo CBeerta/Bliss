@@ -251,6 +251,7 @@ class Feeds
                     'feed' => $feed,
                     'file' => $file,
                     'fname' => $fname,
+                    'guid' => $guid,
                     'relative' => $relative,
                 ), 
                 (array) $feed_infos[$dir]
@@ -263,6 +264,33 @@ class Feeds
         return $files;
     }
 
+
+    /**
+    * Build the title cache for our archive
+    *
+    * FIXME: This might become to slow
+    *
+    * @return array
+    **/
+    public static function titles()
+    {
+        $filelist = Feeds::filelist(mktime());
+        $titles = array();
+        
+        foreach ($filelist as $item) {
+            $file = file_get_contents($item['file']);
+            
+            if (!$file) {
+                continue;
+            }
+            
+            $article = json_decode($file);
+            $titles[$item['dir']][$item['fname']] = $article->title;
+        }
+        
+        return $titles;    
+    }
+    
     /**
     * Load Next item after $offset
     *

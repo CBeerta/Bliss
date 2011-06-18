@@ -56,7 +56,7 @@ class Fetch
     * Commands that we understand
     **/
     private static $_commands = array(
-            'update' => 'Load new Items from frrds',
+            'update' => 'Load new Items from feeds',
             'help' => 'This Help',
     );
         
@@ -219,6 +219,5 @@ class Fetch
         Feeds::filelist(mktime(), $errors);
         error_log(print_r($errors, true));
     } // end update()
-
 }
 

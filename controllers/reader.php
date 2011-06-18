@@ -69,7 +69,8 @@ class Reader
     public static function archive()
     {
         $data = array(
-            'archives' => Feeds::filelist(mktime())
+            'archives' => Feeds::filelist(mktime()),
+            'titles' => Feeds::titles(),
         );
         
         return Flight::render('archive.tpl.html', $data);
