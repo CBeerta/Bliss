@@ -4,8 +4,6 @@ Because reading my private, mostly NSFW RSS Feeds makes me a happy puppy.
 
 fka rssReader. see [link](http://claus.beerta.de/blog/09ce5c79e6426fcb5cbacf2b714c4edf) for my first release.
 
-Version: 2.0.0
-
 # DESCRIPTION:
 
 Bliss is a simple application which can be used to gather a set of RSS/RDF feeds, 
@@ -54,10 +52,9 @@ worry about adding the RSS Feed as URL. Usually just adding a Page that has a Fe
 	
 * An Archive page of some sort, for direct access to posts. Goes along with the starring/flagging.
 * A Gallery of all cached images maybe?
-* Filter Duplicate titles, show only newest
+* Filter Duplicate titles, show only newest. This basically works, but some feeds change their guid on edits, so it may be better to use the Title only?
 * Basic polling works. Only question remains, should we prepend these articles? Or is informing enough
 * Keyboard navigation to hop between articles (prev and next atleast)
-* With the flagging or starring there needs to be a way to retrieve these. And obviously never expire them either.
 * Search?
 * Should probably cache `Reader::filelist()`. it goes over every file on every reload. For now though, the fs-cache does a good job.
 * Export all feeds to OPML

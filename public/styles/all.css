@@ -1,8 +1,6 @@
 /* ########## Core Elements ############################### */
 html{ 
     background: #FFF; 
-    overflow: -moz-scrollbars-vertical;
-    overflow: scroll;
 }
 body{
 	color: #555555;
@@ -111,7 +109,7 @@ article header img {
     font-family: Amaranth;
     position: fixed;
     top: 0px;
-    right: 10px;
+    right: 20px;
     z-index: 999;
     min-width: 200px;
 }
@@ -258,6 +256,15 @@ article header img {
 
 
 
+footer {
+    color: #aaa;
+    text-align: center;
+    margin-top: 25px;
+}
+footer a {
+    color: #888;
+    text-decoration: none;
+}
 
 /* The Magnificent Clearfix: Updated to prevent margin-collapsing on child elements.
    j.mp/bestclearfix */

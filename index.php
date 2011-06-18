@@ -31,7 +31,7 @@
 * @link     http://claus.beerta.de/
 **/
 
-define('BLISS_VERSION', '2.0.5');
+define('BLISS_VERSION', '2.0.6');
 
 require_once __DIR__ . '/vendor/Smarty/libs/Smarty.class.php';
 require_once __DIR__ . '/vendor/flight/flight/Flight.php';

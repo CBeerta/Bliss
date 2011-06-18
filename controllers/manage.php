@@ -167,6 +167,7 @@ class Manage
         }
         
         unset($feeds[$found]);
+        $feeds = array_merge($feeds);
 
         copy($save_file, $save_file . '.bak');
         if (!file_put_contents($save_file, json_encode($feeds), LOCK_EX)) {
