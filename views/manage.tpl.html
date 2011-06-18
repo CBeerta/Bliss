@@ -2,21 +2,31 @@
 
 {block name=body}
 <div class="manage" id="content">
-<ul>
-<li id="title">Currently active Subscriptions</li>
+<table>
+<tr>
+<th colspan="4" id="title">Currently active Subscriptions</th>
 {foreach $feedinfo as $feed}
-<li id="{$feed@index}">
+<tr id="{$feed@index}">
+<td width="32"> 
+    <a href="{$base_uri}#select-feed-{$feed->feed}">
+    <img src="{$base_uri}public/satellite.png" width="32" height="32">
+    </a>
+</td>
+<td width="32">
 {if $feed->source == 'json'}
-    <img src="{$base_uri}public/x_7x7.png" height="7" width="7" onclick="delete_feed('{$feed->feed_uri}', {$feed@index});">
+    <img src="{$base_uri}public/delete-item.png" height="32" width="32" onclick="delete_feed('{$feed->feed_uri}', {$feed@index});">
 {/if}
+</td>
+<td>
 {if $feed->last_update}
     <a href="{$feed->link}">{$feed->title}</a>
 {else}
     {$feed->title}
 {/if}
-    <p class="date">Last Update: {$feed->newest_article|date_format:"%B %e, %Y %H:%M"|default:"Never"}</p>
-</li>
+</td>
+<td id="date">Last Update: {$feed->newest_article|date_format:"%B %e, %Y %H:%M"|default:"Never"}</td>
+</tr>
 {/foreach}
-</ul>
+</table>
 </div>
 {/block}

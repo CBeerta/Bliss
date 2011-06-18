@@ -43,7 +43,7 @@ function delete_feed(uri, id) {
         data: { 'uri': uri, '_METHOD': 'DELETE' },
         success: function(reply) {
             if (success_or_fail(reply['status'], reply['message'])) {
-                ($('li#' + id)).fadeOut("slow", function(){$(this).remove();});
+                ($('tr#' + id)).fadeOut("slow", function(){$(this).remove();});
             }
         }
     });

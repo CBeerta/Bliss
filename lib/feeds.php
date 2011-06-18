@@ -56,7 +56,7 @@ class Feeds
     );
     
     // Cache filelist for multiple "next" calls
-    protected static $filelist = null;
+    protected static $glob = null;
 
     // Cache flagged
     protected static $flagged = null;
@@ -198,17 +198,37 @@ class Feeds
         $files = array();
         $data_dir = rtrim(self::$config['data_dir'], '/');
         $feed_infos = array();
+        $articles = array();
         
-        foreach (glob($data_dir . '/*/*.item') as $file) {
-            $fname = trim(str_replace($data_dir, '', $file), '/');
-            list($dir, $fname) = explode('/', $fname);
-            list($timestamp) = explode('-', $fname);
-            $relative = $dir . '/' . $fname;
-            $dir = $data_dir . '/' . $dir;
+        if (is_null(self::$glob)) {
+            // Cache the glob for multiple iterations
+            self::$glob = glob($data_dir . '/*/*.item');
+            arsort(self::$glob);
+        }  
+        
+        foreach (self::$glob as $file) {
             
-            if ($timestamp >= $offset) {
+            if (!preg_match(
+                "#{$data_dir}/((.*?)/(([0-9]+)-(.*?\.item)))$#i",
+                $file,
+                $matches
+            )) {
+                $errors[] = "Invalid file: {$file}";
                 continue;
             }
+            
+            $relative = $matches[1];
+            $feed = $matches[2];
+            $fname = $matches[3];
+            $timestamp = $matches[4];
+            $guid = $matches[5];
+            $dir = $data_dir . '/' . $matches[2];
+            
+            if ($timestamp >= $offset || in_array($guid, $articles)) {
+                continue;
+            }
+            
+            $articles[] = $guid;
 
             if (!file_exists($dir . '/feed.info')) {
                 $errors[] = "No {$dir}/feed.info File";
@@ -228,7 +248,7 @@ class Feeds
                 array(
                     'timestamp' => $timestamp,
                     'dir' => $dir,
-                    'feed' => basename($dir),
+                    'feed' => $feed,
                     'file' => $file,
                     'fname' => $fname,
                     'relative' => $relative,

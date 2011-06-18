@@ -130,12 +130,14 @@ class Fetch
                 Helpers::d($rss->error());
                 continue;
             }
+            
+            $feed = Helpers::buildSlug(
+                $rss->get_author() . ' ' . 
+                $rss->get_title()
+            );
+
     
-            $dir = Feeds::option('data_dir') . '/' .
-                Helpers::buildSlug(
-                    $rss->get_author() . ' ' . 
-                    $rss->get_title()
-                );
+            $dir = Feeds::option('data_dir') . '/' . $feed;
 
             if (!is_dir($dir)) {
                 mkdir($dir, 0755, true);
@@ -144,6 +146,7 @@ class Fetch
             $feed_info = (object) array(
                 'title' => $rss->get_title(),
                 'feed_uri' => $feed_uri,
+                'feed' => $feed,
                 'last_update' => mktime(),
                 'link' => $rss->get_link(),
                 'feed_type' => $rss->get_type(),
@@ -204,8 +207,6 @@ class Fetch
                     $newest = $content;
                     $feed_info->newest_article = $content->date;
                 }
-                
-                //$title_list[
                 
                 file_put_contents($outfile, json_encode($content));
             } // items foreach 

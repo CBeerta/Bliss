@@ -44,6 +44,7 @@ img {
     float: right;
     margin: 0 auto;
     color: #888;
+	vertical-align: middle;
 }
 #spinner {
     position: fixed;
@@ -188,7 +189,7 @@ article header img {
 /* ########## Archives #################################### */
 .archive ul {
     margin-top: 30px;
-    margin-left: 5px
+    margin-left: 5px;
 }
 .archive li#title {
 	font: 16px/26px Lato, serif;
@@ -215,31 +216,44 @@ article header img {
     margin-left: -24px;
 }
 /* ########## Manage ###################################### */
-.manage ul {
+.manage table {
     margin-top: 30px;
-    margin-left: 5px
+    margin-left: 5px;
+    width: 100%;
 }
-.manage li#title {
+.manage th {
 	font: 16px/26px Lato, serif;
     border: 1px solid #ccc;
     background-color: #fff;
     color: #444;
 }
-.manage li {
+.manage #date {
+    text-align: right;
+    padding-right: 10px;
+}
+.manage tr {
     list-style: none;
     color: #222;
 	vertical-align: middle;
-	line-height: 16px;
-	padding: 5px;
-	padding-bottom: 5px;
 	border-bottom: 1px solid #ccc;
 	border-left: 1px solid #ccc;
 	border-right: 1px solid #ccc;
 	background-color: #f9f9f9;
 }
+.manage td {
+    padding-right: 10px;
+    vertical-align: middle;
+}
+.manage img {
+    cursor: pointer;
+}
 .manage a {
     color: #111;
     text-decoration: none;
+}
+.manage a:hover {
+    color: #111;
+    text-decoration: underline;
 }
 
 
