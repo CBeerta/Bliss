@@ -57,6 +57,7 @@ class Fetch
     **/
     private static $_commands = array(
             'update' => 'Load new Items from feeds',
+            'expire' => 'Expire old Articles',
             'help' => 'This Help',
     );
         
@@ -93,6 +94,10 @@ class Fetch
                 exit;
             case 'update':
                 self::update();
+                self::expire();
+                exit;
+            case 'expire':
+                self::expire();
                 exit;
             }
         }
@@ -108,6 +113,12 @@ class Fetch
     public static function update()
     {
         $rss = new SimplePie();
+
+        try {
+            $expire_before = new DateTime(Feeds::option('expire_before'));
+        } catch (Exception $e) {
+            die($e->getMessage()."\n");
+        }
         
         foreach (Feeds::feedlist()->feeds as $feed_uri) {
             error_log("Fetching: {$feed_uri}");
@@ -127,10 +138,10 @@ class Fetch
             $rss->handle_content_type();
              
             if ($rss->error()) {
-                Helpers::d($rss->error());
+                error_log($rss->error());
                 continue;
             }
-            
+
             $feed = Helpers::buildSlug(
                 md5($feed_uri) . ' ' .
                 $rss->get_title()
@@ -158,6 +169,20 @@ class Fetch
             $title_list = array();
 
             foreach ($rss->get_items() as $item) {
+
+                try {
+                    $article_time = new DateTime($item->get_date());
+                } catch (Exception $e) {
+                    error_log("Can't parse timestamp for : " . $item['file']);
+                    error_log($e->getMessage());
+                    continue;
+                }
+    
+                if ($article_time <= $expire_before) {
+                    // Skip items that are to old already
+                    continue;
+                }
+            
                 $outfile = "{$dir}/"
                     . $item->get_date('U')
                     . '-' 
@@ -218,5 +243,45 @@ class Fetch
         Feeds::filelist(mktime(), $errors);
         error_log(print_r($errors, true));
     } // end update()
+
+
+    /**
+    * Expire Old Articles
+    *
+    * @return void
+    **/
+    public static function  expire()
+    {
+        try {
+            $expire_before = new DateTime(Feeds::option('expire_before'));
+        } catch (Exception $e) {
+            die($e->getMessage()."\n");
+        }
+    
+        $flagged = Feeds::flag();
+        $count = 0;
+        
+        foreach (Feeds::filelist(mktime(), $errors) as $item) {
+
+            try {
+                $article_time = new DateTime("@" . $item['timestamp']);
+            } catch (Exception $e) {
+                error_log("Can't parse timestamp for : " . $item['file']);
+                error_log($e->getMessage());
+            }
+            
+            if ($article_time <= $expire_before 
+                && !in_array($item['relative'], $flagged)
+            ) {
+                error_log("Removing: " . $item['file']);
+                unlink($item['file']);
+                $count++;
+            }
+        }
+        
+        error_log("Expired {$count} Articles.");    
+        error_log(print_r($errors, true));
+    }
+
 }
 

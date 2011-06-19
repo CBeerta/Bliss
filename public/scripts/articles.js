@@ -81,7 +81,6 @@ function poll() {
         data: { 'first_id': first_id },
         success: function(data) {
             if (data['updates_available'] == true) {
-                $('.updater').html('New Articles Available!');
                 $('.updater').fadeIn('slow');
             }
         }
@@ -106,6 +105,7 @@ $(document).ready(function() {
         }
     });
 
+    
     /**
     * Handle Keyboard navigation
     **/
