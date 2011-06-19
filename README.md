@@ -59,7 +59,9 @@ These Keyboard Commands exist currently:
 # TODO:
 
 * Keyboard Nav needs work. We need to make sure a loadNext event loads enough content to allow scrolling to the next item. Maybe we can trick with padding here?
-* A Gallery of all cached images?
+* Expire of the simplepie cache
+* Maybe the cached images shouldn't be in the cache but data direcotry? they're part of our content
+* For the gallery there needs to be a way to go from picture to post somehow. SimplePie makes this incredible hard though.
 * Filter Duplicate titles, show only newest.
 * Basic polling works. Only question remains, should we prepend these articles? Or is informing enough
 * Search?

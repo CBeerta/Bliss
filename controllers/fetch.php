@@ -95,6 +95,7 @@ class Fetch
                 exit;
             case 'update':
                 self::update();
+                self::cacheTriedToLoad();
                 self::expire();
                 if (Feeds::option('enable_gallery') != false) {
                     self::thumbs();
@@ -121,7 +122,9 @@ class Fetch
     **/
     public static function cacheName($url)
     {
-        error_log($url);
+        // FIXME: Remove sometimes
+        error_log("DEBUG: Cachefile: " . $url);
+
         // to decode:
         // base64_decode(strtr($url, '-_,', '+/='));
             
@@ -129,6 +132,43 @@ class Fetch
         // FIXME: Will this lead to filenames that get to long?
         // FIXME: Do we even need this?
         return strtr(base64_encode($url), '+/=', '-_,');
+    }
+
+    /**
+    * Replace the '.tried-to-load' spi files with a 404 image
+    *
+    * @return encoded
+    **/
+    public static function cacheTriedToLoad()
+    {
+        $cache_dir = rtrim(Feeds::option('cache_dir'), '/');
+        
+        foreach (glob($cache_dir . '/*.spi.tried-to-load') as $failed) {
+            if (!preg_match('|^(.*?)\.spi.tried-to-load$|i', $failed, $matches)) {
+                continue;
+            }
+            
+            $dest_file = $matches[1] . '.spi';
+            
+            if (is_file($dest_file)) {
+                // Eeh??? this must be garbage leftover
+                unlink($failed);
+                continue;
+            }
+            $image = array(
+                'headers' => array('content-type' => 'image/png'),
+                'body' => file_get_contents(dirname(__DIR__) . '/public/file.png')
+            );
+            
+            if (file_put_contents(
+                $dest_file, 
+                serialize($image), 
+                LOCK_EX
+            ) !== false
+            ) {
+                unlink($failed);
+            }            
+        }
     }
     
     /**
@@ -139,7 +179,6 @@ class Fetch
     public static function update()
     {
         $rss = new SimplePie();
-        
         $rss->set_useragent(
             'Mozilla/4.0 (Bliss: ' 
             . BLISS_VERSION
@@ -150,6 +189,7 @@ class Fetch
         $rss->set_cache_duration(Feeds::option('simplepie_cache_duration'));
         $rss->set_image_handler('image', 'i');
         $rss->set_cache_name_function('Fetch::cacheName');
+        $rss->set_cache_class('BlissPie_Cache');
 
         try {
             $expire_before = new DateTime(Feeds::option('expire_before'));
