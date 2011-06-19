@@ -172,7 +172,7 @@ class Fetch
                 unlink($failed);
             }            
         }
-        error_log("Replaced {$count} tried-to-load files with our 404 image.");    
+        error_log("Replaced {$count} tried-to-load files with a 404 image.");    
     }
     
     /**
@@ -265,12 +265,14 @@ class Fetch
                 $enclosures = array();
                 
                 foreach ($item->get_enclosures() as $enclosure) {
+
                     if (!empty($enclosure->thumbnails)) {
+
+                        // FIXME: Do something with these
                         $thumbnails = $enclosure->thumbnails;
-                    } else if ($enclosure->medium == 'image') {
-                        // Assume image mediums to be thumbs
-                        $thumbnails = $enclosure->link;
+
                     } else if (!empty($enclosure->link)) {
+
                         $title = !empty($enclosure->title)
                             ? $enclosure->title
                             : basename($enclosure->link);
@@ -280,8 +282,11 @@ class Fetch
                             'content-type' => $enclosure->type,
                             'length' => $enclosure->length,
                         );
+
                     }
+
                     $thumbnails = array_unique($thumbnails);
+
                 }
                 
                 $content = (object) array(
@@ -298,6 +303,38 @@ class Fetch
                     'id' => $item->get_id(),
                     'thumbnails' => $thumbnails,
                 );
+                
+                if (empty($content->content)) {
+                    // No Content?! 
+                    // Try building something
+                    
+                    // FIXME: This is UGLY. Should maybe be a smarty filter?
+                    
+                    $body = '';
+                    
+                    if (!empty($enclosures)) {
+                        foreach ($enclosures as $k => $v) {
+                            list($group, $type) = explode('/', $v['content-type']);
+                            
+                            switch ($group) {
+                            
+                            case 'image':
+                                $body .= '<img src="'.$v['link'].'">';
+                                break;
+                                
+                            default:
+                                $body .= '<a href="'.$v['link'].'">';
+                                $body .= $k;
+                                $body .= '</a>';
+                                break;
+                            }
+                        
+                        }
+                        $content->content = $body;
+                        $content->enclosures = array();
+                    }
+                    
+                }
                 
                 if (!isset($newest)) {
                     $newest = $content;

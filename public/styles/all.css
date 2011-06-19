@@ -103,7 +103,7 @@ article header img {
 }
 
 article img {
-    max-width: 600px;
+    /* max-width: 100%; */
 }
 
 

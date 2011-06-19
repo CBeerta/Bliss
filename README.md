@@ -60,7 +60,8 @@ These Keyboard Commands exist currently:
 
 * Keyboard Nav needs work. We need to make sure a loadNext event loads enough content to allow scrolling to the next item. Maybe we can trick with padding here?
 * Expire of the simplepie cache
-* Maybe the cached images shouldn't be in the cache but data direcotry? they're part of our content
+* Maybe the cached images shouldn't be in the cache but data direcotry? they're part of the content now (gallery)
+* Try to generate content if the feeds body is empty (images only, or attachements only feed fe)
 * For the gallery there needs to be a way to go from picture to post somehow. SimplePie makes this incredible hard though.
 * Filter Duplicate titles, show only newest.
 * Basic polling works. Only question remains, should we prepend these articles? Or is informing enough
