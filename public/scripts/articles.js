@@ -36,6 +36,18 @@ function loadNext() {
         return false;
     }
 
+    $(".fancyme").fancybox({
+        'hideOnContentClick': true,
+        'padding'           : 0,
+    	'transitionIn'		: 'none',
+		'transitionOut'		: 'none',
+		'autoScale'     	: true,
+		'type'				: 'image',
+		'scrolling'   		: 'no',
+		'changeFade'        : 0,
+		'centerOnScroll'    : true
+	});
+
     return true;
 }
 

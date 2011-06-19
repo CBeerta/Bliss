@@ -24,7 +24,12 @@
         <h1>Attachements:</h1>
         <p>
 {/if}
-            <a href="{$enclosure->link}"><img src="public/file.png" width="64" height="64" name="{$enclosure@key}" title="{$enclosure@key}"></a>
+{if $enclosure->medium == 'image'}
+            <a class="fancyme" href="/image?i={$enclosure->image_url}"><img src="/image?i={$enclosure->image_url}" width="64" name="{$enclosure->title}" title="{$enclosure->title}"></a>
+
+{else}
+            <a href="{$enclosure->link}"><img src="public/file.png" width="64" height="64" name="{$enclosure->title}" title="{$enclosure->title}"></a>
+{/if}
 {if $enclosure@last}
         </p>
 {/if}

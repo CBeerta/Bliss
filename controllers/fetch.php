@@ -123,7 +123,7 @@ class Fetch
     public static function cacheName($url)
     {
         // FIXME: Remove sometimes
-        //error_log("DEBUG: Cachefile: " . $url);
+        error_log("DEBUG: Cachefile: " . $url);
 
         // to decode:
         // base64_decode(strtr($url, '-_,', '+/='));
@@ -268,25 +268,88 @@ class Fetch
 
                     if (!empty($enclosure->thumbnails)) {
 
-                        // FIXME: Do something with these
                         $thumbnails = $enclosure->thumbnails;
 
                     } else if (!empty($enclosure->link)) {
-
+                        
                         $title = !empty($enclosure->title)
                             ? $enclosure->title
                             : basename($enclosure->link);
                         
-                        $enclosures[$title] = array(
+                        list($m) = explode('/', $enclosure->type);
+                        
+                        $medium = !empty($enclosure->medium)
+                            ? $enclosure->medium
+                            : $m;
+
+                        $enclosures[] = array(
+                            'title' => $title,
                             'link' => $enclosure->link,
                             'content-type' => $enclosure->type,
+                            'medium' => $medium,
                             'length' => $enclosure->length,
                         );
 
                     }
 
                     $thumbnails = array_unique($thumbnails);
+                    
+                }
+                
+                /**
+                * Lets just convert thumbs to enclosures
+                **/
+                foreach ($thumbnails as $thumb) {
+                    $enclosures[] = array(
+                        'title' => basename($thumb),
+                        'link' => $thumb,
+                        'medium' => 'image'
+                    );
+                }
 
+                /**
+                * Cache Enclosures locally
+                **/
+                foreach ($enclosures as $k => $enc) {
+                
+                    if ($enc['medium'] != 'image') {
+                        continue;
+                    }
+                    
+                    $image_url = Fetch::cacheName($enc['link']);
+                    $cache = BlissPie_Cache::create(
+                        Feeds::option('cache_dir'), 
+                        $image_url, 
+                        'spi'
+                    );
+                    
+                    $enclosures[$k]['image_url'] = $image_url;
+                    
+                    if (!$cache->load()) {
+                        $file = new SimplePie_File(
+                            $enc['link'], 
+                            $timeout = 10, 
+                            $redirects = 5, 
+                            $headers = null, 
+                            $useragent = $rss->useragent, 
+                            $force_fsockopen = false
+                        );
+
+                        $headers = $file->headers;
+                        if ($file->success 
+                            && ($file->method & SIMPLEPIE_FILE_SOURCE_REMOTE === 0 
+                            || ($file->status_code === 200 
+                            || $file->status_code > 206 
+                            && $file->status_code < 300))
+                        ) {
+                            $cache->save(
+                                array(
+                                    'headers' => $file->headers, 
+                                    'body' => $file->body,
+                                )
+                            );
+                        }
+                    }
                 }
                 
                 $content = (object) array(
@@ -301,7 +364,6 @@ class Fetch
                     'enclosures' => $enclosures,
                     'source' => $item->get_source(),
                     'id' => $item->get_id(),
-                    'thumbnails' => $thumbnails,
                 );
                 
                 if (empty($content->content)) {

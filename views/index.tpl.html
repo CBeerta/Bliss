@@ -1,6 +1,11 @@
 {extends file='layout.tpl.html'}
 
+{block name=stylesheet}
+<link rel="stylesheet" href="{$base_uri}public/scripts/fancybox/jquery.fancybox.compressed-1.3.4.css">
+{/block}
+
 {block name=scripts}
+<script type="text/javascript" src="{$base_uri}public/scripts/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
 <script type="text/javascript" src="{$base_uri}public/scripts/jquery.endless-scroll.js"></script>
 <script type="text/javascript" src="{$base_uri}public/scripts/articles.js"></script>
 {/block}
