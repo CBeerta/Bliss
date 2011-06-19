@@ -123,7 +123,7 @@ class Fetch
     public static function cacheName($url)
     {
         // FIXME: Remove sometimes
-        error_log("DEBUG: Cachefile: " . $url);
+        //error_log("DEBUG: Cachefile: " . $url);
 
         // to decode:
         // base64_decode(strtr($url, '-_,', '+/='));
@@ -142,6 +142,8 @@ class Fetch
     public static function cacheTriedToLoad()
     {
         $cache_dir = rtrim(Feeds::option('cache_dir'), '/');
+        
+        $count = 0;
         
         foreach (glob($cache_dir . '/*.spi.tried-to-load') as $failed) {
             if (!preg_match('|^(.*?)\.spi.tried-to-load$|i', $failed, $matches)) {
@@ -166,9 +168,11 @@ class Fetch
                 LOCK_EX
             ) !== false
             ) {
+                $count++;
                 unlink($failed);
             }            
         }
+        error_log("Replaced {$count} tried-to-load files with our 404 image.");    
     }
     
     /**

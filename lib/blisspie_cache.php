@@ -106,7 +106,6 @@ class Bliss_File_Cache implements SimplePie_Cache_Base
     **/
     public function save($data)
     {
-        error_log("Save Called for : " . $this->name);
         if (file_exists($this->name)
             && is_writeable($this->name) 
             || file_exists($this->location) 
@@ -191,7 +190,11 @@ class Bliss_File_Cache implements SimplePie_Cache_Base
     **/
     public function unlink()
     {
-        error_log("DEBUG: Unlink called on: " . $this->name);
+        if ($this->extension == 'spi') {
+            // Don't ever expire images. EVER
+            return false;
+        }
+        
         if (file_exists($this->name)) {
             return unlink($this->name);
         }
