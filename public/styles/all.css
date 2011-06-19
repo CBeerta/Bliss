@@ -36,7 +36,6 @@ input {
     color: #333;
 }
 img {
-    max-width: 600px;
 }
 .date {
     position: relative;
@@ -102,6 +101,11 @@ article header img {
     float: left;
     padding-right: 5px;
 }
+
+article img {
+    max-width: 600px;
+}
+
 
 
 /* ########## Top Bar ##################################### */
@@ -261,6 +265,23 @@ article header img {
     color: #111;
     text-decoration: underline;
 }
+
+/* ########## Gallery ##################################### */
+
+.gallery img {
+}
+div.gallery {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center; 
+    min-width: 210px;
+    min-height: 210px;
+    float: left;
+}
+.gallery a {
+    text-decoration: none;
+}    
+
 
 
 

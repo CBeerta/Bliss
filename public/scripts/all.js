@@ -66,6 +66,22 @@ $(document).ready(function() {
     .ajaxStop(function() {
         $(this).hide();
     });
+
+    /**
+    * Activate fancybox if its loaded
+    **/
+    if (window.jQuery.fancybox) {
+        $('a.fancyme').fancybox({
+            'titlePosition': 'below',
+            'hideOnContentClick': true,
+            'centerOnScroll': true,
+        	'padding'			: 0,
+			'transitionIn'		: 'none',
+			'transitionOut'		: 'none',
+			'type'              : 'image',
+			'changeFade'        : 0
+        });
+    }
     
     /**
     * Show or Hide the "Options" panel

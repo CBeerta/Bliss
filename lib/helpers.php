@@ -70,6 +70,65 @@ class Helpers
     }
 
     /**
+    * Resize an image, keep aspect ratio
+    *
+    * @param img  $src           Source Image (GD)
+    * @param int  $target_width  How wide should the image be
+    * @param int  $target_height And how Hight
+    * @param bool $force_size    Force Target widh, or use calculated size
+    *
+    * @return img $dest New resized Image
+    **/
+    public static function imgResize(
+        $src, 
+        $target_width, 
+        $target_height, 
+        $force_size
+    ) {
+        $width = imagesx($src);
+        $height = imagesy($src);
+        $imgratio = ($width / $height);
+
+        if ($width < $target_width || $height < $target_height) {   
+            return false;
+        }
+
+        if ($imgratio>1) { 
+            $new_width = $target_width; 
+            $new_height = ($target_width / $imgratio); 
+        } else { 
+            $new_height = $target_height; 
+            $new_width = ($target_height * $imgratio); 
+        }
+        
+        if ($force_size) {
+            // Force new image to be of target size
+            $dest = imagecreatetruecolor($target_width, $target_height);
+        } else {
+            // will use aspect ratio
+            $dest = imagecreatetruecolor($new_width, $new_height);
+        }
+        imagesavealpha($dest, true);
+        $trans_color = imagecolorallocatealpha($dest, 0, 0, 0, 127);
+        imagefill($dest, 0, 0, $trans_color);
+        
+        imagecopyresampled(
+            $dest, 
+            $src, 
+            0, 
+            0, 
+            0,
+            0,
+            $new_width,
+            $new_height,
+            $width,
+            $height
+        );
+        
+        return $dest;
+    }
+
+    /**
     * Mini Benchmarking
     *
     * @return microtime
@@ -98,7 +157,7 @@ class Helpers
         }
         
         if ( PHP_SAPI == 'cli' ) {
-            echo $message . "\n";
+            return;
         } else {
             error_log($message);
         }

@@ -54,6 +54,9 @@ class Feeds
         'cache_dir' => 'data/cache/',
         'simplepie_cache_duration' => 7200,
         'expire_before' => '6 month ago',
+        'thumb_size' => 200,
+        'gallery_minimum_image_size' => 800,
+        'enable_gallery' => false,
     );
     
     // Cache filelist for multiple "next" calls

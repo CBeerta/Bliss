@@ -8,6 +8,7 @@
         <link rel="stylesheet" href="public/styles/reset.css" media="all"/>
         <link rel="stylesheet" href="public/styles/all.css" media="all"/>
         <link rel="stylesheet" href="public/styles/print.css" media="print"/>
+{block name=stylesheet}{/block}
         <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Lato:regular,regularitalic,italic,bold,bolditalic" type="text/css">
         <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Amaranth:regular,regularitalic,italic,bold,bolditalic" type="text/css">
         <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Maven+Pro:regular,bold,italic,bolditalic" type="text/css">
@@ -35,6 +36,11 @@
             <a href="{$base_uri}archive">
                 <img id="archive" title="Archive" src="{$base_uri}public/calendar.png" width="32" height="32" />
             </a>
+{if $enable_gallery}
+            <a href="{$base_uri}gallery">
+                <img id="gallery" title="Image Gallery" src="{$base_uri}public/lookup.png" width="32" height="32" />
+            </a>
+{/if}
             &nbsp;&nbsp;&nbsp;&nbsp;
             <img id="handle" title="Add Feed" src="{$base_uri}public/rss.png" width="32" height="32" />
             <a href="{$base_uri}manage">
@@ -57,9 +63,6 @@
         </footer>
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
         <script src="public/scripts/all.js"></script>
-{if $is_index}
-        <script src="public/scripts/jquery.endless-scroll.js"></script>
-        <script src="public/scripts/articles.js"></script>
-{/if}
+{block name=scripts}{/block}
     </body>
 </html>

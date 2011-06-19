@@ -96,6 +96,13 @@ Flight::route('POST /flag', array('Reader', 'flag'));
 /* ######### Access to the image cache #################### */
 Flight::route('GET /image', array('Reader', 'image'));
 
+/* ######### Gallery ###################################### */
+if (Feeds::option('enable_gallery') != false) {
+    Flight::view()->assign('enable_gallery', true);
+    Flight::route('GET /gallery', array('Reader', 'gallery'));
+    Flight::route('POST /gallery_page/@page', array('Reader', 'galleryPage'));
+}
+
 /* ######### Archives ##################################### */
 Flight::route('GET /archive', array('Reader', 'archive'));
 

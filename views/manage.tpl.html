@@ -24,7 +24,7 @@
     {$feed->title}
 {/if}
 </td>
-<td id="date">Last Update: {$feed->newest_article|date_format:"%B %e, %Y %H:%M"|default:"Never"}</td>
+<td id="date">Last Update: {$feed->newest_article|date_format:"%B %e, %Y %H:%M"|default:"<b>Never</b>"}</td>
 </tr>
 {/foreach}
 </table>

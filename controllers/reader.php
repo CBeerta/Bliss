@@ -76,6 +76,60 @@ class Reader
         return Flight::render('archive.tpl.html', $data);
     }
 
+    /**
+    * Image Gallery json loadnext
+    *
+    * @return html
+    **/
+    public static function gallery()
+    {
+        return Flight::render('gallery.tpl.html');
+    }
+
+    /**
+    * Image Gallery json loadnext
+    *
+    * @param int $page Which page to load
+    *
+    * @return html
+    **/
+    public static function galleryPage($page)
+    {
+        $images = array();
+        $cache_dir = rtrim(Feeds::option('cache_dir'), '/');
+        $glob = $cache_dir . '/*.thumb.png';
+    
+        foreach (glob($glob) as $img) {
+            if (!preg_match(
+                "|({$cache_dir}/((.*?).spi))\.(\d+)x(\d+).thumb.png|i",
+                $img,
+                $matches
+            )) {
+                continue;
+            }
+            
+            if (!is_file($matches[1])) {
+                continue;
+            }
+            
+            $images[] = array(
+                'thumb' => basename($matches[0]),
+                'id' => $matches[3],
+                'width' => $matches[4],
+                'height' => $matches[5],
+            );
+        }
+        
+        $images = array_slice($images, 50 * $page, 50);
+        
+        $data = array(
+            'page' => $page,
+            'images' => $images,
+        );
+        
+        return Flight::render('gallery.snippet.tpl.html', $data);
+    }
+
 
     /**
     * Load an Image from cache
@@ -84,10 +138,22 @@ class Reader
     **/
     public static function image()
     {
-        if (!isset($_GET['i'])) {
+        $cache_dir = rtrim(Feeds::option('cache_dir'), '/');
+        
+        if (isset($_GET['thumb'])) {
+            $file = $cache_dir . '/' . basename($_GET['thumb']);
+            if (!file_exists($file) || !is_readable($file)) {
+                return false;
+            }
+
+            header('content-type: image/png');
+            echo file_get_contents($file);
+            exit;
+        } else if (!isset($_GET['i'])) {
             return false;
         }
-        $file = Feeds::option('cache_dir') . '/' . basename($_GET['i']) . '.spi';
+        
+        $file = $cache_dir . '/' . basename($_GET['i']) . '.spi';
         
         if (!file_exists($file) || !is_readable($file)) {
             return false;

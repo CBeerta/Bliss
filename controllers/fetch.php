@@ -58,6 +58,7 @@ class Fetch
     private static $_commands = array(
             'update' => 'Load new Items from feeds',
             'expire' => 'Expire old Articles',
+            'thumbs' => 'Build Thumbnails for all SPI files in the cache',
             'help' => 'This Help',
     );
         
@@ -95,14 +96,39 @@ class Fetch
             case 'update':
                 self::update();
                 self::expire();
+                if (Feeds::option('enable_gallery') != false) {
+                    self::thumbs();
+                }
                 exit;
             case 'expire':
                 self::expire();
+                exit;
+            case 'thumbs':
+                self::thumbs();
                 exit;
             }
         }
         
         self::_help();
+    }
+
+    /**
+    * Encode a $url for simplepie to a cache file name
+    *
+    * @param string $url Url to encode to filename
+    *
+    * @return encoded
+    **/
+    public static function cacheName($url)
+    {
+        error_log($url);
+        // to decode:
+        // base64_decode(strtr($url, '-_,', '+/='));
+            
+        // lets use base64 here so we can decode the url later
+        // FIXME: Will this lead to filenames that get to long?
+        // FIXME: Do we even need this?
+        return strtr(base64_encode($url), '+/=', '-_,');
     }
     
     /**
@@ -113,6 +139,17 @@ class Fetch
     public static function update()
     {
         $rss = new SimplePie();
+        
+        $rss->set_useragent(
+            'Mozilla/4.0 (Bliss: ' 
+            . BLISS_VERSION
+            . '; https://github.com/CBeerta/Bliss'
+            . '; Allow like Gecko)'
+        );
+        $rss->set_cache_location(Feeds::option('cache_dir'));
+        $rss->set_cache_duration(Feeds::option('simplepie_cache_duration'));
+        $rss->set_image_handler('image', 'i');
+        $rss->set_cache_name_function('Fetch::cacheName');
 
         try {
             $expire_before = new DateTime(Feeds::option('expire_before'));
@@ -124,15 +161,6 @@ class Fetch
             error_log("Fetching: {$feed_uri}");
             
             $rss->set_feed_url($feed_uri);
-            $rss->set_useragent(
-                'Mozilla/4.0 (Bliss: ' 
-                . BLISS_VERSION
-                . '; https://github.com/CBeerta/Bliss'
-                . '; Allow like Gecko)'
-            );
-            $rss->set_cache_location(Feeds::option('cache_dir'));
-            $rss->set_cache_duration(Feeds::option('simplepie_cache_duration'));
-            $rss->set_image_handler('image', 'i');
 
             $rss->init();
             $rss->handle_content_type();
@@ -250,7 +278,7 @@ class Fetch
     *
     * @return void
     **/
-    public static function  expire()
+    public static function expire()
     {
         try {
             $expire_before = new DateTime(Feeds::option('expire_before'));
@@ -282,6 +310,63 @@ class Fetch
         error_log("Expired {$count} Articles.");    
         error_log(print_r($errors, true));
     }
+    
+    /**
+    * Generate Thumbnails for all SPI files in cache
+    *
+    * @return void
+    **/
+    public static function thumbs()
+    {
+        $cache_dir = rtrim(Feeds::option('cache_dir'), '/');
+        $thumb_size = Feeds::option('thumb_size');
+        $min_size = Feeds::option('gallery_minimum_image_size');
+        
+        $count = 0;
+        
+        foreach (glob($cache_dir . '/*.spi') as $img) {
+        
+            $content = unserialize(file_get_contents($img));
+            
+            if (!$content || empty($content)) {
+                continue;
+            }
+
+            list($type, $format) = split('/', $content['headers']['content-type']);
+            
+            if ($type !== 'image') {
+                continue;
+            }
+            
+            $src = imagecreatefromstring($content['body']);
+            if (!$src) {
+                error_log(
+                    "Can't read {$img}. " 
+                    . print_r($content['headers'], true)
+                );
+            }
+
+            $w = imagesx($src);
+            $h = imagesy($src);
+            
+            if ($w >= $h && $w <= $min_size) {
+                continue;
+            } else if ($h >= $w && $h <= $min_size) {
+                continue;
+            }
+
+            $dst = Helpers::imgResize($src, $thumb_size, $thumb_size, false);
+            if ($dst !== false) {
+                $w = imagesx($dst);
+                $h = imagesy($dst);
+
+                $dst_fname = $img . ".{$w}x{$h}.thumb.png";
+                imagepng($dst, $dst_fname, 6);
+            }
+        }
+        error_log("Created {$count} Thumbnails.");    
+    }
+    
 
 }
 
