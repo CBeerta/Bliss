@@ -59,29 +59,27 @@ class Helpers
         if (!empty($string)) {
             return $string;
         }
+
         // No Content?! 
         // Try building something
+        $body = '<h2>Article has no Content!</h2>';
         
-        $body = '';
-        
-        foreach ($item['enclosures'] as $k => $v) {
-            list($group, $type) = explode('/', $v['content-type']);
-            
-            switch ($group) {
+        foreach ($item->enclosures as $k => $v) {
+
+            switch ($v->medium) {
             
             case 'image':
-                $body .= '<img src="'.$v['link'].'">';
+                $body .= '<img src="'.$v->link.'">';
                 break;
                 
             default:
-                $body .= '<a href="'.$v['link'].'">';
+                $body .= '<a href="'.$v->link.'">';
                 $body .= $k;
                 $body .= '</a>';
                 break;
             }
         
         }
-        //$item['enclosures'] = array();
         
         return $body;
     }

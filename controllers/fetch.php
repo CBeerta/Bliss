@@ -123,28 +123,17 @@ class Fetch
     public static function cacheName($url)
     {
         $current_feed = Feeds::option('_current_feed');
+    
+        list($fname) = explode('?', basename($url));
 
         // FIXME: Remove sometimes
-        error_log("DEBUG: Cachefile: " . $url);
-        
-        $oldname = rtrim(Feeds::option('cache_dir'), '/')
-            . '/'
-            . strtr(base64_encode($url), '+/=', '-_,')
-            . '.spi';
-            
-            
-        $newname = rtrim(Feeds::option('cache_dir'), '/')
-            . '/'
-            . urlencode("{$current_feed}/" . md5($url))
-            . '.spi';
-            
-        if (file_exists($oldname)) {
-            error_log("Old Cache File Name Exists, renaming.");
-            rename($oldname, $newname);
-        }
-        
+        //error_log("DEBUG: Cachefile: " . $url);
+
         if (!empty($current_feed)) {
-            return urlencode("{$current_feed}/" . md5($url));
+            return urlencode("{$current_feed}/" . md5($url) . '-' . $fname);
+            
+            //FIXME the above may produce urls that are to long
+            //return urlencode("{$current_feed}/" . md5($url));
         }
 
         return md5($url);
@@ -160,14 +149,17 @@ class Fetch
     **/
     public static function cacheTriedToLoad()
     {
-        $cache_dir = rtrim(Feeds::option('cache_dir'), '/');
+        $data_dir = rtrim(Feeds::option('data_dir'), '/');
         
         $count = 0;
         
-        foreach (glob($cache_dir . '/*.spi.tried-to-load') as $failed) {
+        foreach (glob($data_dir . '/*/enclosures/*.spi.tried-to-load') as $failed) {
+            
             if (!preg_match('|^(.*?)\.spi.tried-to-load$|i', $failed, $matches)) {
                 continue;
             }
+
+            error_log("Found: " . $failed);
             
             $dest_file = $matches[1] . '.spi';
             
@@ -240,7 +232,9 @@ class Fetch
 
         /**
         * Convert thumbs to enclosures
+        * FIXME Should we?
         **/
+        /*
         foreach ($thumbnails as $thumb) {
             $enclosures[] = array(
                 'title' => basename($thumb),
@@ -248,7 +242,8 @@ class Fetch
                 'medium' => 'image'
             );
         }
-    
+        */
+        
         return $enclosures;
     }
         
@@ -257,7 +252,7 @@ class Fetch
     *
     * @param array $enclosures A list of enclosures
     *
-    * @return void
+    * @return array
     **/
     public static function cacheEnclosures($enclosures)
     {
@@ -282,7 +277,7 @@ class Fetch
             
             // check if there's already soemthing in cache
             if ($cache->load() !== false) {
-                return;
+                continue;
             }
             
             // Use SimplePie to load file
@@ -314,6 +309,8 @@ class Fetch
             }
             
         } // foreach
+        
+        return $enclosures;
     }
         
     
@@ -413,7 +410,7 @@ class Fetch
                     
                 // Handle Enclosures
                 $enclosures = self::handleEnclosures($item->get_enclosures());
-                self::cacheEnclosures($enclosures);
+                $enclosures = self::cacheEnclosures($enclosures);
                 
                 $content = (object) array(
                     'title' => $item->get_title(),

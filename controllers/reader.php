@@ -169,6 +169,14 @@ class Reader
             return false;
         }
         
+        if (preg_match(
+            '#enclosures/(.*?)%2F(\w{32,32})-(.*?).spi#i', 
+            $file,
+            $matches
+        )) {
+            header("Content-Disposition: inline; filename=\"{$matches[3]}\"");
+        }
+        
         $img = unserialize(file_get_contents($file));
         
         foreach (
