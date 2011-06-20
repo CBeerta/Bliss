@@ -122,20 +122,41 @@ class Fetch
     **/
     public static function cacheName($url)
     {
+        $url = $url . '?test=1';
+        
+        $current_feed = Feeds::option('_current_feed');
+
         // FIXME: Remove sometimes
         error_log("DEBUG: Cachefile: " . $url);
-
-        // to decode:
-        // base64_decode(strtr($url, '-_,', '+/='));
+        
+        $oldname = rtrim(Feeds::option('cache_dir'), '/')
+            . '/'
+            . strtr(base64_encode($url), '+/=', '-_,')
+            . '.spi';
             
-        // lets use base64 here so we can decode the url later
-        // FIXME: Will this lead to filenames that get to long?
-        // FIXME: Do we even need this?
-        return strtr(base64_encode($url), '+/=', '-_,');
+            
+        $newname = rtrim(Feeds::option('cache_dir'), '/')
+            . '/'
+            . urlencode("{$current_feed}/" . md5($url))
+            . '.spi';
+            
+        if (file_exists($oldname)) {
+            error_log("Old Cache File Name Exists, renaming.");
+            rename($oldname, $newname);
+        }
+        
+        if (!empty($current_feed)) {
+            return urlencode("{$current_feed}/" . md5($url));
+        }
+
+        return md5($url);
     }
 
     /**
     * Replace the '.tried-to-load' spi files with a 404 image
+    *
+    * FIXME Aslong as there is no good way in simplepie to deal with broken
+    *       links for the image handler, we need to do it "the hard way"
     *
     * @return encoded
     **/
@@ -174,6 +195,129 @@ class Fetch
         }
         error_log("Replaced {$count} tried-to-load files with a 404 image.");    
     }
+    
+    /**
+    * Handle all enclosures from a Feed
+    *
+    * @param simplepie_class $input $item->get_enclosures() from simplepie
+    *
+    * @return array
+    **/
+    public static function handleEnclosures($input)
+    {
+        $enclosures = array();
+        $thumbnails = array();
+        
+        foreach ($input as $enclosure) {
+
+            if (!empty($enclosure->thumbnails)) {
+
+                $thumbnails = $enclosure->thumbnails;
+
+            } else if (!empty($enclosure->link)) {
+                
+                $title = !empty($enclosure->title)
+                    ? $enclosure->title
+                    : basename($enclosure->link);
+                
+                list($m) = explode('/', $enclosure->type);
+                
+                $medium = !empty($enclosure->medium)
+                    ? $enclosure->medium
+                    : $m;
+
+                $enclosures[] = array(
+                    'title' => $title,
+                    'link' => $enclosure->link,
+                    'content-type' => $enclosure->type,
+                    'medium' => $medium,
+                    'length' => $enclosure->length,
+                );
+
+            }
+
+            $thumbnails = array_unique($thumbnails);
+            
+        }
+
+        /**
+        * Convert thumbs to enclosures
+        **/
+        foreach ($thumbnails as $thumb) {
+            $enclosures[] = array(
+                'title' => basename($thumb),
+                'link' => $thumb,
+                'medium' => 'image'
+            );
+        }
+    
+        return $enclosures;
+    }
+        
+    /**
+    * Cache Enclosures locally
+    *
+    * @param array $enclosures A list of enclosures
+    *
+    * @return void
+    **/
+    public static function cacheEnclosures($enclosures)
+    {
+
+        foreach ($enclosures as $k => $enc) {
+        
+            if ($enc['medium'] != 'image') {
+                // currently only care about images
+                continue;
+            }
+
+            // Generate Cache Class            
+            $image_url = Fetch::cacheName($enc['link']);
+            $cache = BlissPie_Cache::create(
+                Feeds::option('cache_dir'), 
+                $image_url, 
+                'spi'
+            );
+            
+            // add url to enclosure
+            $enclosures[$k]['image_url'] = $image_url;
+            
+            // check if there's already soemthing in cache
+            if ($cache->load() !== false) {
+                return;
+            }
+            
+            // Use SimplePie to load file
+            $file = new SimplePie_File(
+                $enc['link'], 
+                $timeout = 10, 
+                $redirects = 5, 
+                $headers = null, 
+                $useragent = $rss->useragent, 
+                $force_fsockopen = false
+            );
+
+            // Although we know better, this is simply copy&pasted from simplepie
+            // blisspie_cache will take care of the load failures
+            $headers = $file->headers;
+            if ($file->success 
+                && ($file->method & SIMPLEPIE_FILE_SOURCE_REMOTE === 0 
+                || ($file->status_code === 200 
+                || $file->status_code > 206 
+                && $file->status_code < 300))
+            ) {
+                // Store result in cache
+                $cache->save(
+                    array(
+                        'headers' => $file->headers, 
+                        'body' => $file->body,
+                    )
+                );
+            }
+            
+        } // foreach
+    }
+        
     
     /**
     * Update Feeds
@@ -219,7 +363,7 @@ class Fetch
                 $rss->get_title()
             );
     
-            $dir = Feeds::option('data_dir') . '/' . $feed;
+            $dir = rtrim(Feeds::option('data_dir'), '/') . '/' . $feed;
 
             if (!is_dir($dir)) {
                 mkdir($dir, 0755, true);
@@ -239,6 +383,12 @@ class Fetch
             );
             
             $title_list = array();
+            
+            
+            // Set _current_feed here, which is later used by cacheName
+            // and the blisscache stuff
+            // Very "through the eye"
+            Feeds::option('_current_feed', $feed);
 
             foreach ($rss->get_items() as $item) {
 
@@ -252,6 +402,8 @@ class Fetch
     
                 if ($article_time <= $expire_before) {
                     // Skip items that are to old already
+                    // FIXME This is a bit late. At this point all images
+                    // have been downloaded , even if theres no need for them
                     continue;
                 }
             
@@ -261,96 +413,9 @@ class Fetch
                     . Helpers::buildSlug($item->get_id())
                     . '.item';
                     
-                $thumbnails = array();
-                $enclosures = array();
-                
-                foreach ($item->get_enclosures() as $enclosure) {
-
-                    if (!empty($enclosure->thumbnails)) {
-
-                        $thumbnails = $enclosure->thumbnails;
-
-                    } else if (!empty($enclosure->link)) {
-                        
-                        $title = !empty($enclosure->title)
-                            ? $enclosure->title
-                            : basename($enclosure->link);
-                        
-                        list($m) = explode('/', $enclosure->type);
-                        
-                        $medium = !empty($enclosure->medium)
-                            ? $enclosure->medium
-                            : $m;
-
-                        $enclosures[] = array(
-                            'title' => $title,
-                            'link' => $enclosure->link,
-                            'content-type' => $enclosure->type,
-                            'medium' => $medium,
-                            'length' => $enclosure->length,
-                        );
-
-                    }
-
-                    $thumbnails = array_unique($thumbnails);
-                    
-                }
-                
-                /**
-                * Lets just convert thumbs to enclosures
-                **/
-                foreach ($thumbnails as $thumb) {
-                    $enclosures[] = array(
-                        'title' => basename($thumb),
-                        'link' => $thumb,
-                        'medium' => 'image'
-                    );
-                }
-
-                /**
-                * Cache Enclosures locally
-                **/
-                foreach ($enclosures as $k => $enc) {
-                
-                    if ($enc['medium'] != 'image') {
-                        continue;
-                    }
-                    
-                    $image_url = Fetch::cacheName($enc['link']);
-                    $cache = BlissPie_Cache::create(
-                        Feeds::option('cache_dir'), 
-                        $image_url, 
-                        'spi'
-                    );
-                    
-                    $enclosures[$k]['image_url'] = $image_url;
-                    
-                    if (!$cache->load()) {
-                        $file = new SimplePie_File(
-                            $enc['link'], 
-                            $timeout = 10, 
-                            $redirects = 5, 
-                            $headers = null, 
-                            $useragent = $rss->useragent, 
-                            $force_fsockopen = false
-                        );
-
-                        $headers = $file->headers;
-                        if ($file->success 
-                            && ($file->method & SIMPLEPIE_FILE_SOURCE_REMOTE === 0 
-                            || ($file->status_code === 200 
-                            || $file->status_code > 206 
-                            && $file->status_code < 300))
-                        ) {
-                            $cache->save(
-                                array(
-                                    'headers' => $file->headers, 
-                                    'body' => $file->body,
-                                )
-                            );
-                        }
-                    }
-                }
+                // Handle Enclosures
+                $enclosures = self::handleEnclosures($item->get_enclosures());
+                self::cacheEnclosures($enclosures);
                 
                 $content = (object) array(
                     'title' => $item->get_title(),
@@ -365,38 +430,6 @@ class Fetch
                     'source' => $item->get_source(),
                     'id' => $item->get_id(),
                 );
-                
-                if (empty($content->content)) {
-                    // No Content?! 
-                    // Try building something
-                    
-                    // FIXME: This is UGLY. Should maybe be a smarty filter?
-                    
-                    $body = '';
-                    
-                    if (!empty($enclosures)) {
-                        foreach ($enclosures as $k => $v) {
-                            list($group, $type) = explode('/', $v['content-type']);
-                            
-                            switch ($group) {
-                            
-                            case 'image':
-                                $body .= '<img src="'.$v['link'].'">';
-                                break;
-                                
-                            default:
-                                $body .= '<a href="'.$v['link'].'">';
-                                $body .= $k;
-                                $body .= '</a>';
-                                break;
-                            }
-                        
-                        }
-                        $content->content = $body;
-                        $content->enclosures = array();
-                    }
-                    
-                }
                 
                 if (!isset($newest)) {
                     $newest = $content;
@@ -461,13 +494,14 @@ class Fetch
     **/
     public static function thumbs()
     {
-        $cache_dir = rtrim(Feeds::option('cache_dir'), '/');
+        $cache_dir = rtrim(Feeds::option('data_dir'), '/');
         $thumb_size = Feeds::option('thumb_size');
         $min_size = Feeds::option('gallery_minimum_image_size');
         
         $count = 0;
         
-        foreach (glob($cache_dir . '/*.spi') as $img) {
+        foreach (glob($cache_dir . '/*/enclosures/*.spi') as $img) {
+            
         
             $content = unserialize(file_get_contents($img));
             
@@ -505,6 +539,7 @@ class Fetch
 
                 $dst_fname = $img . ".{$w}x{$h}.thumb.png";
                 imagepng($dst, $dst_fname, 6);
+                $count++;
             }
         }
         error_log("Created {$count} Thumbnails.");    

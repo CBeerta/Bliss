@@ -1,6 +1,6 @@
 ;Point this to the datadirectory. The fetch script needs write access here.
 ;This best be outside of your Document Root
-data_dir = data/
+data_dir = ../data
 
 ; Point this to a directory where the HTTP/PHP process can put files into 
 ; This should preferably also be outside of your Document Root
@@ -28,7 +28,7 @@ cache_dir = ../cache
 ; the manage interface. 
 
 ; If you have an opml file, put it in here
-;opml = ../feeds.opml
+;opml = feeds.opml
 
 [feeds]
 sources[] = http://claus.beerta.net/blog/feed

@@ -74,6 +74,12 @@ Flight::register(
         $smarty->compile_dir = Feeds::option('cache_dir');
         $smarty->template_dir = __DIR__ . '/views/';
         $smarty->debugging = false;
+        
+        $smarty->registerPlugin(
+            "modifier", 
+            "enhance_content", 
+            "Helpers::enhanceContent"
+        );
     }
 );
 Flight::map(

@@ -96,30 +96,33 @@ class Reader
     public static function galleryPage($page)
     {
         $images = array();
-        $cache_dir = rtrim(Feeds::option('cache_dir'), '/');
-        $glob = $cache_dir . '/*.thumb.png';
-    
-        foreach (glob($glob) as $img) {
+        $data_dir = rtrim(Feeds::option('data_dir'), '/');
+        $glob = glob($data_dir . '/*/enclosures/*.thumb.png');
+
+        sort($glob);
+
+        foreach ($glob as $img) {
             if (!preg_match(
-                "|({$cache_dir}/((.*?).spi))\.(\d+)x(\d+).thumb.png|i",
+                "|{$data_dir}/(.*?)/enclosures/((.*?).spi)\.(\d+)x(\d+).thumb.png|i",
                 $img,
                 $matches
             )) {
                 continue;
             }
             
-            if (!is_file($matches[1])) {
+            if (!is_file(dirname($img) . '/' . $matches[2])) {
                 continue;
             }
             
             $images[] = array(
                 'thumb' => basename($matches[0]),
+                'feed' => $matches[1],
                 'id' => $matches[3],
                 'width' => $matches[4],
                 'height' => $matches[5],
             );
         }
-        
+
         $images = array_slice($images, 50 * $page, 50);
         
         $data = array(
@@ -138,10 +141,18 @@ class Reader
     **/
     public static function image()
     {
-        $cache_dir = rtrim(Feeds::option('cache_dir'), '/');
+        $cache_dir = rtrim(Feeds::option('data_dir'), '/');
         
+        $i = !empty($_GET['thumb']) ? $_GET['thumb'] : $_GET['i'];
+        
+        list($feed, $file) = explode('/', $i);
+        
+        $feed = basename($feed);
+        $file = urlencode($i);
+        
+        $file = "{$cache_dir}/{$feed}/enclosures/{$file}";
+
         if (isset($_GET['thumb'])) {
-            $file = $cache_dir . '/' . basename($_GET['thumb']);
             if (!file_exists($file) || !is_readable($file)) {
                 return false;
             }
@@ -153,12 +164,11 @@ class Reader
             return false;
         }
         
-        $file = $cache_dir . '/' . basename($_GET['i']) . '.spi';
-        
+        $file = $file . '.spi';
         if (!file_exists($file) || !is_readable($file)) {
             return false;
         }
-
+        
         $img = unserialize(file_get_contents($file));
         
         foreach (

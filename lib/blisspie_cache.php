@@ -91,9 +91,31 @@ class Bliss_File_Cache implements SimplePie_Cache_Base
     **/
     public function __construct($location, $filename, $extension)
     {
-        $this->location = $location;
+        $current_feed_dir = rtrim(Feeds::option('data_dir'), '/')
+            . '/'
+            . Feeds::option('_current_feed');
+
         $this->filename = $filename;
         $this->extension = $extension;
+        $this->location = $location;
+
+        $oldname = "$this->location/$this->filename.$this->extension";
+        
+        if ($extension == 'spi'&& is_dir($current_feed_dir)) {
+            if (!is_dir($current_feed_dir . '/enclosures/')) {
+                mkdir($current_feed_dir . '/enclosures/', 0755, true);
+            }
+            $this->location = $current_feed_dir . '/enclosures/';
+            
+            // Migrate Cache files
+            // FIXME deprecate this sometime
+            $this->name = "$this->location/$this->filename.$this->extension";
+            if (is_file($oldname)) {    
+                error_log("Old Cache Entry exists. Migrating.");
+                rename($oldname, $this->name);
+            }
+        }
+
         $this->name = "$this->location/$this->filename.$this->extension";
     }
 

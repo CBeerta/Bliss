@@ -25,15 +25,15 @@ Recently it got a slight update (as in complete rewrite) to something a bit more
 
 * [Smarty](http://www.smarty.net/) (It is included under `vendor/`)
 * [Flight Framework](https://github.com/mikecao/flight)
-* [SimplePie](https://github.com/simplepie) (as git submodule)
+* [SimplePie](https://github.com/simplepie)
 * PHP 5.3 or later
 * Shell Access to execute PHP
 	
 # INSTALLATION:
 	
 * Untar the archive into your webservers directory. 
-* Open the `config.ini` in you favorite editor and follow the instructions in that file.
-* You need to set `data_dir` and `cache_dir` and, of course, your `sources`.
+* Pull submodoles: `git submodule init` then `git submodule update`. Or Download manually and put them into the `vendor` directory.
+* Open the `config.ini.sample` in your favorite editor and follow the instructions in that file. Save as `config.ini`
 * Then run `php index.php --update` from the commandline
 * After you've run the update you can open the page in your browser.
 
@@ -60,19 +60,17 @@ These Keyboard Commands exist currently:
 
 * Keyboard Nav needs work. We need to make sure a loadNext event loads enough content to allow scrolling to the next item. Maybe we can trick with padding here?
 * Expire of the simplepie cache
-* Maybe the cached images shouldn't be in the cache but data direcotry? they're part of the content now (gallery)
-* Try to generate content if the feeds body is empty (images only, or attachements only feed fe)
-* For the gallery there needs to be a way to go from picture to post somehow. SimplePie makes this incredible hard though.
+* For the gallery there needs to be a way to go from picture to post somehow. SimplePie makes this incredible hard though. We can go to feed now atleast, maybe the step to a single item is more possible then.
 * Filter Duplicate titles, show only newest.
-* Basic polling works. Only question remains, should we prepend these articles? Or is informing enough
-* Search?
+* Search? (this is probably where i will regret most that i chose not to use a database)
 * Should probably cache `Reader::filelist()`. it goes over every file on every reload. For now though, the fs-cache does a good job.
-* Export all feeds to OPML
+* Export all feeds to OPML, export images from gallery
 
 # BUGS
 
 * It will likely not look good in Internet Explorer or Opera.
 * Fast scrolling causes the page to simply stop reloading.
+* Keyboard Navigation needs more work
 
 Probably alot more. Tested with a couple of feeds, but there are probably alot that don't work correct.
 

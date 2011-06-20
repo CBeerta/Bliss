@@ -31,6 +31,10 @@
 * @link     http://claus.beerta.de/
 **/
 
+if ( !defined('BLISS_VERSION') ) {
+    die('No direct Script Access Allowed!');
+}
+
 /**
 * Helpers
 *
@@ -42,6 +46,46 @@
 **/
 class Helpers
 {
+    /**
+    * "Enhance" content for Display
+    *
+    * @param string $string The Content from Smarty
+    * @param mixed  $item   The SimplePie Item
+    *
+    * @return string a slug
+    **/
+    public static function enhanceContent($string, $item = null)
+    {
+        if (!empty($string)) {
+            return $string;
+        }
+        // No Content?! 
+        // Try building something
+        
+        $body = '';
+        
+        foreach ($item['enclosures'] as $k => $v) {
+            list($group, $type) = explode('/', $v['content-type']);
+            
+            switch ($group) {
+            
+            case 'image':
+                $body .= '<img src="'.$v['link'].'">';
+                break;
+                
+            default:
+                $body .= '<a href="'.$v['link'].'">';
+                $body .= $k;
+                $body .= '</a>';
+                break;
+            }
+        
+        }
+        //$item['enclosures'] = array();
+        
+        return $body;
+    }
+
     /**
     * Create a "Slug" from a title
     *
