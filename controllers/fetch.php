@@ -122,8 +122,6 @@ class Fetch
     **/
     public static function cacheName($url)
     {
-        $url = $url . '?test=1';
-        
         $current_feed = Feeds::option('_current_feed');
 
         // FIXME: Remove sometimes
