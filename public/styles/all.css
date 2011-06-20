@@ -1,6 +1,7 @@
 /* ########## Core Elements ############################### */
 html{ 
     background: #FFF; 
+    overflow-y: scroll;
 }
 body{
 	color: #555555;
@@ -16,6 +17,10 @@ sup, sub{
 }
 sup{ bottom: 1ex; }
 sub{ top: .5ex; }
+
+a {
+    text-decoration: none;
+}
 
 /* ########## Basic ####################################### */
 
@@ -74,10 +79,12 @@ article header em {
 }
 article header {
     margin: 0 0 15px 0;
+    padding-top: 5px;
+    border-top: 1px solid #eee;
 }
 article {
     margin: 15px 0 20px 0;
-    border-bottom: 1px dotted #aaa;
+    /*border-bottom: 1px dotted #aaa;*/
     min-height: 200px;
 }
 article .content {
@@ -101,12 +108,9 @@ article header img {
     float: left;
     padding-right: 5px;
 }
-
 article img {
-    /* max-width: 100%; */
+    max-width: 100%;
 }
-
-
 
 /* ########## Top Bar ##################################### */
 
@@ -128,6 +132,9 @@ article img {
 .pulldown img {
     margin-right: 5px;
     cursor: pointer;
+}
+.pulldown a {
+    text-decoration: none;
 }
 .pulldown input {
     border-radius: 2px 2px 2px 2px;
