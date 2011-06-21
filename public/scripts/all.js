@@ -82,6 +82,14 @@ $(document).ready(function() {
 			'changeFade'        : 0
         });
     }
+
+    /**
+    * Move the input box to our add feed icon
+    **/    
+    $('.pulldown #options').css(
+        'top', 
+        Number($('.pulldown #handle').offset().top) - 5 + 'px'
+    );
     
     /**
     * Show or Hide the "Options" panel
