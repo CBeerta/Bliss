@@ -171,6 +171,7 @@ $(document).ready(function() {
     });
     
     $('body').click(function(event) {
+        parent = $(event.target).parent();
         if ($(event.target).is('article header .flag')) {
             var id = $(event.target).attr('name');
             $.ajax({
@@ -183,6 +184,31 @@ $(document).ready(function() {
                     $(event.target).attr('src', data);
                 }
             });
+        } else if ($(event.target).is('article img')
+            && $(parent).is('article a')
+            && $(parent).attr('href').match(/.*\.(jpg|jpeg|png|gif|bmp).*/i)
+        ) {
+            /**
+            * Check if clicked link is a img that links to an image
+            * and run fancybox on it if it is
+            **/
+            $.fancybox({
+                'padding'		: 0,
+                'href'			: $(parent).attr('href'),
+                'transitionIn'	: 'elastic',
+                'transitionOut'	: 'elastic'
+            });        
+            return false;
+        } else if ($(event.target).is('article a')) {
+            // Force article links to open  in a new window
+            window.open($(event.target).attr('href'));
+            return false;
+        } else if ($(event.target).is('article img')
+            && $(parent).is('article a')
+        ) {
+            // Force article links to open in a new window
+            window.open($(parent).attr('href'));
+            return false;
         } else if ($(event.target).is('.updater')) {
             fillPage();
             $('.updater').fadeOut("slow");

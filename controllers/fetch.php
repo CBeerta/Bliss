@@ -126,9 +126,6 @@ class Fetch
     
         list($fname) = explode('?', basename($url));
 
-        // FIXME: Remove sometimes
-        //error_log("DEBUG: Cachefile: " . $url);
-
         if (!empty($current_feed)) {
             return urlencode("{$current_feed}/" . md5($url) . '-' . $fname);
             

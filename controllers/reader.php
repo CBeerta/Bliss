@@ -152,6 +152,14 @@ class Reader
         
         $file = "{$cache_dir}/{$feed}/enclosures/{$file}";
 
+        /**
+        * Set expire headers to enable caching
+        **/
+        $expires = 60 * 60 * 24 * 14;
+        header("Pragma: public");
+        header("Cache-Control: maxage=" . $expires);
+        header('Expires: ' . gmdate('D, d M Y H:i:s', time() + $expires) . ' GMT');
+        
         if (isset($_GET['thumb'])) {
             if (!file_exists($file) || !is_readable($file)) {
                 return false;
@@ -178,11 +186,16 @@ class Reader
         }
         
         $img = unserialize(file_get_contents($file));
-        
+
+        /** 
+        * Load headers from file
+         * FIXME: Keep this? or force our own caching headers?
+        **/
         foreach (
             array(
                 'content-type', 
                 'expires', 
+                'pragma',
                 'content-disposition',
                 'cache-control',
             ) as $header ) {
@@ -191,7 +204,6 @@ class Reader
                 header($header . ':' . $img['headers'][$header]);
             }
         }
-        
         echo $img['body'];
         exit;
     }
