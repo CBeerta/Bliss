@@ -56,6 +56,16 @@ class Helpers
     **/
     public static function enhanceContent($string, $item = null)
     {
+        /*
+        if (preg_match_all(
+            '#a.*href\s?=\s?"(.*?)".*img.*src\s?=\s?"(.*?)".*a#i', 
+            $string, 
+            $matches
+        )) {
+            error_log(print_r($matches,true));
+        }
+        */
+
         if (!empty($string)) {
             return $string;
         }

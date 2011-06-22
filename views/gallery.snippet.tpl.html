@@ -1,11 +1,12 @@
-{foreach $images as $img}
-{if $img@first}
+<div class="clearfix"></div>
 <div class="gallery-page" page="{$page}">
-{/if}
-<div class="gallery"><a href="{$base_uri}image?i={$img.id}" class="fancyme" rel="group-{$page}">
+{foreach $gallery as $gall}
+<a href="{$base_uri}#select-feed-{$feedinfo[$gall@key]->feed}"><h1>{$feedinfo[$gall@key]->title}</h1></a>
+{foreach $gallery[$gall@key] as $img}
+<a href="{$base_uri}image?i={$img.id}" class="fancyme" rel="group-{$page}">
 <img src="{$base_uri}image?thumb={$img.thumb}"{* width="{$img.width}" height="{$img.height}" *}>
-</a></div>
-{if $img@last}
-</div>{/if}
+</a>
 {/foreach}
-
+<div class="clearfix"></div>
+{/foreach}
+</div>

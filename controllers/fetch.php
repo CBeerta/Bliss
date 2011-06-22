@@ -166,7 +166,10 @@ class Fetch
                 continue;
             }
             $image = array(
-                'headers' => array('content-type' => 'image/png'),
+                'headers' => array(
+                    'content-type' => 'image/png',
+                    'failed-to-load' => true,
+                ),
                 'body' => file_get_contents(dirname(__DIR__) . '/public/file.png')
             );
             

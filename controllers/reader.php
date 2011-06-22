@@ -124,12 +124,26 @@ class Reader
         }
 
         $images = array_slice($images, 50 * $page, 50);
+
+        $feeds = Feeds::feedinfo();
+        $feedinfo = array();
+        
+        foreach ($feeds as $k => $v) {
+            $feedinfo[$v->feed] = $v;
+        }
+        
+        $gallery = array();
+        foreach ($images as $image) {
+            $gallery[$image['feed']][] = $image;
+        }
         
         $data = array(
             'page' => $page,
             'images' => $images,
+            'gallery' => $gallery,
+            'feedinfo' => $feedinfo,
         );
-        
+
         return Flight::render('gallery.snippet.tpl.html', $data);
     }
 
