@@ -129,7 +129,7 @@ $(document).ready(function() {
         }
 
         // Find current first article        
-        var ele = document.elementFromPoint(150, 100);
+        var ele = document.elementFromPoint(300, 20);
         var current_id = $(ele).closest('article.bliss-article');
 
         // finde article above and below
@@ -160,6 +160,7 @@ $(document).ready(function() {
             break;
         case 114: // 'r'
             fillPage();
+            $('.updater').fadeOut("slow");
             break;
         /*
         default:
@@ -188,6 +189,7 @@ $(document).ready(function() {
             $('.updater').fadeOut("slow");
         }
     });
+
     
     /**
     * Fetch hash changes, and reload articles if needed

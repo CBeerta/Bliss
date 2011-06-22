@@ -52,8 +52,8 @@ img {
 }
 #spinner {
     position: fixed;
-    float: right;
-    left: 20px;
+    float: left;
+    right: 5px;
     top: 5px;
 }
 
@@ -178,16 +178,17 @@ article img {
 }
 /* ########## Updater Notifications ####################### */
 .updater {
+    z-index: 999;
     opacity: 0.8;
     font-family: Amaranth;
     vertical-align: middle;
     line-height: 32px;
 	background-color: rgba(60, 60, 60, 1.0);
-    border-radius: 0px 10px 0px 0px;
+    border-radius: 0px 0px 0px 10px;
     padding: 2px;
     position: fixed;
-    bottom: 0px;
-    left: 0px;
+    top: 0px;
+    right: 0px;
 	min-width: 200px;
     color: #fff;
     cursor: pointer;
@@ -264,21 +265,27 @@ article img {
 }
 
 /* ########## Gallery ##################################### */
-.gallery img {
+.gallery {
 }
-div.gallery {
+.gallery img {
+    vertical-align: middle;
+    text-align: center; 
+    padding: 5px;
+}
+.gallery div#image{
     display: table-cell;
     vertical-align: middle;
     text-align: center; 
     min-width: 210px;
     min-height: 210px;
-    float: left;
 }
-.gallery a {
+.gallery a h1 {
+    margin-top: 20px;
+    font-size: 169%;
+    color: #111;
     text-decoration: none;
+    text-align: left;
 }    
-
-
 
 
 footer {
