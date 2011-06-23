@@ -303,6 +303,18 @@ article img {
     text-align: left;
 }    
 
+/* ########## Plugins ##################################### */
+.nzbmovie img {
+    border: 1px solid #eee;
+    margin-right: 10px;
+    float: left;
+    padding: 2px;
+    max-height: 300px;
+}
+.nzbmovie li {
+    list-style: none;
+}
+
 
 footer {
     color: #aaa;

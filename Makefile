@@ -1,4 +1,4 @@
-SOURCES = index.php controllers/*.php lib/*.php
+SOURCES = index.php controllers/*.php lib/*.php plugins/*.php
 
 all: csstidy phpcs
 
