@@ -271,9 +271,9 @@ class Reader
         $flagged = Feeds::flag($name);
         
         if (!in_array($name, $flagged)) {
-            $ret = Flight::get('base_uri') . 'public/tag_stroke_24x24.png';
+            $ret = Flight::get('base_uri') . 'public/tag_blue_add.png';
         } else {
-            $ret = Flight::get('base_uri') . 'public/tag_fill_24x24.png';
+            $ret = Flight::get('base_uri') . 'public/tag_blue_delete.png';
         }
 
         echo json_encode($ret);

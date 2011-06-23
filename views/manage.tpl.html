@@ -7,16 +7,16 @@
 <th colspan="4" id="title">Currently active Subscriptions</th>
 {foreach $feedinfo as $feed}
 <tr id="{$feed@index}">
-<td width="32"> 
+<th width="16" > 
     <a href="{$base_uri}#select-feed-{$feed->feed}">
-    <img src="{$base_uri}public/satellite.png" width="32" height="32">
+    <img src="{$base_uri}public/feed_go.png" width="16" height="16" title="Read Feed Items">
     </a>
-</td>
-<td width="32">
+</th>
+<th width="16">
 {if $feed->source == 'json'}
-    <img src="{$base_uri}public/delete-item.png" height="32" width="32" onclick="delete_feed('{$feed->feed_uri}', {$feed@index});">
+    <img src="{$base_uri}public/delete.png" height="16" width="16" onclick="delete_feed('{$feed->feed_uri}', {$feed@index});" title="Remove Feed">
 {/if}
-</td>
+</th>
 <td>
 {if $feed->last_update}
     <a href="{$feed->link}">{$feed->title}</a>

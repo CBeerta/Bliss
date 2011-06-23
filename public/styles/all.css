@@ -193,17 +193,17 @@ article img {
 .updater {
     z-index: 999;
     opacity: 0.8;
-    font-family: Amaranth;
+    font: 14px Amaranth;
     vertical-align: middle;
     line-height: 32px;
-	background-color: rgba(60, 60, 60, 1.0);
+	background-color: rgba(213, 211, 187, 1.0);
     border-radius: 0px 0px 0px 10px;
     padding: 2px;
     position: fixed;
     top: 0px;
     right: 0px;
 	min-width: 200px;
-    color: #fff;
+    color: #222;
     cursor: pointer;
     display: none;
 }
@@ -262,10 +262,12 @@ article img {
 	border-right: 1px solid #ccc;
 }
 .manage td {
-    padding-right: 10px;
+    padding-left: 10px;
     vertical-align: middle;
 }
 .manage img {
+    vertical-align: middle;
+    padding: 4px;
     cursor: pointer;
 }
 .manage a {
