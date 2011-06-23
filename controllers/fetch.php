@@ -95,7 +95,6 @@ class Fetch
                 exit;
             case 'update':
                 self::update();
-                self::cacheTriedToLoad();
                 self::expire();
                 if (Feeds::option('enable_gallery') != false) {
                     self::thumbs();
@@ -128,64 +127,11 @@ class Fetch
 
         if (!empty($current_feed)) {
             return urlencode("{$current_feed}/" . md5($url) . '-' . $fname);
-            
-            //FIXME the above may produce urls that are to long
-            //return urlencode("{$current_feed}/" . md5($url));
         }
 
         return md5($url);
     }
 
-    /**
-    * Replace the '.tried-to-load' spi files with a 404 image
-    *
-    * FIXME Aslong as there is no good way in simplepie to deal with broken
-    *       links for the image handler, we need to do it "the hard way"
-    *
-    * @return encoded
-    **/
-    public static function cacheTriedToLoad()
-    {
-        $data_dir = rtrim(Feeds::option('data_dir'), '/');
-        
-        $count = 0;
-        
-        foreach (glob($data_dir . '/*/enclosures/*.spi.tried-to-load') as $failed) {
-            
-            if (!preg_match('|^(.*?)\.spi.tried-to-load$|i', $failed, $matches)) {
-                continue;
-            }
-
-            error_log("Found: " . $failed);
-            
-            $dest_file = $matches[1] . '.spi';
-            
-            if (is_file($dest_file)) {
-                // Eeh??? this must be garbage leftover
-                unlink($failed);
-                continue;
-            }
-            $image = array(
-                'headers' => array(
-                    'content-type' => 'image/png',
-                    'failed-to-load' => true,
-                ),
-                'body' => file_get_contents(dirname(__DIR__) . '/public/file.png')
-            );
-            
-            if (file_put_contents(
-                $dest_file, 
-                serialize($image), 
-                LOCK_EX
-            ) !== false
-            ) {
-                $count++;
-                unlink($failed);
-            }            
-        }
-        error_log("Replaced {$count} tried-to-load files with a 404 image.");    
-    }
-    
     /**
     * Handle all enclosures from a Feed
     *
@@ -248,73 +194,6 @@ class Fetch
     }
         
     /**
-    * Cache Enclosures locally
-    *
-    * @param array $enclosures A list of enclosures
-    *
-    * @return array
-    **/
-    public static function cacheEnclosures($enclosures)
-    {
-
-        foreach ($enclosures as $k => $enc) {
-        
-            if ($enc['medium'] != 'image') {
-                // currently only care about images
-                continue;
-            }
-
-            // Generate Cache Class            
-            $image_url = Fetch::cacheName($enc['link']);
-            $cache = BlissPie_Cache::create(
-                Feeds::option('cache_dir'), 
-                $image_url, 
-                'spi'
-            );
-            
-            // add url to enclosure
-            $enclosures[$k]['image_url'] = $image_url;
-            
-            // check if there's already soemthing in cache
-            if ($cache->load() !== false) {
-                continue;
-            }
-            
-            // Use SimplePie to load file
-            $file = new SimplePie_File(
-                $enc['link'], 
-                $timeout = 10, 
-                $redirects = 5, 
-                $headers = null, 
-                $useragent = $rss->useragent, 
-                $force_fsockopen = false
-            );
-
-            // Although we know better, this is simply copy&pasted from simplepie
-            // blisspie_cache will take care of the load failures
-            $headers = $file->headers;
-            if ($file->success 
-                && ($file->method & SIMPLEPIE_FILE_SOURCE_REMOTE === 0 
-                || ($file->status_code === 200 
-                || $file->status_code > 206 
-                && $file->status_code < 300))
-            ) {
-                // Store result in cache
-                $cache->save(
-                    array(
-                        'headers' => $file->headers, 
-                        'body' => $file->body,
-                    )
-                );
-            }
-            
-        } // foreach
-        
-        return $enclosures;
-    }
-        
-    
-    /**
     * Update Feeds
     *
     * @return void
@@ -333,6 +212,11 @@ class Fetch
         $rss->set_image_handler('image', 'i');
         $rss->set_cache_name_function('Fetch::cacheName');
         $rss->set_cache_class('BlissPie_Cache');
+        $rss->set_autodiscovery_level(
+            SIMPLEPIE_LOCATOR_AUTODISCOVERY 
+            | SIMPLEPIE_LOCATOR_LOCAL_BODY
+            | SIMPLEPIE_LOCATOR_LOCAL_EXTENSION
+        );
 
         try {
             $expire_before = new DateTime(Feeds::option('expire_before'));
@@ -397,20 +281,19 @@ class Fetch
     
                 if ($article_time <= $expire_before) {
                     // Skip items that are to old already
-                    // FIXME This is a bit late. At this point all images
-                    // have been downloaded , even if theres no need for them
-                    continue;
+                    break;
                 }
-            
+
+                $guid = Helpers::buildSlug($item->get_id());
                 $outfile = "{$dir}/"
                     . $item->get_date('U')
-                    . '-' 
-                    . Helpers::buildSlug($item->get_id())
+                    . '-'
+                    . $guid
                     . '.item';
                     
                 // Handle Enclosures
                 $enclosures = self::handleEnclosures($item->get_enclosures());
-                $enclosures = self::cacheEnclosures($enclosures);
+                $enclosures = BlissPie_Cache::cacheEnclosures($enclosures);
                 
                 $content = (object) array(
                     'title' => $item->get_title(),
@@ -432,6 +315,30 @@ class Fetch
                 }
                 
                 file_put_contents($outfile, json_encode($content));
+                
+                /**
+                * Check for Duplicates
+                **/
+                $glob = glob("{$dir}/*-{$guid}.item");
+                if (!file_exists("{$dir}/feed.info")) {
+                    /**
+                    * This is a freshly added feed that we can skip for dupe
+                    * check alltogether
+                    **/
+                } else if (is_array($glob) && count($glob) > 2) {
+                    /**
+                    * This Feed has all items with the same name, which means
+                    * That it does not set a guid properly
+                    * And we can't check for duplicate posts
+                    **/
+                } else if (is_array($glob) && count($glob) > 1) {
+                    /**
+                    * Remove The Older File.
+                    **/
+                    sort($glob);
+                    unlink($glob[0]);
+                }
+
             } // items foreach 
 
             // Save feed info
@@ -496,8 +403,13 @@ class Fetch
         $count = 0;
         
         foreach (glob($cache_dir . '/*/enclosures/*.spi') as $img) {
+
+            $dst_fname = $img . ".thumb.png";
             
-        
+            if (file_exists($dst_fname)) {
+                continue;
+            }
+
             $content = unserialize(file_get_contents($img));
             
             if (!$content || empty($content)) {
@@ -513,7 +425,7 @@ class Fetch
             $src = imagecreatefromstring($content['body']);
             if (!$src) {
                 error_log(
-                    "Can't read {$img}. " 
+                    "Can't read {$img}.\n"
                     . print_r($content['headers'], true)
                 );
             }
@@ -532,7 +444,6 @@ class Fetch
                 $w = imagesx($dst);
                 $h = imagesy($dst);
 
-                $dst_fname = $img . ".{$w}x{$h}.thumb.png";
                 imagepng($dst, $dst_fname, 6);
                 $count++;
             }

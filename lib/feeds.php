@@ -265,7 +265,6 @@ class Feeds
         return $files;
     }
 
-
     /**
     * Load all titles for all files
     *

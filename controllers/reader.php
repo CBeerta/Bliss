@@ -103,7 +103,7 @@ class Reader
 
         foreach ($glob as $img) {
             if (!preg_match(
-                "|{$data_dir}/(.*?)/enclosures/((.*?).spi)\.(\d+)x(\d+).thumb.png|i",
+                "|{$data_dir}/(.*?)/enclosures/((.*?).spi).thumb.png|i",
                 $img,
                 $matches
             )) {

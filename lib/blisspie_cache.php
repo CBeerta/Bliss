@@ -55,6 +55,86 @@ class BlissPie_Cache extends SimplePie_Cache
     {
         return new Bliss_File_Cache($location, $filename, $extension);
     }
+
+
+    /**
+    * Cache Enclosures locally
+    *
+    * @param array $enclosures A list of enclosures
+    *
+    * @return array
+    **/
+    public static function cacheEnclosures($enclosures)
+    {
+
+        foreach ($enclosures as $k => $enc) {
+        
+            if ($enc['medium'] != 'image') {
+                // currently only care about images
+                continue;
+            }
+
+            // add url to enclosure
+            $enclosures[$k]['image_url'] = self::cacheUri($enc['link']);
+
+        } // foreach
+        
+        return $enclosures;
+    }
+    
+    /**
+    * Cache a URL Locally
+    *
+    * @param string $uri Url to Cache
+    *
+    * @return string $image_url Url to the cached image
+    **/
+    public static function cacheUri($uri)
+    {
+        // Generate Cache Class            
+        $image_url = Fetch::cacheName($uri);
+        $cache = BlissPie_Cache::create(
+            Feeds::option('cache_dir'), 
+            $image_url, 
+            'spi'
+        );
+        
+        // check if there's already soemthing in cache
+        if ($cache->load() !== false) {
+            return $image_url;
+        }
+        
+        // Use SimplePie to load file
+        $file = new SimplePie_File(
+            $uri, 
+            $timeout = 10, 
+            $redirects = 5, 
+            $headers = null, 
+            $useragent = $rss->useragent, 
+            $force_fsockopen = false
+        );
+
+        // Although we know better, this is simply copy&pasted from simplepie
+        // blisspie_cache will take care of the load failures
+        $headers = $file->headers;
+        if ($file->success 
+            && ($file->method & SIMPLEPIE_FILE_SOURCE_REMOTE === 0 
+            || ($file->status_code === 200 
+            || $file->status_code > 206 
+            && $file->status_code < 300))
+        ) {
+            // Store result in cache
+            $cache->save(
+                array(
+                    'headers' => $file->headers, 
+                    'body' => $file->body,
+                )
+            );
+        }
+        
+        return $image_url;
+    }
+    
 }
 
 /**
@@ -142,7 +222,7 @@ class Bliss_File_Cache implements SimplePie_Cache_Base
                 * We downloaded an image, so we can remove the
                 * tried-to-load hint
                 **/
-                @unlink($this->name . '.tried-to-load');
+                unlink($this->name . '.tried-to-load');
             }
 
             $data = serialize($data);
@@ -160,6 +240,16 @@ class Bliss_File_Cache implements SimplePie_Cache_Base
     {
         if (file_exists($this->name) && is_readable($this->name)) {
             return unserialize(file_get_contents($this->name));
+        } else if ($this->extension == 'spi'
+            && file_exists($this->name . '.tried-to-load') 
+            && is_readable($this->name . '.tried-to-load')
+        ) {
+            /**
+            * Tried loading a cached file which failed
+            * And there is already a .tried-to-load
+            * So just return something, to stop simplepie from reloading
+            **/
+            return true;
         }
         
         if ($this->extension == 'spi') {
@@ -169,10 +259,7 @@ class Bliss_File_Cache implements SimplePie_Cache_Base
             * Or, worse, its a file that cant be loaded from the remote server
             *
             * first case, we will simply delete the touched file on save
-            * second case, the file will remain, and we 
-            * can replace that file with a 404 image
-            *
-            * FIXME: There has to be an easier way! somehow
+            * second case, the file will remain, and we will pretend it worked
             **/
             touch($this->name . '.tried-to-load');
         }

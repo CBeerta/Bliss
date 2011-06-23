@@ -4,7 +4,7 @@
 <a href="{$base_uri}#select-feed-{$feedinfo[$gall@key]->feed}"><h1>{$feedinfo[$gall@key]->title}</h1></a>
 {foreach $gallery[$gall@key] as $img}
 <a href="{$base_uri}image?i={$img.id}" class="fancyme" rel="group-{$page}">
-<img src="{$base_uri}image?thumb={$img.thumb}"{* width="{$img.width}" height="{$img.height}" *}>
+<img src="{$base_uri}image?thumb={$img.thumb}">
 </a>
 {/foreach}
 <div class="clearfix"></div>

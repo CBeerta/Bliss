@@ -1,6 +1,6 @@
 /* ########## Core Elements ############################### */
 html{ 
-    background: #FFF; 
+    background: #fff; 
     overflow-y: scroll;
 }
 body{
@@ -85,8 +85,6 @@ article header {
 }
 article {
     margin: 0 0 20px 0;
-    /*border-bottom: 1px dotted #aaa;*/
-    /*min-height: 200px;*/
 }
 article .content {
     margin-left: 15px;
@@ -120,22 +118,20 @@ article img {
     top: 0px;
     left: 0px;
     z-index: 999;
-    min-width: 200px;
     opacity: 0.9;
-
+    height: 100%;
 }
 .pulldown #options {
     position: fixed;
     top: 168px;
     left: 32px;
     border-radius: 0px 4px 4px 0px;
-	background-color: rgba(60, 60, 60, 1.0);
+	background-color: rgba(213, 211, 187, 1.0);
     padding: 5px 10px 5px 10px;
     display: none;
     color: #333;
 }
 .pulldown img {
-    margin-right: 5px;
     cursor: pointer;
 }
 .pulldown a {
@@ -150,17 +146,34 @@ article img {
     margin: 5px;
 }
 .pulldown #lip {
+    text-align: center;
     /*white-space: nowrap;*/
     position: absolute;
     left: 0px;
     top: 0px;
     width: 32px;
-    min-height: 200px;
-    border-radius: 0px 0px 4px 0px;
+    height: 100%;
+    /* border-radius: 0px 0px 4px 0px; */
     margin: auto;
-	background-color: rgba(60, 60, 60, 1.0);
+	background-color: rgba(213, 211, 187, 1.0);
     padding: 4px 5px 2px 5px;
     color: #333;
+}
+.pulldown #logo {
+    font: 21px Maven Pro;
+    margin: 0 auto;
+    text-align: center;
+    vertical-align: bottom;
+    position: absolute;
+    left: 0px;
+    bottom: 40px;
+    text-shadow: 0px 0px 1px #333;
+    writing-mode:tb-rl;
+	-webkit-transform:rotate(90deg);
+	-moz-transform:rotate(90deg);
+	-o-transform: rotate(90deg);
+	white-space:nowrap;
+	display:block;
 }
 
 /* ########## Feedback #################################### */
@@ -202,8 +215,9 @@ article img {
 .archive ul {
 }
 .archive li#title {
-	font: 16px/26px Lato, serif;
+	font: 26px Lato, serif;
     color: #444;
+    margin-left: 0;
 }
 .archive a {
     color: #333;
@@ -217,7 +231,7 @@ article img {
     color: #222;
 	vertical-align: middle;
 	line-height: 16px;
-	margin: 5px;
+	margin: 0 20px 5px 20px;
 	padding-bottom: 5px;
 }
 .archive img {
@@ -232,7 +246,7 @@ article img {
 .manage th {
 	font: 16px/26px Lato, serif;
     border: 1px solid #ccc;
-    background-color: #fff;
+	background-color: #f9f9f9;
     color: #444;
 }
 .manage #date {
@@ -246,7 +260,6 @@ article img {
 	border-bottom: 1px solid #ccc;
 	border-left: 1px solid #ccc;
 	border-right: 1px solid #ccc;
-	background-color: #f9f9f9;
 }
 .manage td {
     padding-right: 10px;
