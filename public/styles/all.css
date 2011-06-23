@@ -237,7 +237,7 @@ article img {
 .archive img {
     float: left;
     margin: 0 auto;
-    margin-left: -24px;
+    margin-left: -20px;
 }
 /* ########## Manage ###################################### */
 .manage table {
@@ -248,6 +248,7 @@ article img {
     border: 1px solid #ccc;
 	background-color: #f9f9f9;
     color: #444;
+    width: 28px;
 }
 .manage #date {
     text-align: right;

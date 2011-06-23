@@ -31,7 +31,8 @@
 * @link     http://claus.beerta.de/
 **/
 
-define('BLISS_VERSION', '2.0.7');
+define('BLISS_VERSION', '2.1.0');
+define('BLISS_BASE_DIR', rtrim(__DIR__, '/'));
 
 require_once __DIR__ . '/vendor/Smarty/libs/Smarty.class.php';
 require_once __DIR__ . '/vendor/flight/flight/Flight.php';
@@ -50,6 +51,15 @@ function autoloader($class)
     foreach ($directories as $dir) {
         if (file_exists(__DIR__ . $dir . strtolower($class) . '.php')) {
             include_once __DIR__ . $dir . strtolower($class) . '.php';
+            return;
+        }
+    }
+
+    if (strstr($class, "Plugin") !== false) {
+        $name = str_replace('_', '.', strtolower($class));
+        if (file_exists(__DIR__ . '/plugins/' . $name . '.php')) {
+            include_once __DIR__ . '/plugins/' . $name . '.php';
+            return;
         }
     }
 }
@@ -74,12 +84,6 @@ Flight::register(
         $smarty->compile_dir = Feeds::option('cache_dir');
         $smarty->template_dir = __DIR__ . '/views/';
         $smarty->debugging = false;
-        
-        $smarty->registerPlugin(
-            "modifier", 
-            "enhance_content", 
-            "Helpers::enhanceContent"
-        );
     }
 );
 Flight::map(

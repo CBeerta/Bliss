@@ -7,12 +7,12 @@
 <th colspan="4" id="title">Currently active Subscriptions</th>
 {foreach $feedinfo as $feed}
 <tr id="{$feed@index}">
-<th width="16" > 
+<th> 
     <a href="{$base_uri}#select-feed-{$feed->feed}">
     <img src="{$base_uri}public/feed_go.png" width="16" height="16" title="Read Feed Items">
     </a>
 </th>
-<th width="16">
+<th>
 {if $feed->source == 'json'}
     <img src="{$base_uri}public/delete.png" height="16" width="16" onclick="delete_feed('{$feed->feed_uri}', {$feed@index});" title="Remove Feed">
 {/if}

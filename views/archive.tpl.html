@@ -5,7 +5,10 @@
 <ul>
 <li id="title">Archives</li>
 {foreach $archives as $item}
-<li>
+<li>    
+{if $item.flagged}
+    <img src="{$base_uri}public/tag_blue_16.png" width="16" height="16">
+{/if}
     <a href="{$base_uri}#select-feed-{$item.feed}">{$item.title}</a>:  
     <a href="{$base_uri}#select-article-{$item.fname}">
 {$titles[$item.dir][$item.fname]|default: $item.guid}

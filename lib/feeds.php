@@ -57,6 +57,7 @@ class Feeds
         'thumb_size' => 200,
         'gallery_minimum_image_size' => 800,
         'enable_gallery' => false,
+        'disable_plugins' => array(),
     );
     
     // Cache filelist for multiple "next" calls
@@ -244,6 +245,14 @@ class Feeds
                 }
                 $feed_infos[$dir] = $info;
             }
+            
+            if (!is_null(self::$flagged) && in_array($relative, self::$flagged)) {
+                $flagged = true;
+            } else if (!is_null(self::$flagged)) {
+                $flagged = false;
+            } else {
+                $flagged = null;
+            }
                 
             $files[$timestamp] = array_merge(
                 array(
@@ -254,6 +263,7 @@ class Feeds
                     'fname' => $fname,
                     'guid' => $guid,
                     'relative' => $relative,
+                    'flagged' => $flagged,
                 ), 
                 (array) $feed_infos[$dir]
             );
@@ -261,7 +271,7 @@ class Feeds
         krsort($files);
         $errors = array_unique($errors);        
         
-        Helpers::d('Filelist took : ' . Helpers::bench());
+        error_log('Filelist took : ' . Helpers::bench());
         return $files;
     }
 
@@ -348,6 +358,31 @@ class Feeds
         
         return $item;
     }
+
+    /**
+    * Find Available Plugins
+    *
+    * @return array
+    **/
+    public static function findPlugins()
+    {
+        $glob = glob(BLISS_BASE_DIR . '/plugins/*.plugin.php');
+        
+        $plugins = array();
+        
+        foreach ($glob as $file) {
+            if (preg_match('#.*/((.*?).plugin).php$#i', $file, $matches)) {
+                $class = ucwords(str_replace('.', ' ', $matches[1]));
+                $class = str_replace(' ', '_', $class);
+                
+                if (class_exists($class, true)) {
+                    $plugins[] = $class;
+                }
+            }
+        }
+        
+        return $plugins;
+    }
     
     /**
     * Flag a item
@@ -360,8 +395,8 @@ class Feeds
     {
         $flag_file = self::$config['data_dir'] . '/flagged.json';
         
-        if (is_file($flag_file) 
-            && self::$flagged === null
+        if (self::$flagged === null
+            && is_file($flag_file) 
             && ($ret = file_get_contents($flag_file)) !== false
         ) {
             self::$flagged = (array) json_decode($ret);

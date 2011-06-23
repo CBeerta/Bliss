@@ -16,7 +16,7 @@
     <h1><a href="{$entry->link}">{$entry->title}</a></h1>
     </header>
     <div class="content">
-        {$entry->content|enhance_content:$entry}
+        {$entry->content}
     </div>
     <div class="enclosures">
 {foreach $entry->enclosures as $enclosure}

@@ -47,54 +47,6 @@ if ( !defined('BLISS_VERSION') ) {
 class Helpers
 {
     /**
-    * "Enhance" content for Display
-    *
-    * @param string $string The Content from Smarty
-    * @param mixed  $item   The SimplePie Item
-    *
-    * @return string a slug
-    **/
-    public static function enhanceContent($string, $item = null)
-    {
-        /*
-        if (preg_match_all(
-            '#a.*href\s?=\s?"(.*?)".*img.*src\s?=\s?"(.*?)".*a#i', 
-            $string, 
-            $matches
-        )) {
-            error_log(print_r($matches,true));
-        }
-        */
-
-        if (!empty($string)) {
-            return $string;
-        }
-
-        // No Content?! 
-        // Try building something
-        $body = '<h2>Article has no Content!</h2>';
-        
-        foreach ($item->enclosures as $k => $v) {
-
-            switch ($v->medium) {
-            
-            case 'image':
-                $body .= '<img src="'.$v->link.'">';
-                break;
-                
-            default:
-                $body .= '<a href="'.$v->link.'">';
-                $body .= $k;
-                $body .= '</a>';
-                break;
-            }
-        
-        }
-        
-        return $body;
-    }
-
-    /**
     * Create a "Slug" from a title
     *
     * @param string $title   The title to create a slug from
@@ -193,26 +145,6 @@ class Helpers
             return 0.0; 
         }    
         return microtime(true) - $microtime_start; 
-    }
-
-    /**
-    * Debugging shortcut function
-    *
-    * @param string $message Message to log
-    * 
-    * @return void
-    **/
-    function d($message)
-    {
-        if (!is_string($message)) {
-            $message = print_r($message, true);
-        }
-        
-        if ( PHP_SAPI == 'cli' ) {
-            return;
-        } else {
-            error_log($message);
-        }
     }
 
 }

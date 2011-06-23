@@ -69,6 +69,7 @@ class Reader
     public static function archive()
     {
         $data = array(
+            'flagged' => Feeds::flag(),
             'archives' => Feeds::filelist(mktime()),
             'titles' => Feeds::titles(),
         );

@@ -224,6 +224,8 @@ class Fetch
             die($e->getMessage()."\n");
         }
         
+        $plugins = Feeds::findPlugins();
+        
         foreach (Feeds::feedlist()->feeds as $feed_uri) {
             error_log("Fetching: {$feed_uri}");
             
@@ -312,6 +314,17 @@ class Fetch
                 if (!isset($newest)) {
                     $newest = $content;
                     $feed_info->newest_article = $content->date;
+                }
+
+                /**
+                * Apply Content Plugins
+                **/                
+                foreach ($plugins as $plugin) {
+                    $p = new $plugin();
+                    if ($p->match($feed_uri)) {
+                        $content = $p->apply($content);
+                    }
+                    unset($p);
                 }
                 
                 file_put_contents($outfile, json_encode($content));
