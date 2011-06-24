@@ -102,32 +102,28 @@ class Content_Nzbmovie_Plugin implements Bliss_Content_Plugin
 
         if (file_exists($cache_file . '.not-found')) {
             return $item;
-        } else if (file_exists($cache_file)
-            && ($ret = file_get_contents($cache_file)) !== false
-        ) {
-            // We expect our search to be awesome, so just pick the first match.
-            $json = array_pop(json_decode($ret));
-
-            Flight::view()->assign(array('json' => $json, 'item' => $item));
-            $item->content = Flight::view()->fetch('plugins/nzbmovie.tpl.html');
-            $item->attachements = null;
-
-            $year = date('Y', strtotime($json->released));
-            $item->title = "{$json->name} - {$year}";
-            
-            return $item;
+        } else if (($ret = file_get_contents($cache_file)) !== false) {
+            // Successfully loaded. Do nothing
+        } else {
+            $ret = $this->scrap($item->title);
+            if (!$ret) {
+                // Scrap didnt fid a thing, so remember that
+                touch($cache_file . '.not-found');
+                return $item;
+            } 
+            //Store TMDb result
+            file_put_contents($cache_file, $ret);
         }
-        
-        $ret = $this->scrap($item->title);
-        
-        if (!$ret) {
-            // Scrap didnt fid a thing, so remember that
-            touch($cache_file . '.not-found');
-            return $item;
-        }
-        
-        //Store TMDb result
-        file_put_contents($cache_file, $ret);
+
+        // We expect our search to be awesome, so just pick the first match.
+        $json = array_pop(json_decode($ret));
+
+        Flight::view()->assign(array('json' => $json, 'item' => $item));
+        $item->content = Flight::view()->fetch('plugins/nzbmovie.tpl.html');
+        $item->attachements = null;
+
+        $year = date('Y', strtotime($json->released));
+        $item->title = "{$json->name} - {$year}";
         
         return $item;
     }
@@ -155,7 +151,7 @@ class Content_Nzbmovie_Plugin implements Bliss_Content_Plugin
         $title = strtolower($title);
         
         // Strip newsgroups names
-        $title = preg_replace('|#(\w+)\.(\w+)|', ' ', $title);
+        $title = preg_replace('|#(\w+)\.(\w+)(\.\w+)?|', ' ', $title);
 
         // Strip usual delimiter characters
         $title = preg_replace('#(_|-|,|\.|:|\)|\()#', ' ', $title);
@@ -171,7 +167,7 @@ class Content_Nzbmovie_Plugin implements Bliss_Content_Plugin
             '(extended|sample|efnet|\w+hd|hd[\d\w]+|nzbsrus)',
             '\s+(nfo|mkv|avchd|jpg|com|nzb)',
             '(\[[0-9]{5,}\])',
-            '(unrated|repack|remastered)',
+            '(unrated|repack|remastered|foreign)',
             '(dts|ac3|hdtv|hdrip|\w+sub(s)?|web\sdl)',
             '([\d(\.\d?)?])\s?g(b)?',
         );
@@ -204,7 +200,7 @@ class Content_Nzbmovie_Plugin implements Bliss_Content_Plugin
         $words = explode(' ', $title);
         $words = array_unique($words);
         
-        if (count($words) > 10) {
+        if (count($words) > 6) {
             // after all this filtering, we still got this much crap.
             // no movie has a title this long, so give up
             return false;
@@ -248,6 +244,9 @@ class Content_Nzbmovie_Plugin implements Bliss_Content_Plugin
             if (($ret = file_get_contents("{$req}{$search}")) === false) {
                 return false;
             }
+
+            // Slow Down
+            sleep(5);
 
             $json = json_decode($ret);
             if (is_null($json) || !is_array($json) || !is_object($json[0])) {

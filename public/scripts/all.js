@@ -95,7 +95,7 @@ $(document).ready(function() {
     * Show or Hide the "Options" panel
     **/
     $('.pulldown #handle').click(function() {
-        $('.pulldown #options').toggle();
+        $('.pulldown #options').fadeToggle();
     });
 
     /**

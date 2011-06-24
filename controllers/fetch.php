@@ -139,6 +139,9 @@ class Fetch
     **/
     public static function update()
     {
+        /**
+        * Setup SimplePie
+        **/
         $rss = new SimplePie();
         $rss->set_useragent(
             'Mozilla/4.0 (Bliss: ' 
@@ -151,11 +154,20 @@ class Fetch
         $rss->set_image_handler('image', 'i');
         $rss->set_cache_name_function('Fetch::cacheName');
         $rss->set_cache_class('BlissPie_Cache');
+        $rss->set_timeout(30);
         $rss->set_autodiscovery_level(
             SIMPLEPIE_LOCATOR_AUTODISCOVERY 
             | SIMPLEPIE_LOCATOR_LOCAL_BODY
             | SIMPLEPIE_LOCATOR_LOCAL_EXTENSION
         );
+
+        $strip_htmltags = $feed->strip_htmltags;
+        array_splice($strip_htmltags, array_search('object', $strip_htmltags), 1);
+        array_splice($strip_htmltags, array_search('param', $strip_htmltags), 1);
+        array_splice($strip_htmltags, array_search('embed', $strip_htmltags), 1);
+         
+        $rss->strip_htmltags($strip_htmltags);
+ 
 
         try {
             $expire_before = new DateTime(Feeds::option('expire_before'));
@@ -314,8 +326,10 @@ class Fetch
     
         $flagged = Feeds::flag();
         $count = 0;
+        $total = 0;
         
         foreach (Feeds::filelist(mktime(), $errors) as $item) {
+            $total ++;
 
             try {
                 $article_time = new DateTime("@" . $item['timestamp']);
@@ -331,6 +345,13 @@ class Fetch
                 unlink($item['file']);
                 $count++;
             }
+        }
+        
+        if ($total > 1000) {
+            error_log(
+                "You have {$total} Articles stored." . 
+                "Consider Tuning the Expire of Articles."
+            );
         }
         
         error_log("Expired {$count} Articles.");    

@@ -146,14 +146,12 @@ article img {
     padding: 4px 5px 2px 5px;
     color: #333;
 }
-.pulldown #logo {
+.pulldown p#logo {
     font: 21px Maven Pro;
     margin: 0 auto;
-    text-align: center;
-    vertical-align: bottom;
     position: absolute;
     left: 0px;
-    bottom: 40px;
+    bottom: 58px;
     text-shadow: 0px 0px 1px #333;
     writing-mode:tb-rl;
 	-webkit-transform:rotate(90deg);
@@ -161,6 +159,13 @@ article img {
 	-o-transform: rotate(90deg);
 	white-space:nowrap;
 	display:block;
+}
+.pulldown img#logo {
+    text-align: center;
+    margin: 0 auto;
+    position: absolute;
+    padding: 4px 5px 2px 5px;
+    bottom: 5px;
 }
 
 /* ########## Feedback #################################### */
