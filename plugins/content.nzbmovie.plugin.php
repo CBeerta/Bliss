@@ -57,6 +57,16 @@ class Content_Nzbmovie_Plugin implements Bliss_Content_Plugin
     }
 
     /**
+    * Priority of when in the stack to execute.
+    *
+    * @return int Priority. Lower numbers go first
+    **/
+    public function priority()
+    {
+        return 10;
+    }
+
+    /**
     * Match uri, and check if we want to apply this filter here
     *
     * @param string $uri URI from feed to check
@@ -100,6 +110,7 @@ class Content_Nzbmovie_Plugin implements Bliss_Content_Plugin
 
             Flight::view()->assign(array('json' => $json, 'item' => $item));
             $item->content = Flight::view()->fetch('plugins/nzbmovie.tpl.html');
+            $item->attachements = null;
 
             $year = date('Y', strtotime($json->released));
             $item->title = "{$json->name} - {$year}";

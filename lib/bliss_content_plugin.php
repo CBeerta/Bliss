@@ -54,6 +54,13 @@ interface Bliss_Content_Plugin
     public function __construct();
 
     /**
+    * Priority of when in the stack to execute.
+    *
+    * @return int Priority. Lower numbers go first
+    **/
+    public function priority();
+
+    /**
     * Match uri, and check if we want to apply this filter here
     *
     * @param string $uri URI from feed to check

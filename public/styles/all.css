@@ -89,19 +89,6 @@ article {
 article .content {
     margin-left: 15px;
 }
-article .enclosures h1 {
-    font-weight: bold;
-    font-size: 140%;
-    padding: 10px 0 5px 0;
-    margin: 0px;
-}
-article .enclosures p {
-    margin-left: 15px;
-    background-color: #f4f4f4;
-    border: 1px solid #999;
-    font-size: 121%;
-    padding: 10px;
-}
 article header img {
     cursor: pointer;
     float: left;
@@ -304,15 +291,28 @@ article img {
 }    
 
 /* ########## Plugins ##################################### */
-.nzbmovie img {
+article .nzbmovie img {
     border: 1px solid #eee;
     margin-right: 10px;
     float: left;
     padding: 2px;
     max-height: 300px;
 }
-.nzbmovie li {
+article .nzbmovie li {
     list-style: none;
+}
+article .enclosures h1 {
+    font-weight: bold;
+    font-size: 140%;
+    padding: 10px 0 5px 0;
+    margin: 0px;
+}
+article .enclosures p {
+    margin-left: 15px;
+    /*background-color: #f4f4f4;
+    border: 1px solid #999;*/
+    font-size: 121%;
+    padding: 10px;
 }
 
 

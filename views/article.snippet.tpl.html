@@ -17,24 +17,8 @@
     </header>
     <div class="content">
         {$entry->content}
-    </div>
-    <div class="enclosures">
-{foreach $entry->enclosures as $enclosure}
-{if $enclosure@first}
-        <h1>Attachements:</h1>
-        <p>
-{/if}
-{if $enclosure->medium == 'image'}
-            <a class="fancyme" href="/image?i={$enclosure->image_url}"><img src="/image?i={$enclosure->image_url}" width="64" name="{$enclosure->title}" title="{$enclosure->title}"></a>
-
-{else}
-            <a href="{$enclosure->link}"><img src="public/file.png" width="64" height="64" name="{$enclosure->title}" title="{$enclosure->title}"></a>
-{/if}
-{if $enclosure@last}
-        </p>
-{/if}
-{/foreach}
-    </div>
     <div class="clearfix"></div>
+        {$entry->attachements}
+    </div>
 </article>
 {/if}

@@ -57,7 +57,6 @@ class Feeds
         'thumb_size' => 200,
         'gallery_minimum_image_size' => 800,
         'enable_gallery' => false,
-        'disable_plugins' => array(),
     );
     
     // Cache filelist for multiple "next" calls
@@ -357,31 +356,6 @@ class Feeds
         $item->info = (object) $info;
         
         return $item;
-    }
-
-    /**
-    * Find Available Plugins
-    *
-    * @return array
-    **/
-    public static function findPlugins()
-    {
-        $glob = glob(BLISS_BASE_DIR . '/plugins/*.plugin.php');
-        
-        $plugins = array();
-        
-        foreach ($glob as $file) {
-            if (preg_match('#.*/((.*?).plugin).php$#i', $file, $matches)) {
-                $class = ucwords(str_replace('.', ' ', $matches[1]));
-                $class = str_replace(' ', '_', $class);
-                
-                if (class_exists($class, true)) {
-                    $plugins[] = $class;
-                }
-            }
-        }
-        
-        return $plugins;
     }
     
     /**

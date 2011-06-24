@@ -1,0 +1,20 @@
+{foreach $item->enclosures as $enclosure}
+{if $enclosure@first}
+<div class="enclosures">
+<h1>Attachements:</h1>
+<p>
+{/if}
+{if $enclosure.medium == 'image'}
+<a class="fancyme" href="image?i={$enclosure.image_url}">
+<img src="image?i={$enclosure.image_url}" width="64" name="{$enclosure.title}" title="{$enclosure.title}">
+</a>
+{else}
+<a href="{$enclosure.link}">
+<img src="public/mime_images/{$enclosure.medium}.png" width="32" height="32" name="{$enclosure.title}" title="{$enclosure.title}">
+</a>
+{/if}
+{if $enclosure@last}
+</p>
+</div>
+{/if}
+{/foreach}

@@ -8,7 +8,9 @@
 <li>Popularity : {$json->popularity}
 <li>Rating : {$json->rating}
 <li>Votes: {$json->votes}
-<li>NZB Title: {$item->title}
+{foreach $item->enclosures as $enc}
+<li>NZB: <a href="{$enc.link}">{$enc.title}</a>
+{/foreach}
 </ul>
 </div>
 <div class="clearfix"></div>

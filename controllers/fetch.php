@@ -133,67 +133,6 @@ class Fetch
     }
 
     /**
-    * Handle all enclosures from a Feed
-    *
-    * @param simplepie_class $input $item->get_enclosures() from simplepie
-    *
-    * @return array
-    **/
-    public static function handleEnclosures($input)
-    {
-        $enclosures = array();
-        $thumbnails = array();
-        
-        foreach ($input as $enclosure) {
-
-            if (!empty($enclosure->thumbnails)) {
-
-                $thumbnails = $enclosure->thumbnails;
-
-            } else if (!empty($enclosure->link)) {
-                
-                $title = !empty($enclosure->title)
-                    ? $enclosure->title
-                    : basename($enclosure->link);
-                
-                list($m) = explode('/', $enclosure->type);
-                
-                $medium = !empty($enclosure->medium)
-                    ? $enclosure->medium
-                    : $m;
-
-                $enclosures[] = array(
-                    'title' => $title,
-                    'link' => $enclosure->link,
-                    'content-type' => $enclosure->type,
-                    'medium' => $medium,
-                    'length' => $enclosure->length,
-                );
-
-            }
-
-            $thumbnails = array_unique($thumbnails);
-            
-        }
-
-        /**
-        * Convert thumbs to enclosures
-        * FIXME Should we?
-        **/
-        /*
-        foreach ($thumbnails as $thumb) {
-            $enclosures[] = array(
-                'title' => basename($thumb),
-                'link' => $thumb,
-                'medium' => 'image'
-            );
-        }
-        */
-        
-        return $enclosures;
-    }
-        
-    /**
     * Update Feeds
     *
     * @return void
@@ -224,7 +163,7 @@ class Fetch
             die($e->getMessage()."\n");
         }
         
-        $plugins = Feeds::findPlugins();
+        $plugins = Helpers::findPlugins();
         
         foreach (Feeds::feedlist()->feeds as $feed_uri) {
             error_log("Fetching: {$feed_uri}");
@@ -293,10 +232,6 @@ class Fetch
                     . $guid
                     . '.item';
                     
-                // Handle Enclosures
-                $enclosures = self::handleEnclosures($item->get_enclosures());
-                $enclosures = BlissPie_Cache::cacheEnclosures($enclosures);
-                
                 $content = (object) array(
                     'title' => $item->get_title(),
                     'author' => $item->get_author(),
@@ -306,7 +241,7 @@ class Fetch
                     'description' => $item->get_description(),
                     'date' => $item->get_date('r'),
                     'link' => $item->get_link(),
-                    'enclosures' => $enclosures,
+                    'enclosures' => $item->get_enclosures(),
                     'source' => $item->get_source(),
                     'id' => $item->get_id(),
                 );

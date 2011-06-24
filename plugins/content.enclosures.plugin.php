@@ -36,7 +36,7 @@ if ( !defined('BLISS_VERSION') ) {
 }
 
 /**
-* Plugin that tries to generate content on empty articles
+* Handle Enclosures
 *
 * @category RSS_Reader
 * @package  Bliss
@@ -44,7 +44,7 @@ if ( !defined('BLISS_VERSION') ) {
 * @license  http://www.opensource.org/licenses/mit-license.php MIT License
 * @link     http://claus.beerta.de/
 **/
-class Content_Empty_Plugin implements Bliss_Content_Plugin
+class Content_Enclosures_Plugin implements Bliss_Content_Plugin
 {
     /**
     * The constructor
@@ -63,7 +63,9 @@ class Content_Empty_Plugin implements Bliss_Content_Plugin
     **/
     public function priority()
     {
-        return 1000;
+        // We want this as early as possible. other plugins might use
+        // the enclosures, and can't deal with SimplePie Objects
+        return 1;
     }
 
     /**
@@ -75,7 +77,7 @@ class Content_Empty_Plugin implements Bliss_Content_Plugin
     **/
     public function match($uri)
     {   
-        // Everything could be empty, so yes.
+        // Everything could Have Enclosures
         return true;
     }
 
@@ -88,28 +90,61 @@ class Content_Empty_Plugin implements Bliss_Content_Plugin
     **/
     public function apply($item)
     {
-        if (!empty($item->content)) {
-            // Already Has Content
-            return $item;
+        $enclosures = array();
+        $thumbnails = array();
+        
+        foreach ($item->enclosures as $enclosure) {
+
+            if (!empty($enclosure->thumbnails)) {
+
+                $thumbnails = $enclosure->thumbnails;
+
+            } else if (!empty($enclosure->link)) {
+                
+                $title = !empty($enclosure->title)
+                    ? $enclosure->title
+                    : basename($enclosure->link);
+                
+                list($m) = explode('/', $enclosure->type);
+                
+                $medium = !empty($enclosure->medium)
+                    ? $enclosure->medium
+                    : $m;
+
+                $enclosures[] = array(
+                    'title' => $title,
+                    'link' => $enclosure->link,
+                    'content-type' => $enclosure->type,
+                    'medium' => $medium,
+                    'length' => $enclosure->length,
+                );
+
+            }
+
+            $thumbnails = array_unique($thumbnails);
+            
         }
 
-        $body = '<h2>Article has no Content!</h2>';
-        
-        foreach ($item->enclosures as $k => $v) {
-            
-            if ($v['medium'] = 'image') {
-                $body .= '<a href="' . $v['link'] . '">';
-                $body .= '<img src="' . $v['link'] . '">';
-                $body .= '</a>';
-            } else {
-                $body .= '<a href="' . $v['link'] . '">';
-                $body .= $k;
-                $body .= '</a>';
-            }
+        /**
+        * Convert thumbs to enclosures
+        * FIXME Should we?
+        **/
+        foreach ($thumbnails as $thumb) {
+            $enclosures[] = array(
+                'title' => basename($thumb),
+                'link' => $thumb,
+                'medium' => 'image',
+                'image_url' => $thumb,
+            );
         }
-        $item->attachements = null;
-        $item->content = $body;
-                
+
+        $enclosures = BlissPie_Cache::cacheEnclosures($enclosures);
+        
+        $item->enclosures = $enclosures;
+
+        Flight::view()->assign(array('json' => $json, 'item' => $item));
+        $item->attachements = Flight::view()->fetch('plugins/enclosures.tpl.html');
+
         return $item;
     }
 }
