@@ -315,7 +315,7 @@ class Feeds
         preg_match('#^select-(.*?)-(.*)$#i', $filter, $matches);
         
         foreach ($filelist as $item) {
-        
+
             switch ($matches[1]) {
             
             case 'flagged':
@@ -339,6 +339,20 @@ class Feeds
                 array_shift($filelist);
                 break;
                 
+            case 'date':
+                try {
+                    $today = new DateTime(urldecode($matches[2]));
+                    $itemdate = new DateTime("@" . $item['timestamp']);
+                } catch (Exception $e) {
+                    break;
+                }
+        
+                if ($today->format('z') == $itemdate->format('z')) {
+                    break 2;
+                }
+                array_shift($filelist);
+                break;
+
             default:
                 break;
             
