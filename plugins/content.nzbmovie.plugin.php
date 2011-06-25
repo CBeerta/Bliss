@@ -117,7 +117,7 @@ class Content_Nzbmovie_Plugin implements Bliss_Content_Plugin
 
         // We expect our search to be awesome, so just pick the first match.
         $json = array_pop(json_decode($ret));
-
+        
         Flight::view()->assign(array('json' => $json, 'item' => $item));
         $item->content = Flight::view()->fetch('plugins/nzbmovie.tpl.html');
         $item->attachements = null;

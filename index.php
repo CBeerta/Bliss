@@ -118,6 +118,7 @@ Flight::route('GET /archive', array('Reader', 'archive'));
 
 /* ######### Config Stuff ################################# */
 Flight::route('GET /manage', array('Manage', 'edit'));
+Flight::route('GET /opml', array('Manage', 'opml'));
 Flight::route('POST /add_feed', array('Manage', 'add'));
 Flight::route('POST /remove_feed', array('Manage', 'remove'));
 

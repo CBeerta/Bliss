@@ -82,7 +82,6 @@ class Manage
         }
         
         // Do a quick test request, to check if the url is valid.
-        // FIXME: Should we? Maybe the Frontend will run on a disconnected host?
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $uri); 
         curl_setopt($ch, CURLOPT_HEADER, false);
@@ -181,5 +180,18 @@ class Manage
         exit(json_encode($reply));
     }
 
+    /**
+    * Export all Feeds to an OPML File
+    *
+    * @return void
+    **/
+    public static function opml()
+    {
+        $feedinfo = Feeds::feedinfo();
+        header('Content-type: text/xml');
+        header('Content-Disposition: attachment; filename="bliss-export.opml"');
+
+        return Flight::render('opml.export.tpl.xml', array('feedinfo' => $feedinfo));
+    }
 
 }

@@ -189,7 +189,7 @@ class Fetch
                 error_log($rss->error());
                 continue;
             }
-
+            
             $feed = Helpers::buildSlug(
                 md5($feed_uri) . ' ' .
                 $rss->get_title()
@@ -204,6 +204,7 @@ class Fetch
             $feed_info = (object) array(
                 'title' => $rss->get_title(),
                 'feed_uri' => $feed_uri,
+                'simplepie_feed_url' => $rss->feed_url,
                 'feed' => $feed,
                 'last_update' => mktime(),
                 'link' => $rss->get_link(),
@@ -336,6 +337,7 @@ class Fetch
             } catch (Exception $e) {
                 error_log("Can't parse timestamp for : " . $item['file']);
                 error_log($e->getMessage());
+                continue;
             }
             
             if ($article_time <= $expire_before 
@@ -357,7 +359,7 @@ class Fetch
         error_log("Expired {$count} Articles.");    
         error_log(print_r($errors, true));
     }
-    
+
     /**
     * Generate Thumbnails for all SPI files in cache
     *

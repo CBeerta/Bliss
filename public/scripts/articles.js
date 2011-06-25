@@ -94,6 +94,7 @@ function poll() {
         success: function(data) {
             if (data['updates_available'] == true) {
                 $('.updater').fadeIn('slow');
+                document.title = "Bliss - New Articles Available!";
             }
         }
     })
@@ -161,6 +162,7 @@ $(document).ready(function() {
         case 114: // 'r'
             fillPage();
             $('.updater').fadeOut("slow");
+            document.title = "Bliss";
             break;
         /*
         default:
@@ -185,6 +187,10 @@ $(document).ready(function() {
                     $(event.target).attr('src', data);
                 }
             });
+        } else if ($(event.target).is('article .enclosures img')) {
+            // enclosures take care of their own styling
+            // dont need to mess with those
+            return;
         } else if ($(event.target).is('article img')
             && $(parent).is('article a')
             && $(parent).attr('href').match(/.*\.(jpg|jpeg|png|gif|bmp).*/i)
@@ -213,6 +219,7 @@ $(document).ready(function() {
         } else if ($(event.target).is('.updater')) {
             fillPage();
             $('.updater').fadeOut("slow");
+            document.title = "Bliss";
         }
     });
 

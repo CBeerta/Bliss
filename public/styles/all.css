@@ -51,6 +51,7 @@ img {
 	vertical-align: middle;
 }
 #spinner {
+    display: none;
     position: fixed;
     float: left;
     right: 5px;

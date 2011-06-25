@@ -198,7 +198,6 @@ class Feeds
     **/
     public static function filelist($offset = 0, &$errors = array())
     {
-        Helpers::bench();
         $files = array();
         $data_dir = rtrim(self::$config['data_dir'], '/');
         $feed_infos = array();
@@ -270,7 +269,6 @@ class Feeds
         krsort($files);
         $errors = array_unique($errors);        
         
-        error_log('Filelist took : ' . Helpers::bench());
         return $files;
     }
 

@@ -60,10 +60,8 @@ These Keyboard Commands exist currently:
 
 * Keyboard Nav needs work. We need to make sure a loadNext event loads enough content to allow scrolling to the next item. Maybe we can trick with padding here?
 * Expire of the simplepie cache
-* For the gallery there needs to be a way to go from picture to post somehow. SimplePie makes this incredible hard though. We can go to feed now atleast, maybe the step to a single item is more possible then.
 * Search? (this is probably where i will regret most that i chose not to use a database)
-* Should probably cache `Reader::filelist()`. it goes over every file on every reload. For now though, the fs-cache does a good job.
-* Export all feeds to OPML, export images from gallery
+* Should probably cache `Reader::filelist()`. it goes over every file on every reload. For now though, the fs-cache does a good job. Caching after fetch seems best for this.
 
 # BUGS
 
