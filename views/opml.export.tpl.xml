@@ -5,7 +5,7 @@
     </head>
     <body>
 {foreach $feedinfo as $feed}
-        <outline text="{$feed->description|default: $feed->title|escape}"
+        <outline text="{$feed->description|escape|default: $feed->title|escape}"
             title="{$feed->title|escape}" 
             type="rss"
             xmlUrl="{$feed->simplepie_feed_url|default: $feed->feed_uri}" 
