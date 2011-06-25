@@ -68,9 +68,18 @@ class Reader
     **/
     public static function archive()
     {
+        Feeds::flag();
+        
+        $articles = array();
+        
+        foreach (Feeds::filelist(mktime()) as $item) {
+            $day = new DateTime("@" . $item['timestamp']);
+            
+            $articles[$day->format('Y-m-d')][] = $item;
+        }
+        
         $data = array(
-            'flagged' => Feeds::flag(),
-            'archives' => Feeds::filelist(mktime()),
+            'archives' => $articles,
             'titles' => Feeds::titles(),
         );
         

@@ -5,7 +5,7 @@ html{
 }
 body{
 	color: #555555;
-	font: 12px/20px Maven Pro, serif;
+	font: 77% 'Maven Pro', arial, serif;
 }
 h1, h2, h3, h4, h5, h6, ol, ul, dl, p, blockquote, form{ margin: 0 0 20px 0; }
 sup, sub{
@@ -70,7 +70,8 @@ article header a:hover {
     text-decoration: underline;
 }
 article header h1 a {
-    font-size: 169%;
+    text-shadow: 1px 1px 1px #aaa;
+    font-size: 167%;
     margin: 0 0 5px 0;
 }
 article header em {
@@ -89,6 +90,12 @@ article {
 article .content {
     margin-left: 15px;
 }
+article .content h1,h2,h3,h4,h5 {
+    font-weight: normal;
+    font-size: 100%;
+}
+
+
 article header img {
     cursor: pointer;
     float: left;
@@ -100,7 +107,6 @@ article img {
 
 /* ########## Top Bar ##################################### */
 .pulldown {
-    font-family: Amaranth;
     position: fixed;
     top: 0px;
     left: 0px;
@@ -134,13 +140,11 @@ article img {
 }
 .pulldown #lip {
     text-align: center;
-    /*white-space: nowrap;*/
     position: absolute;
     left: 0px;
     top: 0px;
     width: 32px;
     height: 100%;
-    /* border-radius: 0px 0px 4px 0px; */
     margin: auto;
 	background-color: rgba(213, 211, 187, 1.0);
     padding: 4px 5px 2px 5px;
@@ -185,7 +189,7 @@ article img {
 .updater {
     z-index: 999;
     opacity: 0.8;
-    font: 14px Amaranth;
+    font-size: 108%;
     vertical-align: middle;
     line-height: 32px;
 	background-color: rgba(213, 211, 187, 1.0);
@@ -204,12 +208,9 @@ article img {
     float: left;
 }
 /* ########## Archives #################################### */
-.archive ul {
-}
-.archive li#title {
-	font: 26px Lato, serif;
-    color: #444;
-    margin-left: 0;
+.archive h1 {
+    text-shadow: 1px 1px 1px #aaa;
+    font-size: 167%;
 }
 .archive a {
     color: #333;
@@ -220,7 +221,7 @@ article img {
 }
 .archive li {
     list-style: none;
-    color: #222;
+    color: #333;
 	vertical-align: middle;
 	line-height: 16px;
 	margin: 0 20px 5px 20px;
@@ -235,12 +236,10 @@ article img {
 .manage table {
     width: 100%;
 }
-.manage th {
-	font: 16px/26px Lato, serif;
-    border: 1px solid #ccc;
-	background-color: #f9f9f9;
-    color: #444;
-    width: 28px;
+.manage h1 {
+	font-size: 167%;
+    text-shadow: 1px 1px 1px #aaa;
+    color: #333;
 }
 .manage #date {
     text-align: right;
@@ -248,27 +247,21 @@ article img {
 }
 .manage tr {
     list-style: none;
-    color: #222;
 	vertical-align: middle;
-	border-bottom: 1px solid #ccc;
-	border-left: 1px solid #ccc;
-	border-right: 1px solid #ccc;
 }
 .manage td {
     padding-left: 10px;
     vertical-align: middle;
 }
 .manage img {
-    vertical-align: middle;
     padding: 4px;
     cursor: pointer;
 }
 .manage a {
-    color: #111;
+    color: #333;
     text-decoration: none;
 }
 .manage a:hover {
-    color: #111;
     text-decoration: underline;
 }
 
@@ -288,9 +281,10 @@ article img {
     min-height: 210px;
 }
 .gallery a h1 {
+    text-shadow: 1px 1px 1px #aaa;
     margin-top: 20px;
-    font-size: 169%;
-    color: #111;
+    font-size: 167%;
+    color: #333;
     text-decoration: none;
     text-align: left;
 }    
@@ -307,17 +301,16 @@ article .nzbmovie li {
     list-style: none;
 }
 article .enclosures h1 {
+    color: #333;
+    text-shadow: 1px 1px 1px #aaa;
+    font-size: 131%;
     font-weight: bold;
-    font-size: 140%;
     padding: 10px 0 5px 0;
     margin: 0px;
 }
 article .enclosures p {
     margin-left: 15px;
-    /*background-color: #f4f4f4;
-    border: 1px solid #999;*/
-    font-size: 121%;
-    padding: 10px;
+    padding: 5px;
 }
 
 
