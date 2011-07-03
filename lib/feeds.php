@@ -115,19 +115,13 @@ class Feeds
         }
         
         //Third: Feeds subitted through the site
-        $fe_feeds = array();
-        $save_file = self::$config['data_dir'] . '/feeds.json';
-        if (is_file($save_file) && is_readable($save_file)) {
-            $ret = json_decode(file_get_contents($save_file));
-            if (!is_array($ret)) {
-                break;
-            }
+        $ret = Store::load('feeds.json');
+        if ($ret !== false) {
             foreach ($ret as $source) {
                 $feeds[] = $source;
                 $sources[] = 'json';
             }
         }
-        
         return (object) array('feeds' => $feeds, 'sources' => $sources);
     }
     
@@ -146,7 +140,7 @@ class Feeds
         $feedinfo = array();
          
         foreach (glob($data_dir . '/*/feed.info') as $file) {        
-            $ret = json_decode(file_get_contents($file));
+            $ret = Store::load($file);
             
             if (!is_object($ret)) {
                 continue;
@@ -240,7 +234,7 @@ class Feeds
             }
             
             if (!isset($feed_infos[$dir])) {
-                $info = json_decode(file_get_contents($dir . '/feed.info'));
+                $info = Store::load($dir . '/feed.info');
                 if ($info === false) {
                     $errors[] = "{$dir}/feed.info Unreadable";
                     continue;
@@ -289,13 +283,7 @@ class Feeds
         $titles = array();
         
         foreach ($filelist as $item) {
-            $file = file_get_contents($item['file']);
-            
-            if (!$file) {
-                continue;
-            }
-            
-            $article = json_decode($file);
+            $article = Store::load($file);
             $titles[$item['dir']][$item['fname']] = $article->title;
         }
         
@@ -375,7 +363,7 @@ class Feeds
             return false;
         }
 
-        $item = json_decode(file_get_contents($info['file']));
+        $item = Store::load($info['relative']);
         $item->info = (object) $info;
         
         return $item;
@@ -390,13 +378,10 @@ class Feeds
     **/
     public static function flag($file = null)
     {
-        $flag_file = self::$config['data_dir'] . '/flagged.json';
-        
         if (self::$flagged === null
-            && is_file($flag_file) 
-            && ($ret = file_get_contents($flag_file)) !== false
+            && ($ret = Store::load('flagged.json')) !== false
         ) {
-            self::$flagged = (array) json_decode($ret);
+            self::$flagged = $ret;
         } else if (self::$flagged === null) {
             self::$flagged = array();
         }
@@ -414,7 +399,7 @@ class Feeds
             unset(self::$flagged[$nr]);
             self::$flagged = array_merge(self::$flagged);
         }
-        file_put_contents($flag_file, json_encode(self::$flagged), LOCK_EX);
+        Store::save('flagged.json', self::$flagged);
  
         return self::$flagged;    
     }
@@ -429,42 +414,21 @@ class Feeds
     **/
     public static function unread($add_unread = null, $merge = true)
     {
-        $data_dir = rtrim(self::$config['data_dir'], '/');
-        $unread_file = $data_dir . '/unread.json';
-
-        if (is_null($add_unread)) {        
+        if (self::$unread !== null) {
             $unread = self::$unread;
-        } else {
-            $unread = null;
-        }
-        
-        if (is_null($unread)
-            && file_exists($unread_file) 
-            && is_readable($unread_file)
-        ) {
-            $unread = json_decode(file_get_contents($unread_file));
-        } else {
+        } else if (($unread = Store::load('unread.json')) === false) {
             $unread = array();
         }
+        
+        self::$unread = $unread;
 
         if (!is_array($add_unread)) {
             return $unread;
         }
-
-        if (!$merge) {
-            $unread = $add_unread;
-        } else {
-            $unread = array_merge($unread, $add_unread);
-        }
-
-        $unread = array_unique($unread);
-        $unread = array_merge($unread);
-
-        file_put_contents($unread_file, json_encode($unread));
         
-        self::$unread = $unread;
+        self::$unread = Store::save('unread.json', $add_unread, $merge);
         
-        return $unread;
+        return self::$unread;
     }
 
 }

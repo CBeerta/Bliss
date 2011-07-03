@@ -102,20 +102,18 @@ class Manage
         if (is_file($save_file) 
             && is_readable($save_file)
         ) {
-            $feeds = json_decode(file_get_contents($save_file));
+            $feeds = Store::load($save_file);
             if ($feeds === false) {
                 $feeds = array();
             } else if (in_array($uri, $feeds)) {
                 $reply['message'] = 'Already pulling that feed.';
                 exit(json_encode($reply));
-            } else {
-                copy($save_file, $save_file . '.bak');
             }
         }
         
         $feeds[] = $uri;
         
-        if (!file_put_contents($save_file, json_encode($feeds), LOCK_EX)) {
+        if (Store::save($save_file, $feeds) === false) {
             $reply['message'] = 'Unable to save feed info.';
             exit(json_encode($reply));
         }
@@ -151,7 +149,7 @@ class Manage
             exit(json_encode($reply));
         }
         
-        $feeds = json_decode(file_get_contents($save_file));
+        $feeds = Store::load($save_file);
         
         if (!$feeds) {
             $reply['message'] = 'Can not load feeds.json file!';
@@ -169,8 +167,7 @@ class Manage
         unset($feeds[$found]);
         $feeds = array_merge($feeds);
 
-        copy($save_file, $save_file . '.bak');
-        if (!file_put_contents($save_file, json_encode($feeds), LOCK_EX)) {
+        if (Store::save($save_file, $feeds) === false) { 
             $reply['message'] = 'Unable to save feed info.';
             exit(json_encode($reply));
         }

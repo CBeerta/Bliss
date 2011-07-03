@@ -279,7 +279,7 @@ class Fetch
                     $unread[] = $feed . '/' . basename($outfile);
                 }
 
-                file_put_contents($outfile, json_encode($content), LOCK_EX);
+                Store::save($outfile, $content);
                 
                 /**
                 * Check for Duplicates
@@ -308,7 +308,7 @@ class Fetch
             } // items foreach 
 
             // Save feed info
-            file_put_contents("{$dir}/feed.info", json_encode($feed_info), LOCK_EX);
+            Store::save("{$dir}/feed.info", $feed_info);
             unset($newest);
         }
         

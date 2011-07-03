@@ -87,6 +87,8 @@ function fillPage() {
         $.get('nothing/' + filter, function(data) {
             $("#content").html(data);
         });
+    } else {
+        $(document).trigger('scroll');
     }
 
 }
