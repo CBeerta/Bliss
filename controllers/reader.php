@@ -103,6 +103,8 @@ class Reader
     /**
     * Return something for empty pages
     *
+    * @param string $page What page is loaded to display an empty message for
+    *
     * @return html
     **/
     public static function nothing($page)
@@ -112,23 +114,23 @@ class Reader
         $text = null;
                 
         switch ($matches[1]) {
-            case 'flagged':
-                $text = "You have no Flagged Articles";
-                break;
-            case 'feed':
-                $text = "This Feed has no Articles";
-                break;
-            case 'unread':
-                $text = "No Unread Articles";
-                break;
-            case 'article':
-                $text = "The Selected Article can't be found";
-                break;
-            case 'day':
-                $text = "This Day has no Articles";
-                break;
-            default:
-                break;
+        case 'flagged':
+            $text = "You have no Flagged Articles";
+            break;
+        case 'feed':
+            $text = "This Feed has no Articles";
+            break;
+        case 'unread':
+            $text = "No Unread Articles";
+            break;
+        case 'article':
+            $text = "The Selected Article can't be found";
+            break;
+        case 'day':
+            $text = "This Day has no Articles";
+            break;
+        default:
+            break;
         }        
 
         $data = array(
