@@ -167,7 +167,6 @@ class Fetch
         array_splice($strip_htmltags, array_search('embed', $strip_htmltags), 1);
          
         $rss->strip_htmltags($strip_htmltags);
- 
 
         try {
             $expire_before = new DateTime(Feeds::option('expire_before'));
@@ -176,6 +175,7 @@ class Fetch
         }
         
         $plugins = Helpers::findPlugins();
+        $unread = array();
         
         foreach (Feeds::feedlist()->feeds as $feed_uri) {
             error_log("Fetching: {$feed_uri}");
@@ -216,7 +216,6 @@ class Fetch
             );
             
             $title_list = array();
-            
             
             // Set _current_feed here, which is later used by cacheName
             // and the blisscache stuff
@@ -275,7 +274,12 @@ class Fetch
                     unset($p);
                 }
                 
-                file_put_contents($outfile, json_encode($content));
+                // Check if file exists, if not -> unread
+                if (!file_exists($outfile)) {
+                    $unread[] = $feed . '/' . basename($outfile);
+                }
+
+                file_put_contents($outfile, json_encode($content), LOCK_EX);
                 
                 /**
                 * Check for Duplicates
@@ -298,14 +302,19 @@ class Fetch
                     **/
                     sort($glob);
                     unlink($glob[0]);
+                    continue;
                 }
-
+                
             } // items foreach 
 
             // Save feed info
             file_put_contents("{$dir}/feed.info", json_encode($feed_info), LOCK_EX);
             unset($newest);
         }
+        
+        // Set New Items as Unread
+        Feeds::unread($unread);
+        
         // Sanity Check, load all files, anc check them
         Feeds::filelist(mktime(), $errors);
         error_log(print_r($errors, true));
@@ -354,6 +363,31 @@ class Fetch
                 "You have {$total} Articles stored." . 
                 "Consider Tuning the Expire of Articles."
             );
+        }
+        
+        /**
+        * Expire Nonexisting Unread Items from json file
+        **/
+        $unread = Feeds::unread(array());
+        foreach ($unread as $k => $v) {
+            if (file_exists(Feeds::option('data_dir') . '/' . $v)) {
+                continue;
+            }
+            unset($unread[$k]);
+        }
+        Feeds::unread($unread, false);
+        
+        /**
+        * Expire Nonexisting Flagged items from json file.
+        * This in theory should never happen unless the user deletes stuff
+        **/
+        $flagged = Feeds::flag();
+        foreach ($flagged as $name) {
+            if (file_exists(Feeds::option('data_dir') . '/' . $name)) {
+                continue;
+            }
+            
+            Feeds::flag($name);
         }
         
         error_log("Expired {$count} Articles.");    
@@ -411,13 +445,39 @@ class Fetch
             }
 
             $dst = Helpers::imgResize($src, $thumb_size, $thumb_size, false);
-            if ($dst !== false) {
-                $w = imagesx($dst);
-                $h = imagesy($dst);
-
-                imagepng($dst, $dst_fname, 6);
-                $count++;
+            if ($dst === false) {
+                continue;
             }
+
+            $w = imagesx($dst);
+            $h = imagesy($dst);
+            
+            /**
+            * Put a Thumb Size canvas around it so all thumbs are the same size
+            **/
+            $canvas = imagecreatetruecolor($thumb_size, $thumb_size);
+            imagesavealpha($canvas, true);
+            $trans_color = imagecolorallocatealpha($canvas, 0, 0, 0, 127);
+            imagefill($canvas, 0, 0, $trans_color);
+
+            $canvas_center = array($thumb_size/2, $thumb_size/2);
+            $dst_center = array($w/2, $h/2);
+            
+            imagecopyresampled(
+                $canvas, 
+                $dst, 
+                $canvas_center[0] - $dst_center[0],
+                $canvas_center[1] - $dst_center[1],
+                0,
+                0,
+                $w,
+                $h,
+                $w,
+                $h
+            );
+                        
+            imagepng($canvas, $dst_fname, 6);
+            $count++;
         }
         error_log("Created {$count} Thumbnails.");    
     }

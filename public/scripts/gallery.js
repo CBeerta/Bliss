@@ -1,19 +1,17 @@
 function loadNext() {
 
-    var hash_page = unescape(self.document.location.hash.substring(1));
     var last_page = $('.gallery-page').last().attr('page');
+
+    if (document.there_is_no_more != undefined) {   
+        // prevent going back any further without having anything
+        return false;
+    }
     
     if (last_page == undefined) {
-        if (hash_page != '') {
-            var page = Number(hash_page);
-        } else {
-            var page = 0;
-        }
-        //self.document.location.hash = page;
+        var page = 0;
     } else {
         var page = Number(last_page);
         page++;
-        self.document.location.hash = page;
     }
     
     var response = $.ajax({ 
@@ -22,6 +20,12 @@ function loadNext() {
         async: false,
         data: { 'page': page },
         success: function(data) {
+
+            if (data.length == 0) {
+                document.there_is_no_more = true;
+                return false;
+            }
+
             if ($(".gallery-page").attr('page') == undefined) {
                 // First item, insert into content
                 $("#content").html(data);
@@ -29,17 +33,10 @@ function loadNext() {
                 // append
                 $(".gallery-page").last().after(data);
             }
+
         }
     }).responseText;
-
-    if (response.length <= 100) {
-        if (page > 0) {
-            /* Nothing loaded, must be last page */
-            self.document.location.hash = page - 1;
-        }
-        return false;
-    }
-
+    
     $(".fancyme").fancybox({
         'hideOnContentClick': true,
         'padding'           : 0,
@@ -68,17 +65,10 @@ $(document).ready(function() {
             loadNext();
         }
     });
-
+    
     /**
     * Initially load us one page
     **/
     loadNext();
-
-/*
-$(function() {
-    $("img").lazyload( { placeholder : "{$base_uri}public/reload.png" } );
-} );
-*/
-
 
 });

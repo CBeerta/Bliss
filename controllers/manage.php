@@ -54,6 +54,7 @@ class Manage
     public static function edit()
     {
         $data = array(
+            'title' => 'Manage Subscriptions',
             'feedlist' => Feeds::feedlist(),
             'feedinfo' => Feeds::feedinfo(true),
         );

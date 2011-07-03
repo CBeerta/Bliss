@@ -58,6 +58,7 @@ These Keyboard Commands exist currently:
 	
 # TODO:
 
+* A Way to mark items read/unread and a "mark all read" maybe?
 * Keyboard Nav needs work. We need to make sure a loadNext event loads enough content to allow scrolling to the next item. Maybe we can trick with padding here?
 * Expire of the simplepie cache
 * Search? (this is probably where i will regret most that i chose not to use a database)

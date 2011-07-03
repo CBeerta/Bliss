@@ -3,7 +3,8 @@
 *
 * return void
 **/
-function loadNext() {
+function loadNext(fireScrollEvent) {
+    console.log(fireScrollEvent);
     var idlist = [];
     $('article.bliss-article').each(function(article) {
         idlist.push($(this).attr('id'));
@@ -15,6 +16,11 @@ function loadNext() {
     }
     
     var filter = unescape(self.document.location.hash.substring(1));
+    
+    if (document.there_is_no_more != undefined) {   
+        // prevent going back any further without having anything
+        return false;
+    }
 
     var response = $.ajax({
         type: "POST",
@@ -22,48 +28,50 @@ function loadNext() {
         async: false,
         data: { 'last_id': last_id, 'idlist': idlist },
         success: function(data) {
-            if ($("#" + last_id).length == 0) {
+            if (data.length == 0) {
+                return false;
+            }
+            
+            if ($("article.bliss-article#" + last_id).length == 0) {
                 // First item, insert into content
                 $("#content").html(data);
             } else {
                 // append
-                $("#" + last_id).after(data);
+                $("article.bliss-article#" + last_id).after(data);
+            }
+            
+            if (fireScrollEvent != false) {
+                // Fire scroll event, to keep endlesscroll going
+                $(document).trigger('scroll');
+                setTimeout("$(document).trigger('scroll')", 150);
             }
         }
     }).responseText;
         
-    if (!response) {
+    if (response.length == 0) {
+        document.there_is_no_more = true;
         return false;
     }
-
-    $(".fancyme").fancybox({
-        'hideOnContentClick': true,
-        'padding'           : 0,
-    	'transitionIn'		: 'none',
-		'transitionOut'		: 'none',
-		'autoScale'     	: true,
-		'type'				: 'image',
-		'scrolling'   		: 'no',
-		'changeFade'        : 0,
-		'centerOnScroll'    : true
-	});
 
     return true;
 }
 
 /**
 * Lets initially load the first items
-* Halt at 10 items to prevent an endless loop
+* Halt at 20 items to prevent an endless loop
 *
 * return void
 **/
 function fillPage() {
     // remove all articles, if any
-    $('article').remove();
-
-    for (var i=0 ; i<= 10 ; i ++) {
+    $('article.bliss-article').remove();
+    
+    // reset limit
+    document.there_is_no_more = undefined;
+    
+    for (var i=0 ; i<= 20 ; i++) {
         var footer = $('footer').offset();
-        if (!loadNext()) break;
+        if (!loadNext(false)) break;
 
         // Check if we actually loaded anything at all, and stop if we didn't
         if (!$('article.bliss-article').last().attr('id')) break;
@@ -72,8 +80,45 @@ function fillPage() {
         // the rest is done by endless scroll
         if (footer.top > $(window).height()) break;
     }
+    
+    if (i == 0) {
+        // Nothing Loaded
+        var filter = unescape(self.document.location.hash.substring(1));
+        $.get('nothing/' + filter, function(data) {
+            $("#content").html(data);
+        });
+    }
+
 }
 
+/**
+* Check if user is still over the reported article id
+* if so, send ajax request to mark article as read
+**/
+function markRead(id) {
+    var ele = document.elementFromPoint(300, 40);
+    var current_id = $(ele).closest('article.bliss-article');
+    
+    if (current_id.length != 0 && id == $(current_id).attr('id')) {
+        
+        if ($(current_id).hasClass('unread')) {
+
+            $.ajax({
+                type: "POST",
+                url: "read",
+                async: true,
+                dataType: 'json',
+                data: { 'name': $(current_id).attr('name') },
+                success: function(data) {
+                    if (data != null) {
+                        $(current_id).removeClass('unread');
+                    }
+                }
+            });
+
+        }
+    }
+}
 
 /**
 * Continuously poll for updates
@@ -82,42 +127,45 @@ function fillPage() {
 **/
 function poll() {
     first_id = $('article').first().attr('id');
+    if ( !first_id ) {
+        // Currently no article on display, so poll from day 0
+        first_id = 0;
+    }
 
     var filter = unescape(self.document.location.hash.substring(1));
 
     $.ajax({
         type: "POST",
         url: "poll/" + filter,
-        async: false,
+        async: true,
         dataType: 'json',
         data: { 'first_id': first_id },
         success: function(data) {
             if (data['updates_available'] == true) {
                 $('.updater').fadeIn('slow');
-                document.title = "Bliss - New Articles Available!";
+                //document.title = "Bliss - New Articles Available!";
             }
         }
     })
 }
 
-
 /**
 * Initialy Page Load completed
 **/
 $(document).ready(function() {
+    
     /**
     * Setup endlessScroll
     **/
-
     $(document).endlessScroll({
         fireOnce: true,
-        fireDelay: 250,
-        bottomPixels: 100,
+        //fireDelay: 250,
+        bottomPixels: 50,
+        insertAfter: "footer",
         callback: function(p) {
             loadNext();
         }
     });
-
     
     /**
     * Handle Keyboard navigation
@@ -130,22 +178,26 @@ $(document).ready(function() {
         }
 
         // Find current first article        
-        var ele = document.elementFromPoint(300, 20);
+        var ele = document.elementFromPoint(300, 40);
         var current_id = $(ele).closest('article.bliss-article');
+        
 
         // finde article above and below
-        var prev = $(current_id).prev('article.bliss-article');
-        var next = $(current_id).next('article.bliss-article');
+        if (current_id.length != 0) {
+            var prev = $(current_id).prev('article.bliss-article');
+            var next = $(current_id).next('article.bliss-article');
 
-        if (next.length == 0 && event.which == 110) {
-            // check if there is one to follow, if not, load one
-            loadNext();
-            var next = $(current_id).next('article');
+            if (next.length == 0 && event.which == 110) {
+                // check if there is one to follow, if not, load one
+                loadNext();
+                var next = $(current_id).next('article');
+            }
+
+            // Find the positions of the next and previous articles        
+            var prev_pos = $(prev).position();
+            var next_pos = $(next).position();
         }
             
-        // Find the positions of the next and previous articles        
-        var prev_pos = $(prev).position();
-        var next_pos = $(next).position();
         
         // check which key was pressed
         switch (event.which) {
@@ -161,8 +213,6 @@ $(document).ready(function() {
             break;
         case 114: // 'r'
             fillPage();
-            $('.updater').fadeOut("slow");
-            document.title = "Bliss";
             break;
         /*
         default:
@@ -173,62 +223,30 @@ $(document).ready(function() {
         
     });
     
-    $('body').click(function(event) {
-        parent = $(event.target).parent();
-        if ($(event.target).is('article header .flag')) {
-            var id = $(event.target).attr('name');
-            $.ajax({
-                type: "POST",
-                url: "flag",
-                dataType: 'json',
-                async: true,
-                data: { 'name': id },
-                success: function(data) {
-                    $(event.target).attr('src', data);
-                }
-            });
-        } else if ($(event.target).is('article .enclosures img')) {
-            // enclosures take care of their own styling
-            // dont need to mess with those
-            return;
-        } else if ($(event.target).is('article img')
-            && $(parent).is('article a')
-            && $(parent).attr('href').match(/.*\.(jpg|jpeg|png|gif|bmp).*/i)
-        ) {
-            /**
-            * Check if clicked link is a img that links to an image
-            * and run fancybox on it if it is
-            **/
-            $.fancybox({
-                'padding'		: 0,
-                'href'			: $(parent).attr('href'),
-                'transitionIn'	: 'elastic',
-                'transitionOut'	: 'elastic'
-            });        
-            return false;
-        } else if ($(event.target).is('article a')) {
-            // Force article links to open  in a new window
-            window.open($(event.target).attr('href'));
-            return false;
-        } else if ($(event.target).is('article img')
-            && $(parent).is('article a')
-        ) {
-            // Force article links to open in a new window
-            window.open($(parent).attr('href'));
-            return false;
-        } else if ($(event.target).is('.updater')) {
-            fillPage();
-            $('.updater').fadeOut("slow");
-            document.title = "Bliss";
+    /**
+    * Watch for scroll events, record currently active article
+    * And recheck after x seconds if user is still hovering over that
+    * article
+    **/
+    $(document).scroll(function() {
+        var ele = document.elementFromPoint(300, 40);
+        var current_id = $(ele).closest('article.bliss-article');
+        
+        if (current_id.length != 0) {
+            setTimeout("markRead(" + $(current_id).attr('id') + ")", 1000);
         }
     });
 
+    /*    
+    document.addEventListener("DOMNodeInserted", function() {
+        console.log("Something got inserted");
+    });
+    */
     
     /**
     * Fetch hash changes, and reload articles if needed
     **/
     window.onhashchange = function() {
-        $('article').remove();
         fillPage();
     };
 

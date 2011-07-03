@@ -57,6 +57,7 @@ class Feeds
         'thumb_size' => 200,
         'gallery_minimum_image_size' => 800,
         'enable_gallery' => false,
+        'read_timeout' => 2000,
     );
     
     // Cache filelist for multiple "next" calls
@@ -64,7 +65,10 @@ class Feeds
 
     // Cache flagged
     protected static $flagged = null;
-
+    
+    // Cache unread
+    protected static $unread = null;
+    
     /**
     * Configure Feeds Class
     *
@@ -81,7 +85,7 @@ class Feeds
         
         self::$config[$key] = $value;
     }
-    
+
     /**
     * The configured Feed Uris
     *
@@ -330,6 +334,13 @@ class Feeds
                 array_shift($filelist);
                 break;
 
+            case 'unread':
+                if (in_array($item['relative'], self::unread())) {
+                    break 2;
+                }
+                array_shift($filelist);
+                break;
+
             case 'article':
                 if ($item['fname'] == $matches[2]) {
                     break 2;
@@ -337,7 +348,7 @@ class Feeds
                 array_shift($filelist);
                 break;
                 
-            case 'date':
+            case 'day':
                 try {
                     $today = new DateTime(urldecode($matches[2]));
                     $itemdate = new DateTime("@" . $item['timestamp']);
@@ -345,7 +356,7 @@ class Feeds
                     break;
                 }
         
-                if ($today->format('z') == $itemdate->format('z')) {
+                if ($today->format('Y-z') == $itemdate->format('Y-z')) {
                     break 2;
                 }
                 array_shift($filelist);
@@ -406,6 +417,54 @@ class Feeds
         file_put_contents($flag_file, json_encode(self::$flagged), LOCK_EX);
  
         return self::$flagged;    
+    }
+
+    /**
+    * Set and Get Unread Items
+    *
+    * @param array $add_unread List with items to set unread
+    * @param bool  $merge      Wether to Merge new array, or overwrite old one
+    *
+    * @return array
+    **/
+    public static function unread($add_unread = null, $merge = true)
+    {
+        $data_dir = rtrim(self::$config['data_dir'], '/');
+        $unread_file = $data_dir . '/unread.json';
+
+        if (is_null($add_unread)) {        
+            $unread = self::$unread;
+        } else {
+            $unread = null;
+        }
+        
+        if (is_null($unread)
+            && file_exists($unread_file) 
+            && is_readable($unread_file)
+        ) {
+            $unread = json_decode(file_get_contents($unread_file));
+        } else {
+            $unread = array();
+        }
+
+        if (!is_array($add_unread)) {
+            return $unread;
+        }
+
+        if (!$merge) {
+            $unread = $add_unread;
+        } else {
+            $unread = array_merge($unread, $add_unread);
+        }
+
+        $unread = array_unique($unread);
+        $unread = array_merge($unread);
+
+        file_put_contents($unread_file, json_encode($unread));
+        
+        self::$unread = $unread;
+        
+        return $unread;
     }
 
 }
