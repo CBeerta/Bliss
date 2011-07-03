@@ -363,7 +363,7 @@ class Feeds
                 break;
 
             default:
-                break;
+                break 2;
             
             }                                
 
