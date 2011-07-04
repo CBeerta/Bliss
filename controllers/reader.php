@@ -153,7 +153,19 @@ class Reader
         $data_dir = rtrim(Feeds::option('data_dir'), '/');
         $glob = glob($data_dir . '/*/enclosures/*.thumb.png');
 
-        sort($glob);
+        $sortmtime = create_function(
+            '$file1, $file2',
+            '
+            $time1 = filemtime($file1);
+            $time2 = filemtime($file2);
+            if ($time1 == $time2) {
+                return 0;
+            }
+            return ($time1 < $time2) ? 1 : -1;
+            '
+        );
+        
+        usort($glob, $sortmtime);
 
         foreach ($glob as $img) {
             if (!preg_match(
