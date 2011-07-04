@@ -10,7 +10,7 @@
 <ul>
 {foreach $day as $item}
 <li>    
-{if $item.flagged}
+{if in_array($item.relative, $flagged)}
     <img src="{$base_uri}public/tag_blue_16.png" width="16" height="16">
 {/if}
     <a href="{$base_uri}#select-feed-{$item.feed}">{$item.title}</a>:

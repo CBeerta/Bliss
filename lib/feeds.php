@@ -57,18 +57,11 @@ class Feeds
         'thumb_size' => 200,
         'gallery_minimum_image_size' => 800,
         'enable_gallery' => false,
-        'read_timeout' => 2000,
     );
     
     // Cache filelist for multiple "next" calls
     protected static $glob = null;
 
-    // Cache flagged
-    protected static $flagged = null;
-    
-    // Cache unread
-    protected static $unread = null;
-    
     /**
     * Configure Feeds Class
     *
@@ -241,15 +234,7 @@ class Feeds
                 }
                 $feed_infos[$dir] = $info;
             }
-            
-            if (!is_null(self::$flagged) && in_array($relative, self::$flagged)) {
-                $flagged = true;
-            } else if (!is_null(self::$flagged)) {
-                $flagged = false;
-            } else {
-                $flagged = null;
-            }
-                
+
             $files[$timestamp] = array_merge(
                 array(
                     'timestamp' => $timestamp,
@@ -259,7 +244,6 @@ class Feeds
                     'fname' => $fname,
                     'guid' => $guid,
                     'relative' => $relative,
-                    'flagged' => $flagged,
                 ), 
                 (array) $feed_infos[$dir]
             );
@@ -309,7 +293,7 @@ class Feeds
             switch ($matches[1]) {
             
             case 'flagged':
-                if (in_array($item['relative'], self::flag())) {
+                if (in_array($item['relative'], Store::toggle('flagged'))) {
                     break 2;
                 }
                 array_shift($filelist);
@@ -323,7 +307,7 @@ class Feeds
                 break;
 
             case 'unread':
-                if (in_array($item['relative'], self::unread())) {
+                if (in_array($item['relative'], Store::toggle('unread'))) {
                     break 2;
                 }
                 array_shift($filelist);
@@ -367,68 +351,6 @@ class Feeds
         $item->info = (object) $info;
         
         return $item;
-    }
-    
-    /**
-    * Flag a item
-    *
-    * @param string $file File to Flag
-    *
-    * @return array
-    **/
-    public static function flag($file = null)
-    {
-        if (self::$flagged === null
-            && ($ret = Store::load('flagged.json')) !== false
-        ) {
-            self::$flagged = $ret;
-        } else if (self::$flagged === null) {
-            self::$flagged = array();
-        }
-        
-        if (is_null($file)) {
-            return self::$flagged;
-        }
-        
-        if (!in_array($file, self::$flagged)) {
-            // It's not set yet, so set it
-            self::$flagged[] = $file;
-        } else {
-            // it's set, so unset
-            $nr = array_search($file, self::$flagged);
-            unset(self::$flagged[$nr]);
-            self::$flagged = array_merge(self::$flagged);
-        }
-        Store::save('flagged.json', self::$flagged);
- 
-        return self::$flagged;    
-    }
-
-    /**
-    * Set and Get Unread Items
-    *
-    * @param array $add_unread List with items to set unread
-    * @param bool  $merge      Wether to Merge new array, or overwrite old one
-    *
-    * @return array
-    **/
-    public static function unread($add_unread = null, $merge = true)
-    {
-        if (self::$unread !== null) {
-            $unread = self::$unread;
-        } else if (($unread = Store::load('unread.json')) === false) {
-            $unread = array();
-        }
-        
-        self::$unread = $unread;
-
-        if (!is_array($add_unread)) {
-            return $unread;
-        }
-        
-        self::$unread = Store::save('unread.json', $add_unread, $merge);
-        
-        return self::$unread;
     }
 
 }

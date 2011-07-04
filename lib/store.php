@@ -48,6 +48,11 @@ if ( !defined('BLISS_VERSION') ) {
 **/
 class Store
 {
+    // Cache
+    protected static $cache = array(
+        'unread' => null,
+        'flagged' => null,
+    );
 
     /**
     * Store a variable to a json file
@@ -109,5 +114,42 @@ class Store
         return $json;
     }
 
-}
+    /**
+    * Toggle a Item in a File
+    *
+    * @param string $toggle File to use to store toggle
+    * @param string $what   What to toggle. Probably a filename
+    *
+    * @return array
+    **/
+    public static function toggle($toggle, $what = null)
+    {
+        $fname = $toggle . '.toggle.json';
+        if (self::$cache[$toggle] === null
+            && ($ret = self::load($fname)) !== false
+        ) {
+            self::$cache[$toggle] = $ret;
+        } else if (self::$cache[$toggle] === null) {
+            self::$cache[$toggle] = array();
+        }
+        
+        if (is_null($what)) {
+            return self::$cache[$toggle];
+        }
+        
+        if (!in_array($what, self::$cache[$toggle])) {
+            // It's not set yet, so set it
+            self::$cache[$toggle][] = $what;
+        } else {
+            // it's set, so unset
+            $nr = array_search($what, self::$cache[$toggle]);
+            unset(self::$cache[$toggle][$nr]);
+            self::$cache[$toggle] = array_merge(self::$cache[$toggle]);
+        }
+        self::save($fname, self::$cache[$toggle]);
  
+        return self::$cache[$toggle];
+    }
+
+}
+

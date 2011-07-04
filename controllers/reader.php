@@ -70,19 +70,17 @@ class Reader
     **/
     public static function archive()
     {
-        Feeds::flag();
-        
         $articles = array();
         
         foreach (Feeds::filelist(mktime()) as $item) {
             $day = new DateTime("@" . $item['timestamp']);
-            
             $articles[$day->format('Y-m-d')][] = $item;
         }
         
         $data = array(
             'title' => 'Archive',
             'archives' => $articles,
+            'flagged' => Store::toggle('flagged'),
             'titles' => Feeds::titles(),
         );
         
@@ -306,8 +304,8 @@ class Reader
         
         $data = array(
             'entry' => $next,
-            'flagged' => in_array($next->info->relative, Feeds::flag()),
-            'unread' => in_array($next->info->relative, Feeds::unread()),
+            'flagged' => in_array($next->info->relative, Store::toggle('flagged')),
+            'unread' => in_array($next->info->relative, Store::toggle('unread')),
         );
 
         return Flight::render('article.snippet.tpl.html', $data);
@@ -328,17 +326,13 @@ class Reader
             exit ("Invalid POST");
         }
         
-        $unread = Feeds::unread();
-        
+        $unread = Store::toggle('unread');
         $found = array_search($name, $unread);
         
         if ($found === false) {
             exit ("Can't Find Your Article!");
         }
-        
-        unset($unread[$found]);
-        
-        Feeds::unread($unread, false);
+        Store::toggle('unread', $name);
         
         echo json_encode("OK");
     }
@@ -354,7 +348,7 @@ class Reader
             ? $_POST['name']
             : null;
             
-        $flagged = Feeds::flag($name);
+        $flagged = Store::toggle('flagged', $name);
         
         if (!in_array($name, $flagged)) {
             $ret = Flight::get('base_uri') . 'public/tag_blue_add.png';

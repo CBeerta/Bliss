@@ -276,7 +276,7 @@ class Fetch
                 
                 // Check if file exists, if not -> unread
                 if (!file_exists($outfile)) {
-                    $unread[] = $feed . '/' . basename($outfile);
+                    Store::toggle('unread', $feed . '/' . basename($outfile));
                 }
 
                 Store::save($outfile, $content);
@@ -311,10 +311,6 @@ class Fetch
             Store::save("{$dir}/feed.info", $feed_info);
             unset($newest);
         }
-        
-        // Set New Items as Unread
-        Feeds::unread($unread);
-        
         // Sanity Check, load all files, anc check them
         Feeds::filelist(mktime(), $errors);
         error_log(print_r($errors, true));
@@ -334,7 +330,7 @@ class Fetch
             die($e->getMessage()."\n");
         }
     
-        $flagged = Feeds::flag();
+        $flagged = Store::toggle('flagged');
         $count = 0;
         $total = 0;
         
@@ -368,26 +364,26 @@ class Fetch
         /**
         * Expire Nonexisting Unread Items from json file
         **/
-        $unread = Feeds::unread(array());
-        foreach ($unread as $k => $v) {
-            if (file_exists(Feeds::option('data_dir') . '/' . $v)) {
-                continue;
-            }
-            unset($unread[$k]);
-        }
-        Feeds::unread($unread, false);
-        
-        /**
-        * Expire Nonexisting Flagged items from json file.
-        * This in theory should never happen unless the user deletes stuff
-        **/
-        $flagged = Feeds::flag();
+        $flagged = Store::toggle('unread');
         foreach ($flagged as $name) {
             if (file_exists(Feeds::option('data_dir') . '/' . $name)) {
                 continue;
             }
             
-            Feeds::flag($name);
+            Store::toggle('unread', $name);
+        }
+        
+        /**
+        * Expire Nonexisting Flagged items from json file.
+        * This in theory should never happen unless the user deletes stuff
+        **/
+        $flagged = Store::toggle('flagged');
+        foreach ($flagged as $name) {
+            if (file_exists(Feeds::option('data_dir') . '/' . $name)) {
+                continue;
+            }
+            
+            Store::toggle('flagged', $name);
         }
         
         error_log("Expired {$count} Articles.");    
