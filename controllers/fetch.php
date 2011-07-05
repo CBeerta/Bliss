@@ -290,13 +290,7 @@ class Fetch
                     * This is a freshly added feed that we can skip for dupe
                     * check alltogether
                     **/
-                } else if (is_array($glob) && count($glob) > 2) {
-                    /**
-                    * This Feed has all items with the same name, which means
-                    * That it does not set a guid properly
-                    * And we can't check for duplicate posts
-                    **/
-                } else if (is_array($glob) && count($glob) > 1) {
+                } else if (is_array($glob) && count($glob) == 2) {
                     /**
                     * Remove The Older File.
                     **/
