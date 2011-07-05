@@ -91,6 +91,7 @@ function fillPage() {
         $(document).trigger('scroll');
     }
 
+    $('.updater').fadeOut("slow");
 }
 
 /**
@@ -145,7 +146,6 @@ function poll() {
         success: function(data) {
             if (data['updates_available'] == true) {
                 $('.updater').fadeIn('slow');
-                //document.title = "Bliss - New Articles Available!";
             }
         }
     })

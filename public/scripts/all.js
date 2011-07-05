@@ -115,8 +115,6 @@ $(document).ready(function() {
             document.title = "Bliss - " + $(event.target).attr('title');
         } else if ($(event.target).is('.updater')) {
             fillPage();
-            $('.updater').fadeOut("slow");
-            //document.title = "Bliss";
         } else if ($(event.target).is('article header .flag')) {
             var id = $(event.target).attr('name');
             $.ajax({
