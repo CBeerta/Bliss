@@ -49,6 +49,7 @@ class Feeds
     // Class configuration
     protected static $config = array(
         'sources' => array(),
+        'filters' => array(),
         'opml' => null,
         'data_dir' => 'data/',
         'cache_dir' => 'data/cache/',

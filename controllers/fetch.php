@@ -133,6 +133,25 @@ class Fetch
     }
 
     /**
+    * Check for a Article Title if it is filtered
+    *
+    * @param string $title Title to check
+    *
+    * @return book
+    **/
+    public static function isFiltered($title)
+    {
+        foreach (Feeds::option('filters') as $filter) {
+        
+            if (preg_match("#{$filter}#i", $title)) {
+                return true;
+            }
+        
+        }
+        return false;
+    }
+    
+    /**
     * Update Feeds
     *
     * @return void
@@ -236,6 +255,12 @@ class Fetch
                 if ($article_time <= $expire_before) {
                     // Skip items that are to old already
                     break;
+                }
+                
+                if (self::isFiltered($item->get_title())) {
+                    // Skip articles that are filtered
+                    error_log("Filtered Item: " . $item->get_title());
+                    continue;
                 }
 
                 $guid = Helpers::buildSlug($item->get_id());

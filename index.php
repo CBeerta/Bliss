@@ -74,6 +74,7 @@ foreach ( $config as $k => $v ) {
     Feeds::option($k, $v);
 }
 Feeds::option('sources', $config['feeds']['sources']);
+Feeds::option('filters', $config['filters']['filter']);
 
 /**
 * Register Smarty as View for Flight

@@ -36,3 +36,9 @@ sources[] = http://claus.beerta.net/blog/feed
 ;sources[] = http://linuxart.com/sitenews.xml
 ;sources[] = http://www.kerneltrap.org/node/feed
 ;sources[] = http://www.php.net/news.rss
+
+
+[filters]
+; List of filters to apply to Article Titles to ignore
+;filter[] = .*Blah[0-9]+
+;filter[] = Monitoring
