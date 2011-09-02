@@ -28,7 +28,9 @@ function success_or_fail(status, msg) {
     }
 }
 
-
+/**
+* Delete a Feed
+**/
 function delete_feed(uri, id) {
     var answer = confirm("Are You sure You want to Remove: \n" + uri);
     
@@ -49,7 +51,6 @@ function delete_feed(uri, id) {
     });
 }
 
-
 /**
 * Initialy Page Load completed
 **/
@@ -68,22 +69,6 @@ $(document).ready(function() {
     });
 
     /**
-    * Activate fancybox if its loaded
-    **/
-    if (window.jQuery.fancybox) {
-        $('a.fancyme').fancybox({
-            'titlePosition': 'below',
-            'hideOnContentClick': true,
-            'centerOnScroll': true,
-        	'padding'			: 0,
-			'transitionIn'		: 'none',
-			'transitionOut'		: 'none',
-			'type'              : 'image',
-			'changeFade'        : 0
-        });
-    }
-
-    /**
     * Move the input box to our add feed icon
     **/    
     $('.pulldown #options').css(
@@ -97,7 +82,7 @@ $(document).ready(function() {
     $('.pulldown #handle').click(function() {
         $('.pulldown #options').fadeToggle();
     });
-
+    
     /**
     * Submit a new Feed Url
     **/
@@ -118,6 +103,65 @@ $(document).ready(function() {
             }
         });          
         return false;
+    });
+
+    /**
+    * Handle Mouse Clicks in the Window
+    **/
+    $('body').click(function(event) {
+        parent = $(event.target).parent();
+        
+        if ($(event.target).is('.pulldown img')) {
+            document.title = "Bliss - " + $(event.target).attr('title');
+        } else if ($(event.target).is('.updater')) {
+            fillPage();
+        } else if ($(event.target).is('article header .flag')) {
+            var id = $(event.target).attr('name');
+            $.ajax({
+                type: "POST",
+                url: "flag",
+                dataType: 'json',
+                async: true,
+                data: { 'name': id },
+                success: function(data) {
+                    $(event.target).attr('src', data);
+                }
+            });
+        } else if ($(parent).is('.enclosures .fancyme')) {
+            $.fancybox({
+                'padding'		: 0,
+                'href'			: $(parent).attr('href'),
+                'transitionIn'	: 'elastic',
+                'transitionOut'	: 'elastic'
+            });        
+            return false;
+        } else if ($(event.target).is('article img')
+            && $(parent).is('article a')
+            && $(parent).attr('href').match(/.*\.(jpg|jpeg|png|gif|bmp).*/i)
+            && !$(parent).attr('href').match(/\?/)
+        ) {
+            /**
+            * Check if clicked link is a img that links to an image
+            * and run fancybox on it if it is
+            **/
+            $.fancybox({
+                'padding'		: 0,
+                'href'			: $(parent).attr('href'),
+                'transitionIn'	: 'elastic',
+                'transitionOut'	: 'elastic'
+            });        
+            return false;
+        } else if ($(event.target).is('article a')) {
+            // Force article links to open  in a new window
+            window.open($(event.target).attr('href'));
+            return false;
+        } else if ($(event.target).is('article img')
+            && $(parent).is('article a')
+        ) {
+            // Force article links to open in a new window
+            window.open($(parent).attr('href'));
+            return false;
+        }
     });
 
     

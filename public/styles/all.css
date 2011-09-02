@@ -88,6 +88,11 @@ article header {
 article {
     margin: 0 0 20px 0;
 }
+article.unread {
+    padding: 4px;
+    border: 2px solid #B6DCF2;
+    border-radius: 4px 4px 4px 4px;
+}
 article .content {
     margin-left: 15px;
 }
@@ -95,8 +100,6 @@ article .content h1,h2,h3,h4,h5 {
     font-weight: normal;
     font-size: 100%;
 }
-
-
 article header img {
     cursor: pointer;
     float: left;
@@ -272,23 +275,33 @@ article img {
 .gallery img {
     vertical-align: middle;
     text-align: center; 
-    padding: 5px;
-}
-.gallery div#image{
-    display: table-cell;
-    vertical-align: middle;
-    text-align: center; 
-    min-width: 210px;
-    min-height: 210px;
+    padding: 2px;
 }
 .gallery a h1 {
     text-shadow: 1px 1px 1px #aaa;
-    margin-top: 20px;
+    margin-top: 10px;
     font-size: 167%;
     color: #333;
     text-decoration: none;
     text-align: left;
 }    
+
+/* ########## Empty Pages ################################# */
+.nothing {
+    background-color: #f9f9f9;
+    text-align: center;
+    padding: 50px;
+    margin: 20px;
+    border: 2px solid #B6DCF2;
+    border-radius: 10px 10px 10px 10px;
+}
+.nothing h1 {
+	font-size: 167%;
+}
+.nothing a {
+    color: #33a;
+}
+
 
 /* ########## Plugins ##################################### */
 article .nzbmovie img {
@@ -314,11 +327,10 @@ article .enclosures p {
     padding: 5px;
 }
 
-
 footer {
     color: #aaa;
     text-align: center;
-    margin-top: 25px;
+    padding: 25px 0 10px 0;
 }
 footer a {
     color: #888;

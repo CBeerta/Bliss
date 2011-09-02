@@ -54,11 +54,13 @@ class Reader
     public static function index()
     {
         /**
-        * We dont actually produce anything usefull on our initial load
+        * This index page doesnt produce any content on the initial load
         * The page is filled with content by jquery
         **/
-        Flight::view()->assign('is_index', true);
-        return Flight::render('index.tpl.html');
+        $data = array(
+            'is_index' => true,
+        );
+        return Flight::render('index.tpl.html', $data);
     }
 
     /**
@@ -68,18 +70,17 @@ class Reader
     **/
     public static function archive()
     {
-        Feeds::flag();
-        
         $articles = array();
         
         foreach (Feeds::filelist(mktime()) as $item) {
             $day = new DateTime("@" . $item['timestamp']);
-            
             $articles[$day->format('Y-m-d')][] = $item;
         }
         
         $data = array(
+            'title' => 'Archive',
             'archives' => $articles,
+            'flagged' => Store::toggle('flagged'),
             'titles' => Feeds::titles(),
         );
         
@@ -93,7 +94,49 @@ class Reader
     **/
     public static function gallery()
     {
-        return Flight::render('gallery.tpl.html');
+        $data = array('title' => 'Image Gallery');
+        return Flight::render('gallery.tpl.html', $data);
+    }
+
+    /**
+    * Return something for empty pages
+    *
+    * @param string $page What page is loaded to display an empty message for
+    *
+    * @return html
+    **/
+    public static function nothing($page)
+    {
+        preg_match('#^select-(.*?)-(.*)$#i', $page, $matches);
+
+        $text = null;
+                
+        switch ($matches[1]) {
+        case 'flagged':
+            $text = "You have no Flagged Articles";
+            break;
+        case 'feed':
+            $text = "This Feed has no Articles";
+            break;
+        case 'unread':
+            $text = "No Unread Articles";
+            break;
+        case 'article':
+            $text = "The Selected Article can't be found";
+            break;
+        case 'day':
+            $text = "This Day has no Articles";
+            break;
+        default:
+            break;
+        }        
+
+        $data = array(
+            'text' => $text,
+            'page' => $page,
+        );
+
+        return Flight::render('nothing.snippet.tpl.html', $data);
     }
 
     /**
@@ -106,10 +149,23 @@ class Reader
     public static function galleryPage($page)
     {
         $images = array();
+        $gallery = array();
         $data_dir = rtrim(Feeds::option('data_dir'), '/');
         $glob = glob($data_dir . '/*/enclosures/*.thumb.png');
 
-        sort($glob);
+        $sortmtime = create_function(
+            '$file1, $file2',
+            '
+            $time1 = filemtime($file1);
+            $time2 = filemtime($file2);
+            if ($time1 == $time2) {
+                return 0;
+            }
+            return ($time1 < $time2) ? 1 : -1;
+            '
+        );
+        
+        usort($glob, $sortmtime);
 
         foreach ($glob as $img) {
             if (!preg_match(
@@ -120,21 +176,20 @@ class Reader
                 continue;
             }
             
-            if (!is_file(dirname($img) . '/' . $matches[2])) {
-                continue;
-            }
-            
             $images[] = array(
                 'thumb' => basename($matches[0]),
                 'feed' => $matches[1],
                 'id' => $matches[3],
-                'width' => $matches[4],
-                'height' => $matches[5],
             );
         }
 
-        $images = array_slice($images, 50 * $page, 50);
-
+        $images = array_slice($images, 30 * $page, 30);
+        
+        if (empty($images)) {
+            return false;
+        }
+        
+        /*
         $feeds = Feeds::feedinfo();
         $feedinfo = array();
         
@@ -142,10 +197,10 @@ class Reader
             $feedinfo[$v->feed] = $v;
         }
         
-        $gallery = array();
         foreach ($images as $image) {
             $gallery[$image['feed']][] = $image;
         }
+        */
         
         $data = array(
             'page' => $page,
@@ -261,10 +316,37 @@ class Reader
         
         $data = array(
             'entry' => $next,
-            'flagged' => in_array($next->info->relative, Feeds::flag()),
+            'flagged' => in_array($next->info->relative, Store::toggle('flagged')),
+            'unread' => in_array($next->info->relative, Store::toggle('unread')),
         );
 
         return Flight::render('article.snippet.tpl.html', $data);
+    }
+
+    /**
+    * Mark an article as read
+    *
+    * @return json
+    **/
+    public static function read()
+    {
+        $name = (!empty($_POST['name']) && is_string($_POST['name']))
+            ? $_POST['name']
+            : null;
+            
+        if (is_null($name)) {
+            exit ("Invalid POST");
+        }
+        
+        $unread = Store::toggle('unread');
+        $found = array_search($name, $unread);
+        
+        if ($found === false) {
+            exit ("Can't Find Your Article!");
+        }
+        Store::toggle('unread', $name);
+        
+        echo json_encode("OK");
     }
 
     /**
@@ -278,7 +360,7 @@ class Reader
             ? $_POST['name']
             : null;
             
-        $flagged = Feeds::flag($name);
+        $flagged = Store::toggle('flagged', $name);
         
         if (!in_array($name, $flagged)) {
             $ret = Flight::get('base_uri') . 'public/tag_blue_add.png';
@@ -305,7 +387,7 @@ class Reader
         if (is_null($first_id)) {
             exit ("Invalid POST");
         }
-
+        
         $first = Feeds::next(mktime(), $filter);
         
         if ($first->info->timestamp > $first_id) {

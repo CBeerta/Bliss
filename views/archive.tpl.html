@@ -4,13 +4,13 @@
 <div class="archive" id="content">
 <h1>Archives</h1>
 {foreach $archives as $day}
-<h2><a href="{$base_uri}#select-date-{$day@key}">
+<h2><a href="{$base_uri}#select-day-{$day@key}">
 {$day@key|date_format:"%A, %B %e, %Y"}
 </a></h2>
 <ul>
 {foreach $day as $item}
 <li>    
-{if $item.flagged}
+{if in_array($item.relative, $flagged)}
     <img src="{$base_uri}public/tag_blue_16.png" width="16" height="16">
 {/if}
     <a href="{$base_uri}#select-feed-{$item.feed}">{$item.title}</a>:

@@ -186,7 +186,6 @@ class Fetch
         array_splice($strip_htmltags, array_search('embed', $strip_htmltags), 1);
          
         $rss->strip_htmltags($strip_htmltags);
- 
 
         try {
             $expire_before = new DateTime(Feeds::option('expire_before'));
@@ -195,6 +194,7 @@ class Fetch
         }
         
         $plugins = Helpers::findPlugins();
+        $unread = array();
         
         foreach (Feeds::feedlist()->feeds as $feed_uri) {
             error_log("Fetching: {$feed_uri}");
@@ -235,7 +235,6 @@ class Fetch
             );
             
             $title_list = array();
-            
             
             // Set _current_feed here, which is later used by cacheName
             // and the blisscache stuff
@@ -300,7 +299,12 @@ class Fetch
                     unset($p);
                 }
                 
-                file_put_contents($outfile, json_encode($content));
+                // Check if file exists, if not -> unread
+                if (!file_exists($outfile)) {
+                    Store::toggle('unread', $feed . '/' . basename($outfile));
+                }
+
+                Store::save($outfile, $content);
                 
                 /**
                 * Check for Duplicates
@@ -311,24 +315,19 @@ class Fetch
                     * This is a freshly added feed that we can skip for dupe
                     * check alltogether
                     **/
-                } else if (is_array($glob) && count($glob) > 2) {
-                    /**
-                    * This Feed has all items with the same name, which means
-                    * That it does not set a guid properly
-                    * And we can't check for duplicate posts
-                    **/
-                } else if (is_array($glob) && count($glob) > 1) {
+                } else if (is_array($glob) && count($glob) == 2) {
                     /**
                     * Remove The Older File.
                     **/
                     sort($glob);
                     unlink($glob[0]);
+                    continue;
                 }
-
+                
             } // items foreach 
 
             // Save feed info
-            file_put_contents("{$dir}/feed.info", json_encode($feed_info), LOCK_EX);
+            Store::save("{$dir}/feed.info", $feed_info);
             unset($newest);
         }
         // Sanity Check, load all files, anc check them
@@ -350,7 +349,7 @@ class Fetch
             die($e->getMessage()."\n");
         }
     
-        $flagged = Feeds::flag();
+        $flagged = Store::toggle('flagged');
         $count = 0;
         $total = 0;
         
@@ -379,6 +378,31 @@ class Fetch
                 "You have {$total} Articles stored." . 
                 "Consider Tuning the Expire of Articles."
             );
+        }
+        
+        /**
+        * Expire Nonexisting Unread Items from json file
+        **/
+        $flagged = Store::toggle('unread');
+        foreach ($flagged as $name) {
+            if (file_exists(Feeds::option('data_dir') . '/' . $name)) {
+                continue;
+            }
+            
+            Store::toggle('unread', $name);
+        }
+        
+        /**
+        * Expire Nonexisting Flagged items from json file.
+        * This in theory should never happen unless the user deletes stuff
+        **/
+        $flagged = Store::toggle('flagged');
+        foreach ($flagged as $name) {
+            if (file_exists(Feeds::option('data_dir') . '/' . $name)) {
+                continue;
+            }
+            
+            Store::toggle('flagged', $name);
         }
         
         error_log("Expired {$count} Articles.");    
@@ -436,13 +460,39 @@ class Fetch
             }
 
             $dst = Helpers::imgResize($src, $thumb_size, $thumb_size, false);
-            if ($dst !== false) {
-                $w = imagesx($dst);
-                $h = imagesy($dst);
-
-                imagepng($dst, $dst_fname, 6);
-                $count++;
+            if ($dst === false) {
+                continue;
             }
+
+            $w = imagesx($dst);
+            $h = imagesy($dst);
+            
+            /**
+            * Put a Thumb Size canvas around it so all thumbs are the same size
+            **/
+            $canvas = imagecreatetruecolor($thumb_size, $thumb_size);
+            imagesavealpha($canvas, true);
+            $trans_color = imagecolorallocatealpha($canvas, 0, 0, 0, 127);
+            imagefill($canvas, 0, 0, $trans_color);
+
+            $canvas_center = array($thumb_size/2, $thumb_size/2);
+            $dst_center = array($w/2, $h/2);
+            
+            imagecopyresampled(
+                $canvas, 
+                $dst, 
+                $canvas_center[0] - $dst_center[0],
+                $canvas_center[1] - $dst_center[1],
+                0,
+                0,
+                $w,
+                $h,
+                $w,
+                $h
+            );
+                        
+            imagepng($canvas, $dst_fname, 6);
+            $count++;
         }
         error_log("Created {$count} Thumbnails.");    
     }

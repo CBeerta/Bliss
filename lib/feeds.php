@@ -63,9 +63,6 @@ class Feeds
     // Cache filelist for multiple "next" calls
     protected static $glob = null;
 
-    // Cache flagged
-    protected static $flagged = null;
-
     /**
     * Configure Feeds Class
     *
@@ -82,7 +79,7 @@ class Feeds
         
         self::$config[$key] = $value;
     }
-    
+
     /**
     * The configured Feed Uris
     *
@@ -112,19 +109,13 @@ class Feeds
         }
         
         //Third: Feeds subitted through the site
-        $fe_feeds = array();
-        $save_file = self::$config['data_dir'] . '/feeds.json';
-        if (is_file($save_file) && is_readable($save_file)) {
-            $ret = json_decode(file_get_contents($save_file));
-            if (!is_array($ret)) {
-                break;
-            }
+        $ret = Store::load('feeds.json');
+        if ($ret !== false) {
             foreach ($ret as $source) {
                 $feeds[] = $source;
                 $sources[] = 'json';
             }
         }
-        
         return (object) array('feeds' => $feeds, 'sources' => $sources);
     }
     
@@ -143,7 +134,7 @@ class Feeds
         $feedinfo = array();
          
         foreach (glob($data_dir . '/*/feed.info') as $file) {        
-            $ret = json_decode(file_get_contents($file));
+            $ret = Store::load($file);
             
             if (!is_object($ret)) {
                 continue;
@@ -237,22 +228,14 @@ class Feeds
             }
             
             if (!isset($feed_infos[$dir])) {
-                $info = json_decode(file_get_contents($dir . '/feed.info'));
+                $info = Store::load($dir . '/feed.info');
                 if ($info === false) {
                     $errors[] = "{$dir}/feed.info Unreadable";
                     continue;
                 }
                 $feed_infos[$dir] = $info;
             }
-            
-            if (!is_null(self::$flagged) && in_array($relative, self::$flagged)) {
-                $flagged = true;
-            } else if (!is_null(self::$flagged)) {
-                $flagged = false;
-            } else {
-                $flagged = null;
-            }
-                
+
             $files[$timestamp] = array_merge(
                 array(
                     'timestamp' => $timestamp,
@@ -262,7 +245,6 @@ class Feeds
                     'fname' => $fname,
                     'guid' => $guid,
                     'relative' => $relative,
-                    'flagged' => $flagged,
                 ), 
                 (array) $feed_infos[$dir]
             );
@@ -286,13 +268,7 @@ class Feeds
         $titles = array();
         
         foreach ($filelist as $item) {
-            $file = file_get_contents($item['file']);
-            
-            if (!$file) {
-                continue;
-            }
-            
-            $article = json_decode($file);
+            $article = Store::load($file);
             $titles[$item['dir']][$item['fname']] = $article->title;
         }
         
@@ -318,7 +294,7 @@ class Feeds
             switch ($matches[1]) {
             
             case 'flagged':
-                if (in_array($item['relative'], self::flag())) {
+                if (in_array($item['relative'], Store::toggle('flagged'))) {
                     break 2;
                 }
                 array_shift($filelist);
@@ -331,6 +307,13 @@ class Feeds
                 array_shift($filelist);
                 break;
 
+            case 'unread':
+                if (in_array($item['relative'], Store::toggle('unread'))) {
+                    break 2;
+                }
+                array_shift($filelist);
+                break;
+
             case 'article':
                 if ($item['fname'] == $matches[2]) {
                     break 2;
@@ -338,7 +321,7 @@ class Feeds
                 array_shift($filelist);
                 break;
                 
-            case 'date':
+            case 'day':
                 try {
                     $today = new DateTime(urldecode($matches[2]));
                     $itemdate = new DateTime("@" . $item['timestamp']);
@@ -346,14 +329,14 @@ class Feeds
                     break;
                 }
         
-                if ($today->format('z') == $itemdate->format('z')) {
+                if ($today->format('Y-z') == $itemdate->format('Y-z')) {
                     break 2;
                 }
                 array_shift($filelist);
                 break;
 
             default:
-                break;
+                break 2;
             
             }                                
 
@@ -365,48 +348,10 @@ class Feeds
             return false;
         }
 
-        $item = json_decode(file_get_contents($info['file']));
+        $item = Store::load($info['relative']);
         $item->info = (object) $info;
         
         return $item;
-    }
-    
-    /**
-    * Flag a item
-    *
-    * @param string $file File to Flag
-    *
-    * @return array
-    **/
-    public static function flag($file = null)
-    {
-        $flag_file = self::$config['data_dir'] . '/flagged.json';
-        
-        if (self::$flagged === null
-            && is_file($flag_file) 
-            && ($ret = file_get_contents($flag_file)) !== false
-        ) {
-            self::$flagged = (array) json_decode($ret);
-        } else if (self::$flagged === null) {
-            self::$flagged = array();
-        }
-        
-        if (is_null($file)) {
-            return self::$flagged;
-        }
-        
-        if (!in_array($file, self::$flagged)) {
-            // It's not set yet, so set it
-            self::$flagged[] = $file;
-        } else {
-            // it's set, so unset
-            $nr = array_search($file, self::$flagged);
-            unset(self::$flagged[$nr]);
-            self::$flagged = array_merge(self::$flagged);
-        }
-        file_put_contents($flag_file, json_encode(self::$flagged), LOCK_EX);
- 
-        return self::$flagged;    
     }
 
 }

@@ -31,7 +31,7 @@
 * @link     http://claus.beerta.de/
 **/
 
-define('BLISS_VERSION', '2.1.0');
+define('BLISS_VERSION', '2.1.5');
 define('BLISS_BASE_DIR', rtrim(__DIR__, '/'));
 
 require_once __DIR__ . '/vendor/Smarty/libs/Smarty.class.php';
@@ -98,11 +98,14 @@ Flight::map(
 $base_uri = "//{$_SERVER['HTTP_HOST']}" . dirname($_SERVER['SCRIPT_NAME']);
 Flight::set('base_uri', $base_uri);
 Flight::view()->assign('base_uri', $base_uri);
+Flight::view()->assign('bliss_version', BLISS_VERSION);
 
 /* ######### Ajax requests ################################ */
 Flight::route('POST /load_next/@filter', array('Reader', 'next'));
 Flight::route('POST /poll/@filter', array('Reader', 'poll'));
 Flight::route('POST /flag', array('Reader', 'flag'));
+Flight::route('POST /read', array('Reader', 'read'));
+Flight::route('GET /nothing/@filter', array('Reader', 'nothing'));
 
 /* ######### Access to the image cache #################### */
 Flight::route('GET /image', array('Reader', 'image'));
