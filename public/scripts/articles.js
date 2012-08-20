@@ -4,7 +4,6 @@
 * return void
 **/
 function loadNext(fireScrollEvent) {
-    console.log(fireScrollEvent);
     var idlist = [];
     $('article.bliss-article').each(function(article) {
         idlist.push($(this).attr('id'));
@@ -164,7 +163,7 @@ $(document).ready(function() {
         //fireDelay: 250,
         bottomPixels: 50,
         insertAfter: "footer",
-        callback: function(p) {
+        callback: function() {
             loadNext();
         }
     });
@@ -239,12 +238,7 @@ $(document).ready(function() {
         }
     });
 
-    /*    
-    document.addEventListener("DOMNodeInserted", function() {
-        console.log("Something got inserted");
-    });
-    */
-    
+   
     /**
     * Fetch hash changes, and reload articles if needed
     **/
