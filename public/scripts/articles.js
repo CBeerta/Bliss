@@ -158,12 +158,15 @@ $(document).ready(function() {
     /**
     * Setup endlessScroll
     **/
-    $(document).endlessScroll({
+    $(window).endlessScroll({
         fireOnce: true,
+        ceaseFireOnEmpty: false,
         //fireDelay: 250,
-        bottomPixels: 50,
-        insertAfter: "footer",
-        callback: function() {
+        inflowPixels: 50,
+        callback: function(fireSequence, pageSequence, scrollDir) {
+            if (scrollDir == "prev") {
+                return false;
+            }
             loadNext();
         }
     });
@@ -202,6 +205,7 @@ $(document).ready(function() {
         
         // check which key was pressed
         switch (event.which) {
+        /*
         case 110: // 'n'
             if (next_pos != null) {
                 $(window).scrollTop(next_pos.top);
@@ -212,6 +216,7 @@ $(document).ready(function() {
                 $(window).scrollTop(prev_pos.top);
             }
             break;
+        */
         case 114: // 'r'
             fillPage();
             break;
