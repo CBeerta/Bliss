@@ -8,8 +8,10 @@ csstidy:
 
 phpcs:
 	phpcs $(SOURCES)
-	php index.php --update
-    
+
+build: phpcs
 
 
 # vim: set tabstop=4 shiftwidth=4 noexpandtab:
+
+
