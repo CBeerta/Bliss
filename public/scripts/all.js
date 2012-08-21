@@ -79,7 +79,8 @@ $(document).ready(function() {
     /**
     * Show or Hide the "Options" panel
     **/
-    $('.pulldown #handle').click(function() {
+    $('.pulldown #handle').unbind("click");
+    $('.pulldown #handle').click(function(e) {
         $('.pulldown #options').fadeToggle();
     });
     
@@ -111,7 +112,9 @@ $(document).ready(function() {
     $('body').click(function(event) {
         parent = $(event.target).parent();
         
-        if ($(event.target).is('.pulldown img')) {
+        if ($(event.target).is('.pulldown #handle')) {
+            return false;
+        } else if ($(event.target).is('.pulldown img')) {
             document.title = "Bliss - " + $(event.target).attr('title');
         } else if ($(event.target).is('.updater')) {
             fillPage();
@@ -163,6 +166,5 @@ $(document).ready(function() {
             return false;
         }
     });
-
     
 });

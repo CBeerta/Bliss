@@ -161,8 +161,8 @@ $(document).ready(function() {
     $(window).endlessScroll({
         fireOnce: true,
         ceaseFireOnEmpty: false,
-        //fireDelay: 250,
-        inflowPixels: 50,
+        fireDelay: 10,
+        inflowPixels: 100,
         callback: function(fireSequence, pageSequence, scrollDir) {
             if (scrollDir == "prev") {
                 return false;
@@ -184,7 +184,6 @@ $(document).ready(function() {
         // Find current first article        
         var ele = document.elementFromPoint(300, 40);
         var current_id = $(ele).closest('article.bliss-article');
-        
 
         // finde article above and below
         if (current_id.length != 0) {
@@ -201,7 +200,6 @@ $(document).ready(function() {
             var prev_pos = $(prev).position();
             var next_pos = $(next).position();
         }
-            
         
         // check which key was pressed
         switch (event.which) {

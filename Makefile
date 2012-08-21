@@ -1,6 +1,6 @@
 SOURCES = index.php controllers/*.php lib/*.php plugins/*.php
 
-all: csstidy phpcs
+all: csstidy phpcs update
 
 csstidy:
 	#csstidy public/css/style.css --silent=true | tr -d '\n' > public/css/style.compressed.css
@@ -10,6 +10,9 @@ phpcs:
 	phpcs $(SOURCES)
 
 build: phpcs
+
+update:
+	php index.php --update
 
 
 # vim: set tabstop=4 shiftwidth=4 noexpandtab:
