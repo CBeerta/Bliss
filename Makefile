@@ -9,10 +9,13 @@ csstidy:
 phpcs:
 	phpcs $(SOURCES)
 
+phpunit: 
+	phpunit tests
+
 lint:
 	for source in $(SOURCES) ; do php -l $$source || exit 1 ; done
 
-build: phpcs lint
+build: phpcs lint phpunit
 
 update:
 	php index.php --update

@@ -31,69 +31,10 @@
 * @link     http://claus.beerta.de/
 **/
 
-define('BLISS_VERSION', '2.1.5');
+define('BLISS_VERSION', '2.3.0');
 define('BLISS_BASE_DIR', rtrim(__DIR__, '/'));
 
-require_once __DIR__ . '/vendor/Smarty/libs/Smarty.class.php';
-require_once __DIR__ . '/vendor/flight/flight/Flight.php';
-
-/**
-* Autoloader for helpers and controllers
-*
-* @param string $class A Class file that is needed
-*
-* @return void
-**/
-function autoloader($class)
-{
-    $directories = array('/controllers/', '/lib/');
-    
-    foreach ($directories as $dir) {
-        if (file_exists(__DIR__ . $dir . strtolower($class) . '.php')) {
-            include_once __DIR__ . $dir . strtolower($class) . '.php';
-            return;
-        }
-    }
-
-    if (strstr($class, "Plugin") !== false) {
-        $name = str_replace('_', '.', strtolower($class));
-        if (file_exists(__DIR__ . '/plugins/' . $name . '.php')) {
-            include_once __DIR__ . '/plugins/' . $name . '.php';
-            return;
-        }
-    }
-}
-
-spl_autoload_register("autoloader");
-
-/**
-* Load config file and override default options
-**/    
-$config = parse_ini_file(__DIR__."/config.ini", true);
-foreach ( $config as $k => $v ) {
-    Feeds::option($k, $v);
-}
-Feeds::option('sources', $config['feeds']['sources']);
-Feeds::option('filters', $config['filters']['filter']);
-
-/**
-* Register Smarty as View for Flight
-**/
-Flight::register(
-    'view', 'Smarty', array(), function($smarty)
-    {
-        $smarty->compile_dir = Feeds::option('cache_dir');
-        $smarty->template_dir = __DIR__ . '/views/';
-        $smarty->debugging = false;
-    }
-);
-Flight::map(
-    'render', function($template, $data)
-    {
-        Flight::view()->assign($data);
-        Flight::view()->display($template);
-    }
-);
+require_once BLISS_BASE_DIR . '/setup.php';
 
 $base_uri = "//{$_SERVER['HTTP_HOST']}" . dirname($_SERVER['SCRIPT_NAME']);
 Flight::set('base_uri', $base_uri);
@@ -134,5 +75,3 @@ if (PHP_SAPI == 'cli') {
 } else {
     Flight::start();
 }
-
-

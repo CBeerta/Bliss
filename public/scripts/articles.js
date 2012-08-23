@@ -64,7 +64,7 @@ function fillPage() {
     
     for (var i=0 ; i<= 30 ; i++) {
         var footer = $('footer').offset();
-        if (!loadNext(false)) break;
+        if (!loadNext()) break;
 
         // Check if we actually loaded anything at all, and stop if we didn't
         if (!$('article.bliss-article').last().attr('id')) break;
