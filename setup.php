@@ -44,7 +44,7 @@ require_once __DIR__ . '/vendor/flight/flight/Flight.php';
 function autoloader($class)
 {
     $directories = array('/controllers/', '/lib/');
-    
+
     foreach ($directories as $dir) {
         if (file_exists(BLISS_BASE_DIR . $dir . strtolower($class) . '.php')) {
             include_once BLISS_BASE_DIR . $dir . strtolower($class) . '.php';
@@ -65,7 +65,7 @@ spl_autoload_register("autoloader");
 
 /**
 * Load config file and override default options
-**/    
+**/
 $config = parse_ini_file(BLISS_BASE_DIR."/config.ini", true);
 foreach ( $config as $k => $v ) {
     Feeds::option($k, $v);

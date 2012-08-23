@@ -224,12 +224,12 @@ $(document).ready(function() {
             setTimeout("checkRead(" + $(current_id).attr('id') + ")", 1000);
         }
 
-        if  ($(window).scrollTop() == $(document).height() - $(window).height()){
+        if  ($(window).scrollTop() >= $(document).height() - $(window).height() - 100){
            loadNext();
         }
 
         $('article.bliss-article.unread').each(function () { 
-            if($(this).offset().top + $(this).height() + 0 < $(window).scrollTop()) {       
+            if($(this).offset().top + $(this).height() + 100 < $(window).scrollTop()) {       
                 markRead($(this).attr('id'));
             }
         });

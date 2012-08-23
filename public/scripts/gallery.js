@@ -64,7 +64,7 @@ $(document).ready(function() {
     loadNext();
 
     $(document).scroll(function() {
-        if  ($(window).scrollTop() == $(document).height() - $(window).height()){
+        if  ($(window).scrollTop() >= $(document).height() - $(window).height() - 100){
             loadNext();
         }
     });
