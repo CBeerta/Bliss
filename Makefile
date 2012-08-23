@@ -9,7 +9,10 @@ csstidy:
 phpcs:
 	phpcs $(SOURCES)
 
-build: phpcs
+lint:
+	for source in $(SOURCES) ; do php -l $$source || exit 1 ; done
+
+build: phpcs lint
 
 update:
 	php index.php --update

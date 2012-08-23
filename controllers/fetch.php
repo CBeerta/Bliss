@@ -195,7 +195,7 @@ class Fetch
         
         $plugins = Helpers::findPlugins();
         $unread = array();
-        
+
         foreach (Feeds::feedlist()->feeds as $feed_uri) {
             error_log("Fetching: {$feed_uri}");
             
