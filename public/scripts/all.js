@@ -65,7 +65,7 @@ $(document).ready(function() {
         $(this).show();
     })
     .ajaxStop(function() {
-        $(this).hide();
+        $(this).fadeOut();
     });
 
     /**

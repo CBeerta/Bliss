@@ -3,7 +3,7 @@
 *
 * return void
 **/
-function loadNext(fireScrollEvent) {
+function loadNext() {
     var idlist = [];
     $('article.bliss-article').each(function(article) {
         idlist.push($(this).attr('id'));
@@ -38,12 +38,6 @@ function loadNext(fireScrollEvent) {
                 // append
                 $("article.bliss-article#" + last_id).after(data);
             }
-            
-            if (fireScrollEvent != false) {
-                // Fire scroll event, to keep endlesscroll going
-                $(document).trigger('scroll');
-                setTimeout("$(document).trigger('scroll')", 150);
-            }
         }
     }).responseText;
         
@@ -68,7 +62,7 @@ function fillPage() {
     // reset limit
     document.there_is_no_more = undefined;
     
-    for (var i=0 ; i<= 20 ; i++) {
+    for (var i=0 ; i<= 30 ; i++) {
         var footer = $('footer').offset();
         if (!loadNext(false)) break;
 
@@ -89,18 +83,24 @@ function fillPage() {
     } else {
         $(document).trigger('scroll');
     }
-
-    $('.updater').fadeOut("slow");
 }
 
+function checkRead(id) {
+    var ele = document.elementFromPoint(300, 40);
+    var current_id = $(ele).closest('article.bliss-article');
+
+    if (current_id.length != 0 && id == $(current_id).attr('id')) {
+        markRead(id);
+    }
+
+}
 /**
 * Check if user is still over the reported article id
 * if so, send ajax request to mark article as read
 **/
 function markRead(id) {
-    var ele = document.elementFromPoint(300, 40);
-    var current_id = $(ele).closest('article.bliss-article');
-    
+    var current_id = $("article.bliss-article#" + id);
+
     if (current_id.length != 0 && id == $(current_id).attr('id')) {
         
         if ($(current_id).hasClass('unread')) {
@@ -154,22 +154,6 @@ function poll() {
 * Initialy Page Load completed
 **/
 $(document).ready(function() {
-    
-    /**
-    * Setup endlessScroll
-    **/
-    $(window).endlessScroll({
-        fireOnce: true,
-        ceaseFireOnEmpty: false,
-        fireDelay: 10,
-        inflowPixels: 100,
-        callback: function(fireSequence, pageSequence, scrollDir) {
-            if (scrollDir == "prev") {
-                return false;
-            }
-            loadNext();
-        }
-    });
     
     /**
     * Handle Keyboard navigation
@@ -237,10 +221,19 @@ $(document).ready(function() {
         var current_id = $(ele).closest('article.bliss-article');
         
         if (current_id.length != 0) {
-            setTimeout("markRead(" + $(current_id).attr('id') + ")", 1000);
+            setTimeout("checkRead(" + $(current_id).attr('id') + ")", 1000);
         }
-    });
 
+        if  ($(window).scrollTop() == $(document).height() - $(window).height()){
+           loadNext();
+        }
+
+        $('article.bliss-article.unread').each(function () { 
+            if($(this).offset().top + $(this).height() + 0 < $(window).scrollTop()) {       
+                markRead($(this).attr('id'));
+            }
+        });
+    });
    
     /**
     * Fetch hash changes, and reload articles if needed
@@ -254,4 +247,5 @@ $(document).ready(function() {
     
     /* Setup the poller */
     window.setInterval(poll, 60000);
+
 });

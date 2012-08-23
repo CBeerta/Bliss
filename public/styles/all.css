@@ -53,9 +53,8 @@ img {
 #spinner {
     display: none;
     position: fixed;
-    float: left;
-    right: 5px;
-    top: 5px;
+    right: 20px;
+    bottom: 20px;
 }
 .endless_scroll_loader { 
     position: fixed; 

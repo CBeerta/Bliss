@@ -52,8 +52,6 @@ worry about adding the RSS Feed as URL. Usually just adding a Page that has a Fe
 
 These Keyboard Commands exist currently:
 
-* `n` for Next Article
-* `p` for Previois Article
 * `r` to Reload all Articles
 	
 # TODO:
@@ -62,13 +60,11 @@ These Keyboard Commands exist currently:
 * Expire of the simplepie cache
 * Sortable Image Gallery
 * Search? (this is probably where i will regret most that i chose not to use a database)
-* Keyboard Nav needs work. We need to make sure a loadNext event loads enough content to allow scrolling to the next item. Maybe we can trick with padding here?
+* Keyboard Navigation needs work. We need to make sure a loadNext event loads enough content to allow scrolling to the next item. Maybe we can trick with padding here?
 
 # BUGS
 
 * It will likely not look good in Internet Explorer or Opera.
-* Fast scrolling causes the page to simply stop reloading.
-* Keyboard Navigation needs more work
 
 Probably alot more. Tested with a couple of feeds, but there are probably alot that don't work correct.
 

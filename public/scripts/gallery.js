@@ -57,18 +57,17 @@ function loadNext() {
 **/
 $(document).ready(function() {
 
-    $(document).endlessScroll({
-        fireOnce: true,
-        fireDelay: 250,
-        bottomPixels: 100,
-        callback: function(p) {
-            loadNext();
-        }
-    });
     
     /**
     * Initially load us one page
     **/
     loadNext();
+
+    $(document).scroll(function() {
+        if  ($(window).scrollTop() == $(document).height() - $(window).height()){
+            loadNext();
+        }
+    });
+
 
 });
