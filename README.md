@@ -1,5 +1,7 @@
 # Bliss
 
+[![Build Status](https://secure.travis-ci.org/CBeerta/Bliss.png?branch=master)](http://travis-ci.org/CBeerta/Bliss)
+
 Because reading my private, mostly NSFW RSS Feeds makes me a happy puppy.
 
 fka rssReader. see [link](http://claus.beerta.de/blog/09ce5c79e6426fcb5cbacf2b714c4edf) for my first release.
