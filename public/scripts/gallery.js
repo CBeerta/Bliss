@@ -6,6 +6,11 @@ function loadNext() {
         // prevent going back any further without having anything
         return false;
     }
+
+    if (document.blissIsLoading) {
+        return false;
+    }
+    document.blissIsLoading = true;
     
     if (last_page == undefined) {
         var page = 0;
@@ -20,7 +25,8 @@ function loadNext() {
         async: false,
         data: { 'page': page },
         success: function(data) {
-
+            document.blissIsLoading = false;
+            
             if (data.length == 0) {
                 document.there_is_no_more = true;
                 return false;

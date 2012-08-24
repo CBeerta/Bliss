@@ -21,12 +21,19 @@ function loadNext() {
         return false;
     }
 
+    if (document.blissIsLoading) {
+        return false;
+    }
+    document.blissIsLoading = true;
+
     var response = $.ajax({
         type: "POST",
         url: "load_next/" + filter,
         async: false,
         data: { 'last_id': last_id, 'idlist': idlist },
         success: function(data) {
+            document.blissIsLoading = false;
+
             if (data.length == 0) {
                 return false;
             }
@@ -217,6 +224,7 @@ $(document).ready(function() {
     * article
     **/
     $(document).scroll(function() {
+
         var ele = document.elementFromPoint(300, 40);
         var current_id = $(ele).closest('article.bliss-article');
         

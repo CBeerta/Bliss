@@ -69,6 +69,11 @@ $(document).ready(function() {
     });
 
     /**
+    * Make Sure only one is actively loading
+    **/
+    document.blissIsLoading = false;
+
+    /**
     * Move the input box to our add feed icon
     **/    
     $('.pulldown #options').css(
