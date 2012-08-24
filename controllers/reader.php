@@ -284,7 +284,7 @@ class Reader
             }
         }
         echo $img['body'];
-        exit;
+        return;
     }
 
     /**

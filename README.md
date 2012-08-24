@@ -60,7 +60,8 @@ These Keyboard Commands exist currently:
 * Expire of the simplepie cache
 * Sortable Image Gallery
 * Search? (this is probably where i will regret most that i chose not to use a database)
-* Keyboard Navigation needs work. We need to make sure a loadNext event loads enough content to allow scrolling to the next item. Maybe we can trick with padding here?
+* Keyboard Navigation needs completion 
+* More Unit Tests
 
 # BUGS
 

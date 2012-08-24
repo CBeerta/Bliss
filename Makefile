@@ -10,7 +10,8 @@ phpcs:
 	phpcs $(SOURCES)
 
 phpunit: 
-	phpunit tests
+	tar xzf tests/testdata.tar.gz
+	phpunit --strict tests
 
 lint:
 	for source in $(SOURCES) ; do php -l $$source || exit 1 ; done

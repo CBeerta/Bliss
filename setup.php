@@ -31,8 +31,8 @@
 * @link     http://claus.beerta.de/
 **/
 
-require_once __DIR__ . '/vendor/Smarty/libs/Smarty.class.php';
-require_once __DIR__ . '/vendor/flight/flight/Flight.php';
+require_once BLISS_BASE_DIR . '/vendor/Smarty/libs/Smarty.class.php';
+require_once BLISS_BASE_DIR . '/vendor/flight/flight/Flight.php';
 
 /**
 * Autoloader for helpers and controllers
@@ -80,7 +80,7 @@ Flight::register(
     'view', 'Smarty', array(), function($smarty)
     {
         $smarty->compile_dir = Feeds::option('cache_dir');
-        $smarty->template_dir = __DIR__ . '/views/';
+        $smarty->template_dir = BLISS_BASE_DIR . '/views/';
         $smarty->debugging = false;
     }
 );

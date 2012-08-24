@@ -49,9 +49,9 @@ class Manage
     /**
     * Manage current subscriptions
     *
-    * @return htmls
+    * @return html
     **/
-    public static function edit()
+    public static function feedlist()
     {
         $data = array(
             'title' => 'Manage Subscriptions',
@@ -69,8 +69,6 @@ class Manage
     **/
     public static function add()
     {
-        $save_file = Feeds::option('data_dir') . '/feeds.json';
-        
         $uri = (isset($_POST['uri']) && is_string($_POST['uri']))
             ? $_POST['uri']
             : null;
@@ -96,24 +94,22 @@ class Manage
             $reply['message'] = 'There is nothing at that URL';
             exit(json_encode($reply));
         }
-        
-        $feeds = array();
 
-        if (is_file($save_file) 
-            && is_readable($save_file)
-        ) {
-            $feeds = Store::load($save_file);
-            if ($feeds === false) {
-                $feeds = array();
-            } else if (in_array($uri, $feeds)) {
-                $reply['message'] = 'Already pulling that feed.';
-                exit(json_encode($reply));
-            }
+        // Check if the feed is already beeing pulled
+        $feedlist = Feeds::feedlist();
+        if (in_array($uri, $feedlist->feeds)) {
+            $reply['message'] = 'Already pulling that feed.';
+            exit(json_encode($reply));
+        }
+
+        $feeds = Store::load('feeds.json');
+        if ($feeds === false) {
+            $feeds = array();
         }
         
         $feeds[] = $uri;
         
-        if (Store::save($save_file, $feeds) === false) {
+        if (Store::save('feeds.json', $feeds) === false) {
             $reply['message'] = 'Unable to save feed info.';
             exit(json_encode($reply));
         }
@@ -136,8 +132,6 @@ class Manage
     **/
     public static function remove()
     {
-        $save_file = Feeds::option('data_dir') . '/feeds.json';
-        
         $uri = (isset($_POST['uri']) && is_string($_POST['uri']))
             ? $_POST['uri']
             : null;
@@ -149,7 +143,7 @@ class Manage
             exit(json_encode($reply));
         }
         
-        $feeds = Store::load($save_file);
+        $feeds = Store::load('feeds.json');
         
         if (!$feeds) {
             $reply['message'] = 'Can not load feeds.json file!';
@@ -167,7 +161,7 @@ class Manage
         unset($feeds[$found]);
         $feeds = array_merge($feeds);
 
-        if (Store::save($save_file, $feeds) === false) { 
+        if (Store::save('feeds.json', $feeds) === false) { 
             $reply['message'] = 'Unable to save feed info.';
             exit(json_encode($reply));
         }

@@ -22,8 +22,6 @@ cache_dir = ../cache
 ;gallery_minimum_image_size = 600
 
 
-
-
 ; You can add feeds in here, but those will not be manageable through
 ; the manage interface. 
 
@@ -32,6 +30,7 @@ cache_dir = ../cache
 
 [feeds]
 sources[] = http://claus.beerta.net/blog/feed
+sources[] = https://github.com/CBeerta.atom
 ;sources[] = http://kniebes.net/API/rss
 ;sources[] = http://linuxart.com/sitenews.xml
 ;sources[] = http://www.kerneltrap.org/node/feed
