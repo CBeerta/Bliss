@@ -45,6 +45,10 @@ function loadNext() {
                 // append
                 $("article.bliss-article#" + last_id).after(data);
             }
+            if ($('.updater').is(":visible")) {
+                // Remove update notice after something is loaded
+                $('.updater').fadeOut('slow');
+            }
         }
     }).responseText;
         
