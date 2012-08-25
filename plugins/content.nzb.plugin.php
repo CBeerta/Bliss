@@ -175,15 +175,25 @@ class Content_Nzb_Plugin implements Bliss_Content_Plugin
         }
 
         if (empty($tmdb->name)) {
-            error_log($item->title);
             return false;
         }
 
-        $item->title = $tmdb->name;
+        $images = array();
 
+        foreach ($tmdb->backdrops as $img) {
+            $images[$img->image->id][$img->image->size] = (array) $img->image;
+        }
 
-        Flight::view()->assign(array('json' => $tmdb, 'item' => $item));
+        Flight::view()->assign(
+            array(
+                'json' => $tmdb, 
+                'item' => $item, 
+                'images' => $images
+            )
+        );
+        
         $item->content = Flight::view()->fetch('plugins/tmdb.tpl.html');
+        $item->title = $tmdb->name;
 
         return $item;
     }

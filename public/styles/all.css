@@ -318,6 +318,16 @@ article .nzbmovie img {
 article .nzbmovie li {
     list-style: none;
 }
+article .nzbmovie h1 {
+    color: #333;
+    text-shadow: 1px 1px 1px #aaa;
+    font-size: 131%;
+    font-weight: bold;
+    padding: 10px 0 5px 0;
+    margin: 0px;
+    clear: both;
+}
+
 article .enclosures h1 {
     color: #333;
     text-shadow: 1px 1px 1px #aaa;

@@ -1,14 +1,27 @@
 <div class="nzbmovie">
-<img src="{$json->posters[2]->image->url}">
-<p>{$json->overview}</p>
-<ul>
-<li><a href="{$json->url}">TheMovie DB</a>
-<li><a href="http://www.imdb.com/title/{$json->imdb_id}">IMDB</a>
-<li>Released : {$json->released|date_format:"%a, %b %e, %Y"}
-<li>Popularity : {$json->popularity}
-<li>Rating : {$json->rating}
-<li>Votes: {$json->votes}
-<li>NZB Title: {$item->title}
-</ul>
+    <a href="{$json->posters[5]->image->url}">
+        <img src="{$json->posters[1]->image->url}">
+    </a>
+    <p>{$json->overview}</p>
+    <ul>
+        <li><a href="{$json->url}">TheMovie DB</a>
+        <li><a href="http://www.imdb.com/title/{$json->imdb_id}">IMDB</a>
+        <li>Released : {$json->released|date_format:"%a, %b %e, %Y"}
+        <li>Popularity : {$json->popularity}
+        <li>Rating : {$json->rating}
+        <li>Votes: {$json->votes}
+        <li>NZB Title: {$item->title}
+        <li>Genres: {foreach $json->genres as $genre}{$genre->name} {/foreach}
+    </ul>
+    <h1>Backdrops from TheMovieDB:</h1>
+    <div>
+    {foreach $json->backdrops as $img}
+    {if $img->image->height == '169'}
+    <a href="{$images[$img->image->id]['original']['url']}">
+        <img src="{$images[$img->image->id]['thumb']['url']}">
+    </a>
+    {/if}
+    {/foreach}
+    </div>
 </div>
 <div class="clearfix"></div>
