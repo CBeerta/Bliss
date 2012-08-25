@@ -60,13 +60,18 @@ class Store
     * @param string $filename Filename to put stuff into
     * @param mixed  $content  Content to store
     * @param bool   $merge    Wether to merge the old file or overwrite it
+    * @param string $dirname  Which directory from config to store file in
     *
     * @return array
     **/
-    public static function save($filename, $content, $merge = false)
-    {
-        $data_dir = rtrim(Feeds::option('data_dir'), '/');
-        
+    public static function save(
+        $filename, 
+        $content, 
+        $merge = false, 
+        $dirname = 'data_dir'
+    ) {
+        $data_dir = rtrim(Feeds::option($dirname), '/');
+
         if (strstr($filename, $data_dir . '/') === false) {
             $filename = $data_dir . '/' . $filename;
         }
@@ -92,12 +97,13 @@ class Store
     * Load a JSON file
     *
     * @param string $filename Filename to put stuff into
+    * @param string $dirname  Which directory from config to load file from
     *
     * @return mixed
     **/
-    public static function load($filename)
+    public static function load($filename, $dirname = 'data_dir')
     {
-        $data_dir = rtrim(Feeds::option('data_dir'), '/');
+        $data_dir = rtrim(Feeds::option($dirname), '/');
 
         if (strstr($filename, $data_dir . '/') === false) {
             $filename = $data_dir . '/' . $filename;

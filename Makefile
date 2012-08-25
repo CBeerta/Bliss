@@ -10,6 +10,7 @@ phpcs:
 	phpcs $(SOURCES)
 
 phpunit: 
+	rm -f data/*json
 	tar xzf tests/testdata.tar.gz
 	phpunit --strict tests
 

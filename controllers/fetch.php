@@ -282,11 +282,6 @@ class Fetch
                     'source' => $item->get_source(),
                     'id' => $item->get_id(),
                 );
-                
-                if (!isset($newest)) {
-                    $newest = $content;
-                    $feed_info->newest_article = $content->date;
-                }
 
                 /**
                 * Apply Content Plugins
@@ -296,7 +291,17 @@ class Fetch
                     if ($p->match($feed_uri)) {
                         $content = $p->apply($content);
                     }
+
+                    if ($content === false) {
+                        // Skip Item
+                        continue 2;
+                    }
                     unset($p);
+                }
+
+                if (!isset($newest)) {
+                    $newest = $content;
+                    $feed_info->newest_article = $content->date;
                 }
                 
                 // Check if file exists, if not -> unread
