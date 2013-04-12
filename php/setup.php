@@ -62,6 +62,8 @@ function autoloader($class)
 }
 
 spl_autoload_register("autoloader");
+date_default_timezone_set('GMT');
+
 
 /**
 * Load config file and override default options
