@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+    <head>
+        <title>Your Subscriptions exporter from Bliss!</title>
+    </head>
+    <body>
+{foreach $feedinfo as $feed}
+        <outline text="{$feed->description|escape|default: $feed->title|escape}"
+            title="{$feed->title|escape}" 
+            type="rss"
+            xmlUrl="{$feed->simplepie_feed_url|default: $feed->feed_uri}" 
+            htmlUrl="{$feed->link}"
+        />
+{/foreach}
+    </body>
+</opml>

@@ -1,0 +1,6 @@
+[submodule "vendor/flight"]
+	path = vendor/flight
+	url = https://github.com/mikecao/flight.git
+[submodule "vendor/simplepie"]
+	path = vendor/simplepie
+	url = https://github.com/simplepie/simplepie.git

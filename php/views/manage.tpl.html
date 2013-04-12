@@ -1,0 +1,33 @@
+{extends file='layout.tpl.html'}
+
+{block name=body}
+<div class="manage" id="content">
+<h1>Currently active Subscriptions</h1>
+<p><a href="{$base_uri}opml">Export your subscriptions as an OPML file</a></p>
+<table>
+<tr>
+{foreach $feedinfo as $feed}
+<tr id="{$feed@index}">
+<th> 
+    <a href="{$base_uri}#select-feed-{$feed->feed}">
+    <img src="{$base_uri}public/feed_go.png" width="16" height="16" title="Read Feed Items">
+    </a>
+</th>
+<th>
+{if $feed->source == 'json'}
+    <img src="{$base_uri}public/delete.png" height="16" width="16" onclick="delete_feed('{$feed->feed_uri}', {$feed@index});" title="Remove Feed">
+{/if}
+</th>
+<td>
+{if $feed->last_update}
+    <a href="{$feed->link}">{$feed->title}</a>
+{else}
+    {$feed->title}
+{/if}
+</td>
+<td id="date">Last Update: {$feed->newest_article|date_format:"%B %e, %Y %H:%M"|default:"<b>Never</b>"}</td>
+</tr>
+{/foreach}
+</table>
+</div>
+{/block}

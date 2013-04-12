@@ -1,0 +1,24 @@
+{if $entry}
+<article id="{$entry->info->timestamp}" class="bliss-article{if $unread} unread{/if}" name="{$entry->info->relative}">
+    <header>
+    <div class="date">{$entry->date|date_format:"D jS F Y H:i"}</div>
+    <p>
+    From <a href="#select-feed-{$entry->info->feed}"><em>{$entry->info->title}</em></a>
+    posted by: <em>{$entry->author->name|default:'Unknown'}</em>
+    </p>
+    <img 
+        name="{$entry->info->relative}" 
+        class="flag" 
+        src="{$base_uri}public/{if $flagged}tag_blue_delete{else}tag_blue_add{/if}.png" 
+        width="24" 
+        height="24"
+    >
+    <h1><a href="{$entry->link}">{$entry->title}</a></h1>
+    </header>
+    <div class="content">
+        {$entry->content}
+    <div class="clearfix"></div>
+        {$entry->attachements}
+    </div>
+</article>
+{/if}
