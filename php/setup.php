@@ -66,12 +66,17 @@ spl_autoload_register("autoloader");
 /**
 * Load config file and override default options
 **/
+/**
 $config = parse_ini_file(BLISS_BASE_DIR."/config.ini", true);
 foreach ( $config as $k => $v ) {
     Feeds::option($k, $v);
 }
-Feeds::option('sources', $config['feeds']['sources']);
-Feeds::option('filters', $config['filters']['filter']);
+**/
+Feeds::option('data_dir', $_ENV['OPENSHIFT_DATA_DIR']);
+Feeds::option('cache_dir', $_ENV['OPENSHIFT_TMP_DIR']);
+
+Feeds::option('sources', array());
+Feeds::option('filters', array());
 
 /**
 * Register Smarty as View for Flight
