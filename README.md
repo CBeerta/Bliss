@@ -35,9 +35,37 @@ Recently it got a slight update (as in complete rewrite) to something a bit more
 	
 * Untar the archive into your webservers directory. 
 * Pull submodoles: `git submodule init` then `git submodule update`. Or Download manually and put them into the `vendor` directory.
-* Open the `config.ini.sample` in your favorite editor and follow the instructions in that file. Save as `config.ini`
-* Then run `php index.php --update` from the commandline
+* Open the `php/config.ini.sample` in your favorite editor and follow the instructions in that file. Save as `config.ini`
+* Then run `php php/index.php --update` from the commandline
 * After you've run the update you can open the page in your browser.
+
+# Running on OpenShift
+
+Create an account at http://openshift.redhat.com/
+
+Create a PHP application
+
+	rhc app create -a bliss -t php-5.3
+
+Add cron support to your application
+    
+	rhc cartridge add -a bliss -c cron-1.4
+
+Add this upstream quickstart repo
+
+	cd bliss/php
+	rm -rf *
+	git remote add upstream -m master https://github.com/CBeerta/Bliss.git
+	git pull -s recursive -X theirs upstream master
+
+Then push the repo upstream to OpenShift
+
+	git push
+
+That's it, you can now checkout your application at:
+
+	http://bliss-$yournamespace.rhcloud.com
+
 
 # ADDING FEEDS:
 

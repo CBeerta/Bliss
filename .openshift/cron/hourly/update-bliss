@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+ 
+
+cd "${OPENSHIFT_REPO_DIR}/php"
+
+php index.php --update
+

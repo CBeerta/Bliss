@@ -1,3 +1,4 @@
+w
 <?php 
 /**
 * Bliss
@@ -57,7 +58,7 @@ class Feeds
         'expire_before' => '6 month ago',
         'thumb_size' => 200,
         'gallery_minimum_image_size' => 800,
-        'enable_gallery' => false,
+        'enable_gallery' => true,
     );
     
     // Cache filelist for multiple "next" calls
