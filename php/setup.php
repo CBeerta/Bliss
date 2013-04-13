@@ -74,8 +74,8 @@ foreach ( $config as $k => $v ) {
     Feeds::option($k, $v);
 }
 **/
-Feeds::option('data_dir', $_ENV['OPENSHIFT_DATA_DIR']);
-Feeds::option('cache_dir', $_ENV['OPENSHIFT_TMP_DIR']);
+Feeds::option('data_dir', isset($_ENV['OPENSHIFT_DATA_DIR']) ? $_ENV['OPENSHIFT_DATA_DIR'] : $_SERVER['OPENSHIFT_DATA_DIR']);
+Feeds::option('cache_dir', isset($_ENV['OPENSHIFT_TMP_DIR']) ? $_ENV['OPENSHIFT_TMP_DIR'] : $_SERVER['OPENSHIFT_TMP_DIR']);
 
 Feeds::option('sources', array());
 Feeds::option('filters', array());
