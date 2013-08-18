@@ -6,6 +6,6 @@
 unset GIT_DIR
 cd $OPENSHIFT_REPO_DIR/libs
 wget -qN http://getcomposer.org/composer.phar
-php composer.phar install
+php composer.phar install -d ../php/
 
 
