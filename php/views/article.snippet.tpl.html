@@ -1,4 +1,4 @@
-{if $entry}
+{if isset($entry)}
 <article id="{$entry->info->timestamp}" class="bliss-article{if $unread} unread{/if}" name="{$entry->info->relative}">
     <header>
     <div class="date">{$entry->date|date_format:"D jS F Y H:i"}</div>

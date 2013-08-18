@@ -108,6 +108,10 @@ class Store
         if (strstr($filename, $data_dir . '/') === false) {
             $filename = $data_dir . '/' . $filename;
         }
+
+        if (!file_exists($filename)) {
+            return false;
+        }
     
         if (($content = file_get_contents($filename)) === false) {
             return false;

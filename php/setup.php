@@ -63,36 +63,48 @@ function autoloader($class)
 spl_autoload_register("autoloader");
 date_default_timezone_set('GMT');
 
-
 /**
 * Load config file and override default options
 **/
-/**
-$config = parse_ini_file(BLISS_BASE_DIR."/config.ini", true);
+$config = parse_ini_file(BLISS_BASE_DIR."/config.ini", false);
 foreach ( $config as $k => $v ) {
     Feeds::option($k, $v);
 }
-**/
-Feeds::option('data_dir', isset($_ENV['OPENSHIFT_DATA_DIR']) ? $_ENV['OPENSHIFT_DATA_DIR'] : $_SERVER['OPENSHIFT_DATA_DIR']);
-Feeds::option('cache_dir', isset($_ENV['OPENSHIFT_TMP_DIR']) ? $_ENV['OPENSHIFT_TMP_DIR'] : $_SERVER['OPENSHIFT_TMP_DIR']);
 
-Feeds::option('sources', array());
-Feeds::option('filters', array());
+if (isset($_ENV['OPENSHIFT_DATA_DIR'])) {
+    Feeds::option('sources', array());
+    Feeds::option('filters', array());
+
+    /* Running on Openshift */
+    Feeds::option(
+        'data_dir', 
+        isset($_ENV['OPENSHIFT_DATA_DIR']) 
+        ? $_ENV['OPENSHIFT_DATA_DIR'] 
+        : $_SERVER['OPENSHIFT_DATA_DIR']
+    );
+
+    Feeds::option(
+        'cache_dir', 
+        isset($_ENV['OPENSHIFT_TMP_DIR']) 
+        ? $_ENV['OPENSHIFT_TMP_DIR'] 
+        : $_SERVER['OPENSHIFT_TMP_DIR']
+    );
+}
+
+Flight::init();
 
 /**
 * Register Smarty as View for Flight
 **/
 Flight::register(
-    'view', 'Smarty', array(), function($smarty)
-    {
+    'view', 'Smarty', array(), function ($smarty) {
         $smarty->compile_dir = Feeds::option('cache_dir');
         $smarty->template_dir = BLISS_BASE_DIR . '/views/';
         $smarty->debugging = false;
     }
 );
 Flight::map(
-    'render', function($template, $data)
-    {
+    'render', function ($template, $data) {
         Flight::view()->assign($data);
         Flight::view()->display($template);
     }

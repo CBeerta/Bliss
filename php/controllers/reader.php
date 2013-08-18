@@ -151,6 +151,7 @@ class Reader
         $images = array();
         $gallery = array();
         $data_dir = rtrim(Feeds::option('data_dir'), '/');
+        $cache_dir = rtrim(Feeds::option('cache_dir'), '/');
         $glob = glob($data_dir . '/*/enclosures/*.thumb.png');
 
         $sortmtime = create_function(
@@ -206,7 +207,7 @@ class Reader
             'page' => $page,
             'images' => $images,
             'gallery' => $gallery,
-            'feedinfo' => $feedinfo,
+            //'feedinfo' => $feedinfo,
         );
 
         return Flight::render('gallery.snippet.tpl.html', $data);
@@ -220,7 +221,7 @@ class Reader
     **/
     public static function image()
     {
-        $cache_dir = rtrim(Feeds::option('data_dir'), '/');
+        $cache_dir = rtrim(Feeds::option('cache_dir'), '/');
         
         $i = !empty($_GET['thumb']) ? $_GET['thumb'] : $_GET['i'];
         
@@ -229,7 +230,7 @@ class Reader
         $feed = basename($feed);
         $file = urlencode($i);
         
-        $file = "{$cache_dir}/{$feed}/enclosures/{$file}";
+        $file = "{$cache_dir}/{$file}";
 
         /**
         * Set expire headers to enable caching

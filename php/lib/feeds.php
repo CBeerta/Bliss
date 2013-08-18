@@ -267,8 +267,9 @@ class Feeds
         $filelist = Feeds::filelist(mktime());
         $titles = array();
         
-        foreach ($filelist as $item) {
-            $article = Store::load($file);
+
+        foreach ($filelist as $item) {  
+            $article = Store::load($item['file']);
             $titles[$item['dir']][$item['fname']] = $article->title;
         }
         

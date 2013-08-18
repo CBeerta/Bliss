@@ -5,8 +5,8 @@
 <p>
 {/if}
 {if $enclosure.medium == 'image'}
-<a class="fancyme" href="image?i={$enclosure.image_url}">
-<img src="image?i={$enclosure.image_url}" width="64" name="{$enclosure.title}" title="{$enclosure.title}">
+<a class="fancyme" href="{$enclosure.image_url}">
+<img src="{$enclosure.image_url}" width="64" name="{$enclosure.title}" title="{$enclosure.title}">
 </a>
 {else}
 <a href="{$enclosure.link}">

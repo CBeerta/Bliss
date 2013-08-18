@@ -51,11 +51,12 @@ class BlissPie_Cache extends SimplePie_Cache
     *
     * @return void
     **/
-    public static function create($location, $filename, $extension)
+    // @codingStandardsIgnoreStart
+    public static function get_handler($location, $filename, $extension)
     {
         return new Bliss_File_Cache($location, $filename, $extension);
     }
-
+    // @codingStandardsIgnoreEnd
 
     /**
     * Cache Enclosures locally
@@ -93,7 +94,7 @@ class BlissPie_Cache extends SimplePie_Cache
     {
         // Generate Cache Class            
         $image_url = Fetch::cacheName($uri);
-        $cache = BlissPie_Cache::create(
+        $cache = BlissPie_Cache::get_handler(
             Feeds::option('cache_dir'), 
             $image_url, 
             'spi'
@@ -110,7 +111,7 @@ class BlissPie_Cache extends SimplePie_Cache
             $timeout = 10, 
             $redirects = 5, 
             $headers = null, 
-            $useragent = $rss->useragent, 
+            $useragent = null, 
             $force_fsockopen = false
         );
 
@@ -178,6 +179,8 @@ class Bliss_File_Cache implements SimplePie_Cache_Base
         $this->filename = $filename;
         $this->extension = $extension;
         $this->location = $location;
+
+        print_r($filename);
 
         $oldname = "$this->location/$this->filename.$this->extension";
         

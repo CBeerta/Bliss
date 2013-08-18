@@ -37,7 +37,7 @@ if ( PHP_SAPI != 'cli' ) {
 }
 
 // Simplepie throws notices on unreadalble feeds, dont want these
-error_reporting(E_ALL ^ E_USER_NOTICE);
+//error_reporting(E_ALL ^ E_USER_NOTICE);
 
 /**
 * Fetch
@@ -170,7 +170,7 @@ class Fetch
         $rss->set_cache_duration(Feeds::option('simplepie_cache_duration'));
         $rss->set_image_handler('image', 'i');
         $rss->set_cache_name_function('Fetch::cacheName');
-        $rss->set_cache_class('BlissPie_Cache');
+        //$rss->set_cache_class('BlissPie_Cache');
         $rss->set_timeout(30);
         $rss->set_autodiscovery_level(
             SIMPLEPIE_LOCATOR_AUTODISCOVERY 
@@ -178,7 +178,7 @@ class Fetch
             | SIMPLEPIE_LOCATOR_LOCAL_EXTENSION
         );
 
-        $strip_htmltags = $feed->strip_htmltags;
+        $strip_htmltags = $rss->strip_htmltags;
         array_splice($strip_htmltags, array_search('object', $strip_htmltags), 1);
         array_splice($strip_htmltags, array_search('param', $strip_htmltags), 1);
         array_splice($strip_htmltags, array_search('embed', $strip_htmltags), 1);
@@ -193,10 +193,21 @@ class Fetch
         
         $plugins = Helpers::findPlugins();
         $unread = array();
+        $errors = array();
 
         foreach (Feeds::feedlist()->feeds as $feed_uri) {
             error_log("Fetching: {$feed_uri}");
             
+            $feed = Helpers::buildSlug(
+                md5($feed_uri) . ' ' .
+                $rss->get_title()
+            );
+
+            // Set _current_feed here, which is later used by cacheName
+            // and the blisscache stuff
+            // Very "through the eye"
+            Feeds::option('_current_feed', $feed);
+
             $rss->set_feed_url($feed_uri);
 
             $rss->init();
@@ -207,10 +218,6 @@ class Fetch
                 continue;
             }
             
-            $feed = Helpers::buildSlug(
-                md5($feed_uri) . ' ' .
-                $rss->get_title()
-            );
     
             $dir = rtrim(Feeds::option('data_dir'), '/') . '/' . $feed;
 
@@ -228,16 +235,17 @@ class Fetch
                 'feed_type' => $rss->get_type(),
                 'feed_encoding' => $rss->get_encoding(),
                 'description' => $rss->get_description(),
-                'author_name' => $rss->get_author()->name,
-                'author_email' => $rss->get_author()->email,
+                'author_name' => 
+                    isset($rss->get_author()->name) 
+                    ? $rss->get_author()->name 
+                    : 'na' ,
+                'author_email' => 
+                    isset($rss->get_author()->email) 
+                    ? $rss->get_author()->email 
+                    : 'na',
             );
             
             $title_list = array();
-            
-            // Set _current_feed here, which is later used by cacheName
-            // and the blisscache stuff
-            // Very "through the eye"
-            Feeds::option('_current_feed', $feed);
 
             foreach ($rss->get_items() as $item) {
 
@@ -346,6 +354,8 @@ class Fetch
     **/
     public static function expire()
     {
+        $errors = array();
+
         try {
             $expire_before = new DateTime(Feeds::option('expire_before'));
         } catch (Exception $e) {
@@ -439,7 +449,7 @@ class Fetch
                 continue;
             }
 
-            list($type, $format) = split('/', $content['headers']['content-type']);
+            list($type, $format) = explode('/', $content['headers']['content-type']);
             
             if ($type !== 'image') {
                 continue;

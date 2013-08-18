@@ -138,11 +138,11 @@ class Content_Enclosures_Plugin implements Bliss_Content_Plugin
             );
         }
 
-        $enclosures = BlissPie_Cache::cacheEnclosures($enclosures);
+        //$enclosures = BlissPie_Cache::cacheEnclosures($enclosures);
         
         $item->enclosures = $enclosures;
 
-        Flight::view()->assign(array('json' => $json, 'item' => $item));
+        Flight::view()->assign(array('item' => $item));
         $item->attachements = Flight::view()->fetch('plugins/enclosures.tpl.html');
 
         return $item;

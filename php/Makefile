@@ -1,13 +1,9 @@
-SOURCES = index.php controllers/*.php lib/*.php plugins/*.php
+SOURCES = index.php controllers/*.php lib/*.php plugins/*.php setup.php
 
-all: csstidy phpcs update
-
-csstidy:
-	#csstidy public/css/style.css --silent=true | tr -d '\n' > public/css/style.compressed.css
-	#csstidy public/js/libs/fancybox/jquery.fancybox-1.3.4.css --silent=true | tr -d '\n' > public/js/libs/fancybox/jquery.fancybox.compressed-1.3.4.css
+all: phpcs update
 
 phpcs:
-	./vendor/bin/phpcs $(SOURCES)
+	./vendor/bin/phpcs -s $(SOURCES)
 
 phpunit: 
 	rm -f data/*json
