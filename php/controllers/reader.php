@@ -152,7 +152,7 @@ class Reader
         $gallery = array();
         $data_dir = rtrim(Feeds::option('data_dir'), '/');
         $cache_dir = rtrim(Feeds::option('cache_dir'), '/');
-        $glob = glob($data_dir . '/*/enclosures/*.thumb.png');
+        $glob = glob($cache_dir . '/*.thumb.png');
 
         $sortmtime = create_function(
             '$file1, $file2',
@@ -169,18 +169,18 @@ class Reader
         usort($glob, $sortmtime);
 
         foreach ($glob as $img) {
+
             if (!preg_match(
-                "|{$data_dir}/(.*?)/enclosures/((.*?).spi).thumb.png|i",
+                "|{$cache_dir}/((.*?).spi).thumb.png|i",
                 $img,
                 $matches
             )) {
                 continue;
-            }
-            
+            }   
+
             $images[] = array(
                 'thumb' => basename($matches[0]),
-                'feed' => $matches[1],
-                'id' => $matches[3],
+                'name' => $matches[2],
             );
         }
 
@@ -190,24 +190,10 @@ class Reader
             return false;
         }
         
-        /*
-        $feeds = Feeds::feedinfo();
-        $feedinfo = array();
-        
-        foreach ($feeds as $k => $v) {
-            $feedinfo[$v->feed] = $v;
-        }
-        
-        foreach ($images as $image) {
-            $gallery[$image['feed']][] = $image;
-        }
-        */
-        
         $data = array(
             'page' => $page,
             'images' => $images,
             'gallery' => $gallery,
-            //'feedinfo' => $feedinfo,
         );
 
         return Flight::render('gallery.snippet.tpl.html', $data);
@@ -224,13 +210,7 @@ class Reader
         $cache_dir = rtrim(Feeds::option('cache_dir'), '/');
         
         $i = !empty($_GET['thumb']) ? $_GET['thumb'] : $_GET['i'];
-        
-        list($feed, $file) = explode('/', $i);
-        
-        $feed = basename($feed);
-        $file = urlencode($i);
-        
-        $file = "{$cache_dir}/{$file}";
+        $file = "{$cache_dir}/" . urlencode($i);
 
         /**
         * Set expire headers to enable caching

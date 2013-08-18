@@ -49,7 +49,7 @@ Flight::route('GET /nothing/@filter', array('Reader', 'nothing'));
 Flight::route('GET /image', array('Reader', 'image'));
 
 /* ######### Gallery ###################################### */
-if (Feeds::option('enable_gallery') != false) {
+if (Feeds::option('enable_gallery') == true) {
     Flight::view()->assign('enable_gallery', true);
     Flight::route('GET /gallery', array('Reader', 'gallery'));
     Flight::route('POST /gallery_page/@page', array('Reader', 'galleryPage'));

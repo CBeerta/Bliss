@@ -169,7 +169,7 @@ class Fetch
         $rss->set_cache_location(Feeds::option('cache_dir'));
         $rss->set_cache_duration(Feeds::option('simplepie_cache_duration'));
         $rss->set_image_handler('image', 'i');
-        $rss->set_cache_name_function('Fetch::cacheName');
+        //$rss->set_cache_name_function('Fetch::cacheName');
         //$rss->set_cache_class('BlissPie_Cache');
         $rss->set_timeout(30);
         $rss->set_autodiscovery_level(
@@ -198,27 +198,27 @@ class Fetch
         foreach (Feeds::feedlist()->feeds as $feed_uri) {
             error_log("Fetching: {$feed_uri}");
             
-            $feed = Helpers::buildSlug(
-                md5($feed_uri) . ' ' .
-                $rss->get_title()
-            );
 
             // Set _current_feed here, which is later used by cacheName
             // and the blisscache stuff
             // Very "through the eye"
-            Feeds::option('_current_feed', $feed);
+            //Feeds::option('_current_feed', $feed);
 
             $rss->set_feed_url($feed_uri);
 
             $rss->init();
             $rss->handle_content_type();
+
+            $feed = Helpers::buildSlug(
+                md5($feed_uri) . ' ' .
+                $rss->get_title()
+            );
              
             if ($rss->error()) {
                 error_log($rss->error());
                 continue;
             }
-            
-    
+                
             $dir = rtrim(Feeds::option('data_dir'), '/') . '/' . $feed;
 
             if (!is_dir($dir)) {
@@ -343,7 +343,7 @@ class Fetch
         }
         // Sanity Check, load all files, anc check them
         Feeds::filelist(mktime(), $errors);
-        error_log(print_r($errors, true));
+        //error_log(print_r($errors, true));
     } // end update()
 
 
@@ -419,7 +419,7 @@ class Fetch
         }
         
         error_log("Expired {$count} Articles.");    
-        error_log(print_r($errors, true));
+        //error_log(print_r($errors, true));
     }
 
     /**
@@ -429,13 +429,13 @@ class Fetch
     **/
     public static function thumbs()
     {
-        $cache_dir = rtrim(Feeds::option('data_dir'), '/');
+        $cache_dir = rtrim(Feeds::option('cache_dir'), '/');
         $thumb_size = Feeds::option('thumb_size');
         $min_size = Feeds::option('gallery_minimum_image_size');
         
         $count = 0;
         
-        foreach (glob($cache_dir . '/*/enclosures/*.spi') as $img) {
+        foreach (glob($cache_dir . '/*.spi') as $img) {
 
             $dst_fname = $img . ".thumb.png";
             

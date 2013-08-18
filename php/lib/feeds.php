@@ -52,7 +52,7 @@ class Feeds
         'filters' => array(),
         'opml' => null,
         'data_dir' => 'data/',
-        'cache_dir' => 'data/cache/',
+        'cache_dir' => 'cache/',
         'simplepie_cache_duration' => 7200,
         'expire_before' => '6 month ago',
         'thumb_size' => 200,
@@ -73,7 +73,7 @@ class Feeds
     **/
     public static function option($key, $value = null)
     {
-        if ($value == null) {
+        if ($value === null) {
             return self::$config[$key];
         }
         
@@ -116,6 +116,7 @@ class Feeds
                 $sources[] = 'json';
             }
         }
+        
         return (object) array('feeds' => $feeds, 'sources' => $sources);
     }
     

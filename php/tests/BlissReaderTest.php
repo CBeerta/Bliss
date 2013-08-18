@@ -18,7 +18,7 @@ class BlissReaderTest extends PHPUnit_Framework_TestCase
     public function testArchives()
     {
         $html = Reader::archive();
-        $this->assertContains('Thursday, July 26, 2012', $html);
+        $this->assertContains('Thursday, July 11, 2013', $html);
         $this->assertContains('<footer>', $html);
     }
 
@@ -50,13 +50,12 @@ class BlissReaderTest extends PHPUnit_Framework_TestCase
     public function testGalleryPage()
     {
         $html = Reader::galleryPage(0);
-        $this->assertContains('-artgerm-s-gallery', $html);
+        $this->assertContains('thumb=a2b33921a6f794e8e3efa117eb0af8b1.spi', $html);
     }
 
     public function testImage()
     {
-        $_GET['i'] = 'd65a35f73902aa81714387358eab224f-artgerm-s-gallery/' .
-            'e35490a977f3efb3ae18e6d6e61301d2-c53ff98e02cbdc81f363dfeb4f5adbc7-d5c4o37.jpg';
+        $_GET['i'] = '91698153f5b5e50afeb0dba128a9cbbb';
 
         ob_start();
         Reader::image();
@@ -70,13 +69,12 @@ class BlissReaderTest extends PHPUnit_Framework_TestCase
     {
         $_POST['last_id'] = time();
         $html = Reader::next('select-all-articles');
-        $this->assertContains('mascot design for a local game convention called', $html);
+        $this->assertContains('CBeerta pushed to master at CBeerta/simplepie', $html);
     }
 
     public function testRead()
     {
-        $_POST['name'] = 'b65c61d943f0aa0757474538d66df1f0-cbeerta-s-activity/'.
-            '1345782975-tag-github-com-2008-pushevent-1589114773.item';
+        $_POST['name'] = 'b65c61d943f0aa0757474538d66df1f0-cbeerta-s-activity/1376822908-tag-github-com-2008-issuesevent-1807303690.item';
 
         $this->expectOutputRegex('/OK/im');
         Reader::read();    
@@ -84,8 +82,7 @@ class BlissReaderTest extends PHPUnit_Framework_TestCase
 
     public function testFlag()
     {
-        $_POST['name'] = 'b65c61d943f0aa0757474538d66df1f0-cbeerta-s-activity/'.
-            '1345782975-tag-github-com-2008-pushevent-1589114773.item';
+        $_POST['name'] = '1376824706-tag-github-com-2008-pushevent-1807309626.item';
 
         $this->expectOutputRegex('/.*tag_blue_delete.*/im');
         Reader::flag();
@@ -95,6 +92,6 @@ class BlissReaderTest extends PHPUnit_Framework_TestCase
     {
         $_POST['first_id'] = 0;
         $this->expectOutputRegex('/.*updates_available.*true.*/im');
-        Reader::poll();
+        Reader::poll('select-all-articles');
     }
 }
