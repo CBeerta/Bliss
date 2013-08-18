@@ -67,9 +67,11 @@ date_default_timezone_set('GMT');
 /**
 * Load config file and override default options
 **/
-$config = parse_ini_file(BLISS_BASE_DIR."/config.ini", false);
-foreach ( $config as $k => $v ) {
-    Feeds::option($k, $v);
+if (is_file(BLISS_BASE_DIR . "/config.ini")) {
+    $config = parse_ini_file(BLISS_BASE_DIR . "/config.ini", false);
+    foreach ( $config as $k => $v ) {
+        Feeds::option($k, $v);
+    }
 }
 
 if (isset($_ENV['OPENSHIFT_DATA_DIR'])) {
