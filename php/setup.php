@@ -31,8 +31,7 @@
 * @link     http://claus.beerta.de/
 **/
 
-require_once BLISS_BASE_DIR . '/vendor/Smarty/libs/Smarty.class.php';
-require_once BLISS_BASE_DIR . '/vendor/flight/flight/Flight.php';
+require_once BLISS_BASE_DIR . '/vendor/autoload.php';
 
 /**
 * Autoloader for helpers and controllers

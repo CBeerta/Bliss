@@ -7,12 +7,12 @@ csstidy:
 	#csstidy public/js/libs/fancybox/jquery.fancybox-1.3.4.css --silent=true | tr -d '\n' > public/js/libs/fancybox/jquery.fancybox.compressed-1.3.4.css
 
 phpcs:
-	phpcs $(SOURCES)
+	./vendor/bin/phpcs $(SOURCES)
 
 phpunit: 
 	rm -f data/*json
 	tar xzf tests/testdata.tar.gz
-	phpunit --strict tests
+	./vendor/bin/phpunit --strict tests
 
 lint:
 	for source in $(SOURCES) ; do php -l $$source || exit 1 ; done

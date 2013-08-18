@@ -36,8 +36,6 @@ if ( PHP_SAPI != 'cli' ) {
     return;
 }
 
-require_once __DIR__ . '/../vendor/simplepie/SimplePieAutoloader.php';
-
 // Simplepie throws notices on unreadalble feeds, dont want these
 error_reporting(E_ALL ^ E_USER_NOTICE);
 
