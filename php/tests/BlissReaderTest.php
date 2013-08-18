@@ -18,7 +18,7 @@ class BlissReaderTest extends PHPUnit_Framework_TestCase
     public function testArchives()
     {
         $html = Reader::archive();
-        $this->assertContains('Thursday, July 11, 2013', $html);
+        $this->assertContains('Monday, August 12, 2013', $html);
         $this->assertContains('<footer>', $html);
     }
 
@@ -50,12 +50,12 @@ class BlissReaderTest extends PHPUnit_Framework_TestCase
     public function testGalleryPage()
     {
         $html = Reader::galleryPage(0);
-        $this->assertContains('thumb=a2b33921a6f794e8e3efa117eb0af8b1.spi', $html);
+        $this->assertContains('thumb=b9f89a64396e53a00f5541814bca964e.spi', $html);
     }
 
     public function testImage()
     {
-        $_GET['i'] = '91698153f5b5e50afeb0dba128a9cbbb';
+        $_GET['i'] = 'b9f89a64396e53a00f5541814bca964e';
 
         ob_start();
         Reader::image();
@@ -69,12 +69,12 @@ class BlissReaderTest extends PHPUnit_Framework_TestCase
     {
         $_POST['last_id'] = time();
         $html = Reader::next('select-all-articles');
-        $this->assertContains('CBeerta pushed to master at CBeerta/simplepie', $html);
+        $this->assertContains('CBeerta pushed to master at CBeerta/Bliss', $html);
     }
 
     public function testRead()
     {
-        $_POST['name'] = 'b65c61d943f0aa0757474538d66df1f0-cbeerta-s-activity/1376822908-tag-github-com-2008-issuesevent-1807303690.item';
+        $_POST['name'] = 'b65c61d943f0aa0757474538d66df1f0-cbeerta-s-activity/1376823849-tag-github-com-2008-forkevent-1807306936.item';
 
         $this->expectOutputRegex('/OK/im');
         Reader::read();    
@@ -82,7 +82,7 @@ class BlissReaderTest extends PHPUnit_Framework_TestCase
 
     public function testFlag()
     {
-        $_POST['name'] = '1376824706-tag-github-com-2008-pushevent-1807309626.item';
+        $_POST['name'] = 'b65c61d943f0aa0757474538d66df1f0-cbeerta-s-activity/1376823849-tag-github-com-2008-forkevent-1807306936.item';
 
         $this->expectOutputRegex('/.*tag_blue_delete.*/im');
         Reader::flag();

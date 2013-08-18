@@ -36,9 +36,6 @@ if ( PHP_SAPI != 'cli' ) {
     return;
 }
 
-// Simplepie throws notices on unreadalble feeds, dont want these
-//error_reporting(E_ALL ^ E_USER_NOTICE);
-
 /**
 * Fetch
 *
@@ -230,7 +227,7 @@ class Fetch
                 'feed_uri' => $feed_uri,
                 'simplepie_feed_url' => $rss->feed_url,
                 'feed' => $feed,
-                'last_update' => mktime(),
+                'last_update' => time(),
                 'link' => $rss->get_link(),
                 'feed_type' => $rss->get_type(),
                 'feed_encoding' => $rss->get_encoding(),
@@ -342,7 +339,7 @@ class Fetch
             unset($newest);
         }
         // Sanity Check, load all files, anc check them
-        Feeds::filelist(mktime(), $errors);
+        Feeds::filelist(time(), $errors);
         //error_log(print_r($errors, true));
     } // end update()
 
@@ -366,7 +363,7 @@ class Fetch
         $count = 0;
         $total = 0;
         
-        foreach (Feeds::filelist(mktime(), $errors) as $item) {
+        foreach (Feeds::filelist(time(), $errors) as $item) {
             $total ++;
 
             try {

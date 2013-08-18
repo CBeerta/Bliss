@@ -265,7 +265,7 @@ class Feeds
     **/
     public static function titles()
     {
-        $filelist = Feeds::filelist(mktime());
+        $filelist = Feeds::filelist(time());
         $titles = array();
         
 

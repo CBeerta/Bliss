@@ -72,7 +72,7 @@ class Reader
     {
         $articles = array();
         
-        foreach (Feeds::filelist(mktime()) as $item) {
+        foreach (Feeds::filelist(time()) as $item) {
             $day = new DateTime("@" . $item['timestamp']);
             $articles[$day->format('Y-m-d')][] = $item;
         }
@@ -369,7 +369,7 @@ class Reader
             exit ("Invalid POST");
         }
         
-        $first = Feeds::next(mktime(), $filter);
+        $first = Feeds::next(time(), $filter);
         
         if ($first->info->timestamp > $first_id) {
             echo json_encode(array('updates_available' => true));

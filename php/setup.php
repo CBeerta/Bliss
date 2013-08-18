@@ -30,6 +30,7 @@
 * @license  http://www.opensource.org/licenses/mit-license.php MIT License
 * @link     http://claus.beerta.de/
 **/
+error_reporting(E_ALL);
 
 require_once BLISS_BASE_DIR . '/vendor/autoload.php';
 
