@@ -2,3 +2,10 @@
 # This is a simple post deploy hook executed after your application 
 # is deployed and started.  This script gets executed directly, so 
 # it could be python, php, ruby, etc.
+
+unset GIT_DIR
+cd $OPENSHIFT_REPO_DIR/libs
+wget -qN http://getcomposer.org/composer.phar
+php composer.phar install
+
+

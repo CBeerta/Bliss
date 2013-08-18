@@ -1,3 +1,5 @@
 data
 cache
 php/config.ini
+php/composer.phar
+php/vendor/

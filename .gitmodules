@@ -1,6 +1,0 @@
-[submodule "php/vendor/flight"]
-	path = php/vendor/flight
-	url = https://github.com/mikecao/flight.git
-[submodule "php/vendor/simplepie"]
-	path = php/vendor/simplepie
-	url = https://github.com/simplepie/simplepie.git
