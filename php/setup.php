@@ -74,24 +74,15 @@ if (is_file(BLISS_BASE_DIR . "/config.ini")) {
     }
 }
 
-if (isset($_ENV['OPENSHIFT_DATA_DIR'])) {
+if (getenv('OPENSHIFT_DATA_DIR')) {
     Feeds::option('sources', array());
     Feeds::option('filters', array());
 
     /* Running on Openshift */
-    Feeds::option(
-        'data_dir', 
-        isset($_ENV['OPENSHIFT_DATA_DIR']) 
-        ? $_ENV['OPENSHIFT_DATA_DIR'] 
-        : $_SERVER['OPENSHIFT_DATA_DIR']
-    );
+    Feeds::option('data_dir', getenv('OPENSHIFT_DATA_DIR'));
+    Feeds::option('cache_dir', getenv('OPENSHIFT_TMP_DIR'));
 
-    Feeds::option(
-        'cache_dir', 
-        isset($_ENV['OPENSHIFT_TMP_DIR']) 
-        ? $_ENV['OPENSHIFT_TMP_DIR'] 
-        : $_SERVER['OPENSHIFT_TMP_DIR']
-    );
+    Feeds::option('opml', Feeds::option('data_dir') . '/feeds.opml');
 }
 
 Flight::init();

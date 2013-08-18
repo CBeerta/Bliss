@@ -98,7 +98,7 @@ class Feeds
 
         // Second: Feeds from opml source
         $opml = array();        
-        if (self::$config['opml']) {
+        if (self::$config['opml'] && is_file(self::$config['opml'])) {
             $fh = file_get_contents(self::$config['opml']);
             preg_match_all("=<outline (.+)/>=sU", $fh, $items);
             foreach ($items[1] as $item) {
