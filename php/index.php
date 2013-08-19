@@ -136,11 +136,33 @@ $app->get(
 );
 
 /* ######### Config Stuff ################################# */
-/*
-Flight::route('GET /manage', array('Manage', 'feedlist'));
-Flight::route('GET /opml', array('Manage', 'opml'));
-Flight::route('POST /add_feed', array('Manage', 'add'));
-Flight::route('POST /remove_feed', array('Manage', 'remove'));
+$app->get(
+    // Show Current Subscriptions
+    '/manage', function () use ($app) {
+        $app->render('manage.tpl.html', Manage::feedlist());
+    }
+);
+
+$app->get(
+    // Export opml
+    '/opml', function () use ($app) {
+        $app->render('opml.export.tpl.xml', Manage::opml());
+    }
+);
+
+$app->put(
+    // Add a feed
+    '/add_feed', function () use ($app) {
+        Manage::add();
+    }
+);
+
+$app->delete(
+    // Remove a feed
+    '/remove_feed', function () use ($app) {
+        Manage::remove();
+    }
+);
 
 /* ######### The Main Page ################################ */
 $app->get(

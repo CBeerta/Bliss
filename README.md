@@ -26,7 +26,7 @@ Recently it got a slight update (as in complete rewrite) to something a bit more
 # REQUIREMENTS:
 
 * [Smarty](http://www.smarty.net/)
-* [Flight Framework](https://github.com/mikecao/flight)
+* [Slim](http://www.slimframework.com/)
 * [SimplePie](https://github.com/simplepie)
 * PHP 5.3 or later
 * Shell Access to execute PHP

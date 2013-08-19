@@ -31,7 +31,10 @@
 * @link     http://claus.beerta.de/
 **/
 
-namespace \Bliss\Controllers;
+namespace Bliss\Controllers;
+
+use \Bliss\Feeds;
+use \Bliss\Store;
 
 if ( !defined('BLISS_VERSION') ) {
     die('No direct Script Access Allowed!');
@@ -61,7 +64,7 @@ class Manage
             'feedinfo' => Feeds::feedinfo(true),
         );
         
-        return Flight::render('manage.tpl.html', $data);
+        return $data;
     }
 
     /**
@@ -185,7 +188,7 @@ class Manage
         header('Content-type: text/xml');
         header('Content-Disposition: attachment; filename="bliss-export.opml"');
 
-        return Flight::render('opml.export.tpl.xml', array('feedinfo' => $feedinfo));
+        return array('feedinfo' => $feedinfo);
     }
 
 }
