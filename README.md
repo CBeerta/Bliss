@@ -25,7 +25,7 @@ Recently it got a slight update (as in complete rewrite) to something a bit more
 
 # REQUIREMENTS:
 
-* [Smarty](http://www.smarty.net/) (It is included under `vendor/`)
+* [Smarty](http://www.smarty.net/)
 * [Flight Framework](https://github.com/mikecao/flight)
 * [SimplePie](https://github.com/simplepie)
 * PHP 5.3 or later
@@ -34,9 +34,9 @@ Recently it got a slight update (as in complete rewrite) to something a bit more
 # INSTALLATION:
 	
 * Untar the archive into your webservers directory. 
-* Pull submodoles: `git submodule init` then `git submodule update`. Or Download manually and put them into the `vendor` directory.
-* Open the `php/config.ini.sample` in your favorite editor and follow the instructions in that file. Save as `config.ini`
-* Then run `php php/index.php --update` from the commandline
+* Use [composer](http://getcomposer.org/) to install all vendor packages
+* Open the `config.ini.sample` in your favorite editor and follow the instructions in that file. Save as `config.ini`
+* Then run `manage.php --update` from the commandline
 * After you've run the update you can open the page in your browser.
 
 # Running on OpenShift

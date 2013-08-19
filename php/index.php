@@ -31,10 +31,7 @@
 * @link     http://claus.beerta.de/
 **/
 
-define('BLISS_VERSION', '2.3.0');
-define('BLISS_BASE_DIR', rtrim(__DIR__, '/'));
-
-require_once BLISS_BASE_DIR . '/setup.php';
+require_once __DIR__ . '/../setup.php';
 
 Flight::view()->assign('bliss_version', BLISS_VERSION);
 
@@ -67,12 +64,8 @@ Flight::route('POST /remove_feed', array('Manage', 'remove'));
 /* ######### The Main Page ################################ */
 Flight::route('GET /', array('Reader', 'index'));
 
-if (PHP_SAPI == 'cli') {
-    Fetch::parseArgs();
-} else {
-    $base_uri = "//{$_SERVER['HTTP_HOST']}" . dirname($_SERVER['SCRIPT_NAME']);
-    Flight::set('base_uri', $base_uri);
-    Flight::view()->assign('base_uri', $base_uri);
+$base_uri = "//{$_SERVER['HTTP_HOST']}" . dirname($_SERVER['SCRIPT_NAME']);
+Flight::set('base_uri', $base_uri);
+Flight::view()->assign('base_uri', $base_uri);
 
-    Flight::start();
-}
+Flight::start();

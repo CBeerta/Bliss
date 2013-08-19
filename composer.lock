@@ -3,8 +3,47 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "815bc9f17629c4904d09ff9dac91e834",
+    "hash": "db94de35069f6b6a3eaf82934e74c5e9",
     "packages": [
+        {
+            "name": "cbeerta/cling",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/CBeerta/Cling.git",
+                "reference": "0.2.1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/CBeerta/Cling/zipball/0.2.1",
+                "reference": "0.2.1",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">= 5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "Cling/Cling.php"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Claus Beerta",
+                    "email": "claus@beerta.de"
+                }
+            ],
+            "description": "Cling is a Micro Framework for building Command Line Applications",
+            "support": {
+                "source": "https://github.com/CBeerta/Cling/tree/0.2.1",
+                "issues": "https://github.com/CBeerta/Cling/issues"
+            },
+            "time": "2013-08-02 08:31:46"
+        },
         {
             "name": "mikecao/flight",
             "version": "v1.0",
@@ -621,7 +660,8 @@
     ],
     "minimum-stability": "dev",
     "stability-flags": {
-        "simplepie/simplepie": 20
+        "simplepie/simplepie": 20,
+        "cbeerta/cling": 20
     },
     "platform": {
         "php": ">= 5.3.0"

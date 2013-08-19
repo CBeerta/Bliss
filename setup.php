@@ -32,36 +32,11 @@
 **/
 error_reporting(E_ALL);
 
+define('BLISS_VERSION', '2.3.0');
+define('BLISS_BASE_DIR', rtrim(__DIR__, '/'));
+
 require_once BLISS_BASE_DIR . '/vendor/autoload.php';
 
-/**
-* Autoloader for helpers and controllers
-*
-* @param string $class A Class file that is needed
-*
-* @return void
-**/
-function autoloader($class)
-{
-    $directories = array('/controllers/', '/lib/');
-
-    foreach ($directories as $dir) {
-        if (file_exists(BLISS_BASE_DIR . $dir . strtolower($class) . '.php')) {
-            include_once BLISS_BASE_DIR . $dir . strtolower($class) . '.php';
-            return;
-        }
-    }
-
-    if (strstr($class, "Plugin") !== false) {
-        $name = str_replace('_', '.', strtolower($class));
-        if (file_exists(BLISS_BASE_DIR . '/plugins/' . $name . '.php')) {
-            include_once BLISS_BASE_DIR . '/plugins/' . $name . '.php';
-            return;
-        }
-    }
-}
-
-spl_autoload_register("autoloader");
 date_default_timezone_set('GMT');
 
 /**

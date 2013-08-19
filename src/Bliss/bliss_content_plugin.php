@@ -35,6 +35,8 @@ if ( !defined('BLISS_VERSION') ) {
     die('No direct Script Access Allowed!');
 }
 
+namespace Bliss;
+
 /**
 * Base Plugin Interface
 *

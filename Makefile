@@ -1,4 +1,4 @@
-SOURCES = index.php controllers/*.php lib/*.php plugins/*.php setup.php
+SOURCES = php/index.php controllers/*.php src/Bliss/*.php plugins/*.php setup.php
 
 all: phpcs update
 
