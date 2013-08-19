@@ -40,7 +40,8 @@
     "require": {
         "php": ">= 5.3.0",
         "simplepie/simplepie": "dev-master",
-        "mikecao/flight": "1.0",
+        "slim/slim": "2.3.*",
+        "slim/views": "dev-master",
         "cbeerta/cling": "dev-master",
         "smarty/smarty": "3.1.14"
     },

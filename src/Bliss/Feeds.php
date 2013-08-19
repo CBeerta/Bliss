@@ -31,11 +31,15 @@
 * @link     http://claus.beerta.de/
 **/
 
+namespace Bliss;
+
+use \DateTime;
+use \Bliss\Store;
+
 if ( !defined('BLISS_VERSION') ) {
     die('No direct Script Access Allowed!');
 }
 
-namespace Bliss;
 
 /**
 * Feeds
@@ -53,8 +57,8 @@ class Feeds
         'sources' => array(),
         'filters' => array(),
         'opml' => null,
-        'data_dir' => 'data/',
-        'cache_dir' => 'cache/',
+        'data_dir' => 'data',
+        'cache_dir' => 'data/cache',
         'simplepie_cache_duration' => 7200,
         'expire_before' => '6 week ago',
         'thumb_size' => 200,

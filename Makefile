@@ -1,9 +1,9 @@
-SOURCES = php/index.php controllers/*.php src/Bliss/*.php plugins/*.php setup.php
+SOURCES = php/index.php src/Bliss/Controllers/*.php src/Bliss/*.php plugins/*.php setup.php
 
 all: phpcs update
 
 phpcs:
-	./vendor/bin/phpcs -s $(SOURCES)
+	./vendor/bin/phpcs --standard=PEAR -s $(SOURCES)
 
 phpunit: 
 	rm -f data/*json

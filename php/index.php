@@ -33,39 +33,121 @@
 
 require_once __DIR__ . '/../setup.php';
 
-Flight::view()->assign('bliss_version', BLISS_VERSION);
+use \Bliss\Feeds;
+use \Bliss\Controllers\Reader;
+use \Bliss\Controllers\Manage;
+use \Flight;
+
+$app = new \Slim\Slim(
+    array(
+    'view' => new \Slim\Views\Smarty(),
+    'templates.path' => BLISS_BASE_DIR . '/templates/'
+    )
+);
+
+$app->view()->parserDirectory = BLISS_BASE_DIR . '/templates/';
+$app->view()->parserCompileDirectory = Feeds::option('cache_dir');
+$app->view()->parserCacheDirectory = Feeds::option('cache_dir');
+
+$base_uri = "//{$_SERVER['HTTP_HOST']}" . dirname($_SERVER['SCRIPT_NAME']);
+$app->view()->setData('bliss_version', BLISS_VERSION);
+$app->view()->setData('base_uri', $base_uri);
 
 /* ######### Ajax requests ################################ */
-Flight::route('POST /load_next/@filter', array('Reader', 'next'));
-Flight::route('POST /poll/@filter', array('Reader', 'poll'));
-Flight::route('POST /flag', array('Reader', 'flag'));
-Flight::route('POST /read', array('Reader', 'read'));
-Flight::route('GET /nothing/@filter', array('Reader', 'nothing'));
+
+$app->post(
+    // Called to load the next batch of articles
+    '/load_next/:filter', function ($filter) use ($app) {
+        if (($next = Reader::next($filter))) {
+            $app->render('article.snippet.tpl.html', $next);
+        }
+    }
+);
+
+$app->post(
+    // Mark a Post as 'read'
+    '/read', function () use ($app) {
+        echo Reader::read();
+    }
+);
+
+$app->post(
+    // Flag a Post
+    '/flag', function () use ($app) {
+        echo Reader::flag();
+    }
+);
+
+$app->get(
+    // Called when not a single article has been loaded
+    '/nothing/:filter', function ($filter) use ($app) {
+        $app->render('nothing.snippet.tpl.html', Reader::nothing($filter));
+    }
+);
+
+$app->post(
+    // Loaded regularly to check for new posts
+    '/poll/:filter', function ($filter) use ($app) {
+        echo Reader::poll($filter);
+    }
+);
+
+
 
 /* ######### Access to the image cache #################### */
-Flight::route('GET /image', array('Reader', 'image'));
+$app->get(
+    // get an image from cache and display
+    '/image', function () use ($app) {
+        echo Reader::image();
+    }
+);
 
 /* ######### Gallery ###################################### */
 if (Feeds::option('enable_gallery') == true) {
-    Flight::view()->assign('enable_gallery', true);
-    Flight::route('GET /gallery', array('Reader', 'gallery'));
-    Flight::route('POST /gallery_page/@page', array('Reader', 'galleryPage'));
+
+    $app->view()->setData('enable_gallery', true);
+
+    $app->get(
+        // Gallery Mainpage
+        '/gallery', function () use ($app) {
+            $app->render('gallery.tpl.html', array('title' => 'Image Gallery'));
+
+        }
+    );
+
+    $app->post(
+        // Gallery single Page
+        '/gallery_page/:page', function ($page) use ($app) {
+            $app->render(
+                'gallery.snippet.tpl.html', 
+                Reader::galleryPage($page)
+            );
+        }
+    );
+
 }
 
 /* ######### Archives ##################################### */
-Flight::route('GET /archive', array('Reader', 'archive'));
+$app->get(
+    // Load Archives
+    '/archive', function () use ($app) {
+        $app->render('archive.tpl.html', Reader::archive());
+    }
+);
 
 /* ######### Config Stuff ################################# */
+/*
 Flight::route('GET /manage', array('Manage', 'feedlist'));
 Flight::route('GET /opml', array('Manage', 'opml'));
 Flight::route('POST /add_feed', array('Manage', 'add'));
 Flight::route('POST /remove_feed', array('Manage', 'remove'));
 
 /* ######### The Main Page ################################ */
-Flight::route('GET /', array('Reader', 'index'));
+$app->get(
+    // Get the Main Page
+    '/', function () use ($app) {
+        $app->render('index.tpl.html');
+    }
+);
 
-$base_uri = "//{$_SERVER['HTTP_HOST']}" . dirname($_SERVER['SCRIPT_NAME']);
-Flight::set('base_uri', $base_uri);
-Flight::view()->assign('base_uri', $base_uri);
-
-Flight::start();
+$app->run();

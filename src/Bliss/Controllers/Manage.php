@@ -31,6 +31,8 @@
 * @link     http://claus.beerta.de/
 **/
 
+namespace \Bliss\Controllers;
+
 if ( !defined('BLISS_VERSION') ) {
     die('No direct Script Access Allowed!');
 }

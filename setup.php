@@ -30,10 +30,16 @@
 * @license  http://www.opensource.org/licenses/mit-license.php MIT License
 * @link     http://claus.beerta.de/
 **/
+
+use Bliss\Feeds;
+use Bliss\Controllers\Reader;
+
 error_reporting(E_ALL);
 
 define('BLISS_VERSION', '2.3.0');
 define('BLISS_BASE_DIR', rtrim(__DIR__, '/'));
+
+chdir(BLISS_BASE_DIR);
 
 require_once BLISS_BASE_DIR . '/vendor/autoload.php';
 
@@ -44,7 +50,7 @@ date_default_timezone_set('GMT');
 **/
 if (is_file(BLISS_BASE_DIR . "/config.ini")) {
     $config = parse_ini_file(BLISS_BASE_DIR . "/config.ini", false);
-    foreach ( $config as $k => $v ) {
+    foreach ($config as $k => $v) {
         Feeds::option($k, $v);
     }
 }
@@ -59,22 +65,3 @@ if (getenv('OPENSHIFT_DATA_DIR')) {
 
     Feeds::option('opml', Feeds::option('data_dir') . '/feeds.opml');
 }
-
-Flight::init();
-
-/**
-* Register Smarty as View for Flight
-**/
-Flight::register(
-    'view', 'Smarty', array(), function ($smarty) {
-        $smarty->compile_dir = Feeds::option('cache_dir');
-        $smarty->template_dir = BLISS_BASE_DIR . '/views/';
-        $smarty->debugging = false;
-    }
-);
-Flight::map(
-    'render', function ($template, $data) {
-        Flight::view()->assign($data);
-        Flight::view()->display($template);
-    }
-);

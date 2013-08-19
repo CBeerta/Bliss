@@ -1,5 +1,4 @@
-data
-cache
+data/
 config.ini
 composer.phar
 vendor/

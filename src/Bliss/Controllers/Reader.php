@@ -31,6 +31,11 @@
 * @link     http://claus.beerta.de/
 **/
 
+namespace Bliss\Controllers;
+
+use \Bliss\Feeds;
+use \Bliss\Store;
+
 if ( !defined('BLISS_VERSION') ) {
     die('No direct Script Access Allowed!');
 }
@@ -46,24 +51,7 @@ if ( !defined('BLISS_VERSION') ) {
 **/
 class Reader
 {
-    /**
-    * Landing Page
-    *
-    * @return html
-    **/
-    public static function index()
-    {
-        /**
-        * This index page doesnt produce any content on the initial load
-        * The page is filled with content by jquery
-        **/
-        $data = array(
-            'is_index' => true,
-        );
-        return Flight::render('index.tpl.html', $data);
-    }
-
-    /**
+     /**
     * Archive Page
     *
     * @return html
@@ -73,7 +61,7 @@ class Reader
         $articles = array();
         
         foreach (Feeds::filelist(time()) as $item) {
-            $day = new DateTime("@" . $item['timestamp']);
+            $day = new \DateTime("@" . $item['timestamp']);
             $articles[$day->format('Y-m-d')][] = $item;
         }
         
@@ -84,18 +72,7 @@ class Reader
             'titles' => Feeds::titles(),
         );
         
-        return Flight::render('archive.tpl.html', $data);
-    }
-
-    /**
-    * Image Gallery json loadnext
-    *
-    * @return html
-    **/
-    public static function gallery()
-    {
-        $data = array('title' => 'Image Gallery');
-        return Flight::render('gallery.tpl.html', $data);
+        return $data;
     }
 
     /**
@@ -136,7 +113,7 @@ class Reader
             'page' => $page,
         );
 
-        return Flight::render('nothing.snippet.tpl.html', $data);
+        return $data;
     }
 
     /**
@@ -196,7 +173,7 @@ class Reader
             'gallery' => $gallery,
         );
 
-        return Flight::render('gallery.snippet.tpl.html', $data);
+        return $data;
     }
 
 
@@ -264,8 +241,7 @@ class Reader
                 header($header . ':' . $img['headers'][$header]);
             }
         }
-        echo $img['body'];
-        return;
+        return $img['body'];
     }
 
     /**
@@ -286,13 +262,13 @@ class Reader
             : array();
         
         if ($last_id == null) {
-            return;
+            return false;
         }
 
         $next = Feeds::next($last_id, $filter);
         
         if (!$next || in_array($next->info->timestamp, $idlist)) {
-            return;
+            return false;
         }
         
         $data = array(
@@ -301,7 +277,7 @@ class Reader
             'unread' => in_array($next->info->relative, Store::toggle('unread')),
         );
 
-        return Flight::render('article.snippet.tpl.html', $data);
+        return $data;
     }
 
     /**
@@ -327,7 +303,7 @@ class Reader
         }
         Store::toggle('unread', $name);
         
-        echo json_encode("OK");
+        return json_encode("OK");
     }
 
     /**
@@ -344,12 +320,12 @@ class Reader
         $flagged = Store::toggle('flagged', $name);
         
         if (!in_array($name, $flagged)) {
-            $ret = Flight::get('base_uri') . 'public/tag_blue_add.png';
+            $ret = 'public/tag_blue_add.png';
         } else {
-            $ret = Flight::get('base_uri') . 'public/tag_blue_delete.png';
+            $ret = 'public/tag_blue_delete.png';
         }
 
-        echo json_encode($ret);
+        return json_encode($ret);
     }
 
     /**
@@ -371,12 +347,11 @@ class Reader
         
         $first = Feeds::next(time(), $filter);
         
-        if ($first->info->timestamp > $first_id) {
-            echo json_encode(array('updates_available' => true));
-        } else {
-            echo json_encode(array('updates_available' => false));
+        if (isset($first->info->timestamp) && $first->info->timestamp > $first_id) {
+            return json_encode(array('updates_available' => true));
         }
-        return;
+
+        return json_encode(array('updates_available' => false));   
     }
     
 }

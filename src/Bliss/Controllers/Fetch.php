@@ -31,6 +31,8 @@
 * @link     http://claus.beerta.de/
 **/
 
+namespace \Bliss\Controllers;
+
 if ( PHP_SAPI != 'cli' ) {
     // dont do anything if we're not a cli php
     return;

@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "db94de35069f6b6a3eaf82934e74c5e9",
+    "hash": "604f0bc35fabed0b379026e24e9976dd",
     "packages": [
         {
             "name": "cbeerta/cling",
@@ -43,44 +43,6 @@
                 "issues": "https://github.com/CBeerta/Cling/issues"
             },
             "time": "2013-08-02 08:31:46"
-        },
-        {
-            "name": "mikecao/flight",
-            "version": "v1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/mikecao/flight.git",
-                "reference": "v1.0"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/mikecao/flight/zipball/v1.0",
-                "reference": "v1.0",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.0"
-            },
-            "type": "library",
-            "autoload": {
-                "files": [
-                    "flight/Flight.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Mike Cao",
-                    "email": "mike@mikecao.com",
-                    "homepage": "http://www.mikecao.com/",
-                    "role": "Original Developer"
-                }
-            ],
-            "description": "Flight is a fast, simple, extensible framework for PHP. Flight enables you to quickly and easily build RESTful web applications.",
-            "time": "2013-07-30 05:24:59"
         },
         {
             "name": "simplepie/simplepie",
@@ -137,6 +99,100 @@
                 "source": "https://github.com/CBeerta/simplepie/tree/master"
             },
             "time": "2013-08-18 11:18:18"
+        },
+        {
+            "name": "slim/slim",
+            "version": "2.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/codeguy/Slim.git",
+                "reference": "2.3.1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/codeguy/Slim/zipball/2.3.1",
+                "reference": "2.3.1",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mcrypt": "*",
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Slim": "."
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Josh Lockhart",
+                    "email": "info@joshlockhart.com",
+                    "homepage": "http://www.joshlockhart.com/"
+                }
+            ],
+            "description": "Slim Framework, a PHP micro framework",
+            "homepage": "http://github.com/codeguy/Slim",
+            "keywords": [
+                "microframework",
+                "rest",
+                "router"
+            ],
+            "time": "2013-07-20 18:38:05"
+        },
+        {
+            "name": "slim/views",
+            "version": "dev-master",
+            "target-dir": "Slim/Views",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/codeguy/Slim-Views.git",
+                "reference": "aa664267cd42cb1560a716d109b5f972ca24a4a3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/codeguy/Slim-Views/zipball/aa664267cd42cb1560a716d109b5f972ca24a4a3",
+                "reference": "aa664267cd42cb1560a716d109b5f972ca24a4a3",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0",
+                "slim/slim": ">=2.2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Slim\\Views": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Andrew Smith",
+                    "email": "a.smith@silentworks.co.uk",
+                    "homepage": "http://thoughts.silentworks.co.uk/"
+                },
+                {
+                    "name": "Josh Lockhart",
+                    "email": "info@joshlockhart.com",
+                    "homepage": "http://www.joshlockhart.com/"
+                }
+            ],
+            "description": "Smarty and Twig View Parser package for the Slim Framework",
+            "homepage": "http://github.com/codeguy/Slim-Views",
+            "keywords": [
+                "extensions",
+                "slimphp",
+                "templating"
+            ],
+            "time": "2013-07-10 08:21:46"
         },
         {
             "name": "smarty/smarty",
@@ -661,6 +717,7 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "simplepie/simplepie": 20,
+        "slim/views": 20,
         "cbeerta/cling": 20
     },
     "platform": {
