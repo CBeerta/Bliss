@@ -3,10 +3,10 @@ SOURCES = php/index.php src/Bliss/Controllers/*.php src/Bliss/*.php src/Bliss_Pl
 all: phpcs update
 
 phpcs:
-	./vendor/bin/phpcs --standard=PEAR -s $(SOURCES)
+	./vendor/bin/phpcs -n --standard=PSR2 -s $(SOURCES)
 
 phpunit: 
-	rm -f data/*json
+	rm -rf data	
 	tar xzf tests/testdata.tar.gz
 	./vendor/bin/phpunit --stderr --strict tests
 

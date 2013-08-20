@@ -35,10 +35,6 @@ namespace Bliss_Plugin\Content;
 
 use \Bliss\Plugin;
 
-if ( !defined('BLISS_VERSION') ) {
-    die('No direct Script Access Allowed!');
-}
-
 /**
 * Plugin that tries to generate content on empty articles
 *
@@ -71,6 +67,16 @@ class Generator implements Plugin
     }
 
     /**
+    * The Template this Plugin uses to display Content
+    *
+    * @return string Template Name
+    **/
+    public function template()
+    {
+        return false;
+    }
+
+    /**
     * Match uri, and check if we want to apply this filter here
     *
     * @param string $uri URI from feed to check
@@ -78,7 +84,7 @@ class Generator implements Plugin
     * @return bool Wether or not to apply this filter
     **/
     public function match($uri)
-    {   
+    {
         // Everything could be empty, so yes.
         return true;
     }
@@ -117,4 +123,3 @@ class Generator implements Plugin
         return $item;
     }
 }
-

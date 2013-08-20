@@ -36,10 +36,6 @@ namespace Bliss\Controllers;
 use \Bliss\Feeds;
 use \Bliss\Store;
 
-if ( !defined('BLISS_VERSION') ) {
-    die('No direct Script Access Allowed!');
-}
-
 /**
 * Config
 *
@@ -80,14 +76,14 @@ class Manage
             
         $reply = array('status' => 'FAIL');
             
-        if (is_null($uri)) {        
+        if (is_null($uri)) {
             $reply['message'] = 'Feed URI not Parseable!';
             return json_encode($reply);
         }
         
         // Do a quick test request, to check if the url is valid.
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $uri); 
+        curl_setopt($ch, CURLOPT_URL, $uri);
         curl_setopt($ch, CURLOPT_HEADER, false);
         curl_setopt($ch, CURLOPT_NOBODY, true); // do HEAD request only
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, false);
@@ -143,7 +139,7 @@ class Manage
 
         $reply = array('status' => 'FAIL');
             
-        if (is_null($uri)) {        
+        if (is_null($uri)) {
             $reply['message'] = 'Not a Valid Feed to Remove!';
             return json_encode($reply);
         }
@@ -156,7 +152,7 @@ class Manage
         }
         
         if (($found = array_search($uri, $feeds)) === false) {
-            $reply['message'] 
+            $reply['message']
                 = 'Can not Delete that Feed!<br/>
                 This can happen if the feed has been added to the `config.ini`
                 or part of an OPML file.';
@@ -166,7 +162,7 @@ class Manage
         unset($feeds[$found]);
         $feeds = array_merge($feeds);
 
-        if (Store::save('feeds.json', $feeds) === false) { 
+        if (Store::save('feeds.json', $feeds) === false) {
             $reply['message'] = 'Unable to save feed info.';
             return json_encode($reply);
         }
@@ -190,5 +186,4 @@ class Manage
 
         return array('feedinfo' => $feedinfo);
     }
-
 }

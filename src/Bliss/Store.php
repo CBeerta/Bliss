@@ -33,11 +33,6 @@
 
 namespace Bliss;
 
-if ( !defined('BLISS_VERSION') ) {
-    die('No direct Script Access Allowed!');
-}
-
-
 /**
 * Store
 *
@@ -68,9 +63,9 @@ class Store
     * @return array
     **/
     public static function save(
-        $filename, 
-        $content, 
-        $merge = false, 
+        $filename,
+        $content,
+        $merge = false,
         $dirname = 'data_dir'
     ) {
         $data_dir = rtrim(Feeds::option($dirname), '/');
@@ -142,7 +137,7 @@ class Store
             && ($ret = self::load($fname)) !== false
         ) {
             self::$cache[$toggle] = $ret;
-        } else if (self::$cache[$toggle] === null) {
+        } elseif (self::$cache[$toggle] === null) {
             self::$cache[$toggle] = array();
         }
         
@@ -163,6 +158,4 @@ class Store
  
         return self::$cache[$toggle];
     }
-
 }
-

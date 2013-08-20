@@ -36,7 +36,7 @@ use Bliss\Controllers\Reader;
 
 error_reporting(E_ALL);
 
-define('BLISS_VERSION', '2.3.0');
+define('BLISS_VERSION', '2.5.0');
 define('BLISS_BASE_DIR', rtrim(__DIR__, '/'));
 
 chdir(BLISS_BASE_DIR);

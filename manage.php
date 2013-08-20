@@ -50,15 +50,12 @@ $app = new \Cling\Cling(
     )
 );
 
-$blah = new \Bliss_Plugin\Content\Generator();
-$blah = new \Bliss_Plugin\Content\Nzb();
-$blah = new \Bliss_Plugin\Content\Enclosures();
-
 $fetch = new \Bliss\Controllers\Fetch($app);
 
 $app->command(
     // Help Text
-    'help', 'h',
+    'help',
+    'h',
     function () use ($app) {
         echo $app->notFound();
         exit;
@@ -67,7 +64,8 @@ $app->command(
 
 $app->command(
     // Update Feeds
-    'update', 'u',
+    'update',
+    'u',
     function () use ($app, $fetch) {
         $fetch->update();
     }
@@ -75,7 +73,8 @@ $app->command(
 
 $app->command(
     // Expire old Artices
-    'expire', 'e',
+    'expire',
+    'e',
     function () use ($app, $fetch) {
         $fetch->expire();
     }
@@ -83,7 +82,8 @@ $app->command(
 
 $app->command(
     // Render Thumbs
-    'thumbs', 't',
+    'thumbs',
+    't',
     function () use ($app, $fetch) {
         if (Feeds::option('enable_gallery') != false) {
             $fetch->thumbs();

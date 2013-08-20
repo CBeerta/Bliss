@@ -35,10 +35,6 @@ namespace Bliss_Plugin\Content;
 
 use \Bliss\Plugin;
 
-if ( !defined('BLISS_VERSION') ) {
-    die('No direct Script Access Allowed!');
-}
-
 /**
 * Handle Enclosures
 *
@@ -73,6 +69,16 @@ class Enclosures implements Plugin
     }
 
     /**
+    * The Template this Plugin uses to display Content
+    *
+    * @return string Template Name
+    **/
+    public function template()
+    {
+        return "plugins/enclosures.tpl.html";
+    }
+
+    /**
     * Match uri, and check if we want to apply this filter here
     *
     * @param string $uri URI from feed to check
@@ -80,7 +86,7 @@ class Enclosures implements Plugin
     * @return bool Wether or not to apply this filter
     **/
     public function match($uri)
-    {   
+    {
         // Everything could Have Enclosures
         return true;
     }
@@ -103,7 +109,7 @@ class Enclosures implements Plugin
 
                 $thumbnails = $enclosure->thumbnails;
 
-            } else if (!empty($enclosure->link)) {
+            } elseif (!empty($enclosure->link)) {
                 
                 $title = !empty($enclosure->title)
                     ? $enclosure->title
@@ -146,10 +152,6 @@ class Enclosures implements Plugin
         
         $item->enclosures = $enclosures;
 
-        Flight::view()->assign(array('item' => $item));
-        $item->attachements = Flight::view()->fetch('plugins/enclosures.tpl.html');
-
         return $item;
     }
 }
-

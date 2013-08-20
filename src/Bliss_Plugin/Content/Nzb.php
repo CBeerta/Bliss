@@ -35,10 +35,6 @@ namespace Bliss_Plugin\Content;
 
 use \Bliss\Plugin;
 
-if ( !defined('BLISS_VERSION') ) {
-    die('No direct Script Access Allowed!');
-}
-
 /**
 * Plugin that tries to generate content on empty articles
 *
@@ -71,6 +67,16 @@ class Nzb implements Plugin
     }
 
     /**
+    * The Template this Plugin uses to display Content
+    *
+    * @return string Template Name
+    **/
+    public function template()
+    {
+        return "plugins/tmdb.tpl.html";
+    }
+
+    /**
     * Match uri, and check if we want to apply this filter here
     *
     * @param string $uri URI from feed to check
@@ -78,7 +84,7 @@ class Nzb implements Plugin
     * @return bool Wether or not to apply this filter
     **/
     public function match($uri)
-    {   
+    {
         if (!preg_match("|.*nzbindex.*|i", $uri)) {
             return false;
         }
@@ -165,7 +171,7 @@ class Nzb implements Plugin
 
             preg_match(
                 "|.*\"(http://www.imdb.com/title/(.*?)/?)\".*|mi",
-                $nfo, 
+                $nfo,
                 $matches
             );
 
@@ -190,8 +196,8 @@ class Nzb implements Plugin
 
         Flight::view()->assign(
             array(
-                'json' => $tmdb, 
-                'item' => $item, 
+                'json' => $tmdb,
+                'item' => $item,
                 'images' => $images
             )
         );

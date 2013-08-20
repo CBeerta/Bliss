@@ -33,11 +33,6 @@
 
 namespace Bliss;
 
-if ( !defined('BLISS_VERSION') ) {
-    die('No direct Script Access Allowed!');
-}
-
-
 /**
 * Base Plugin Interface
 *
@@ -64,6 +59,13 @@ interface Plugin
     public function priority();
 
     /**
+    * The Template this Plugin uses to display Content
+    *
+    * @return string Template Name
+    **/
+    public function template();
+ 
+    /**
     * Match uri, and check if we want to apply this filter here
     *
     * @param string $uri URI from feed to check
@@ -81,5 +83,3 @@ interface Plugin
     **/
     public function apply($item);
 }
-
-

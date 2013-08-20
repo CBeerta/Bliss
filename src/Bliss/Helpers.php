@@ -33,11 +33,6 @@
 
 namespace Bliss;
 
-if ( !defined('BLISS_VERSION') ) {
-    die('No direct Script Access Allowed!');
-}
-
-
 /**
 * Helpers
 *
@@ -63,12 +58,13 @@ class Helpers
         // Build Slug
         $slug = strtolower(htmlentities($title, ENT_COMPAT, $charset));
         $slug = preg_replace(
-            '/&(.)(acute|cedil|circ|lig|grave|ring|tilde|uml);/', "$1", 
+            '/&(.)(acute|cedil|circ|lig|grave|ring|tilde|uml);/',
+            "$1",
             $slug
         );
         $slug = preg_replace(
-            '/([^a-z0-9]+)/', 
-            $sep, 
+            '/([^a-z0-9]+)/',
+            $sep,
             html_entity_decode($slug, ENT_COMPAT, $charset)
         );
         $slug = trim($slug, $sep);
@@ -87,25 +83,25 @@ class Helpers
     * @return img $dest New resized Image
     **/
     public static function imgResize(
-        $src, 
-        $target_width, 
-        $target_height, 
+        $src,
+        $target_width,
+        $target_height,
         $force_size
     ) {
         $width = imagesx($src);
         $height = imagesy($src);
         $imgratio = ($width / $height);
 
-        if ($width < $target_width || $height < $target_height) {   
+        if ($width < $target_width || $height < $target_height) {
             return false;
         }
 
-        if ($imgratio>1) { 
-            $new_width = $target_width; 
-            $new_height = ($target_width / $imgratio); 
-        } else { 
-            $new_height = $target_height; 
-            $new_width = ($target_height * $imgratio); 
+        if ($imgratio>1) {
+            $new_width = $target_width;
+            $new_height = ($target_width / $imgratio);
+        } else {
+            $new_height = $target_height;
+            $new_width = ($target_height * $imgratio);
         }
         
         if ($force_size) {
@@ -120,10 +116,10 @@ class Helpers
         imagefill($dest, 0, 0, $trans_color);
         
         imagecopyresampled(
-            $dest, 
-            $src, 
-            0, 
-            0, 
+            $dest,
+            $src,
+            0,
+            0,
             0,
             0,
             $new_width,
@@ -140,15 +136,13 @@ class Helpers
     *
     * @return microtime
     **/
-    function bench()
+    public function bench()
     {
         static $microtime_start = null;
         if ($microtime_start === null) {
             $microtime_start = microtime(true);
-            return 0.0; 
-        }    
-        return microtime(true) - $microtime_start; 
+            return 0.0;
+        }
+        return microtime(true) - $microtime_start;
     }
-
 }
-

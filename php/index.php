@@ -56,7 +56,8 @@ $app->view()->setData('base_uri', $base_uri);
 
 $app->post(
     // Called to load the next batch of articles
-    '/load_next/:filter', function ($filter) use ($app) {
+    '/load_next/:filter',
+    function ($filter) use ($app) {
         if (($next = Reader::next($filter))) {
             $app->render('article.snippet.tpl.html', $next);
         }
@@ -65,28 +66,32 @@ $app->post(
 
 $app->post(
     // Mark a Post as 'read'
-    '/read', function () use ($app) {
+    '/read',
+    function () use ($app) {
         echo Reader::read();
     }
 );
 
 $app->post(
     // Flag a Post
-    '/flag', function () use ($app) {
+    '/flag',
+    function () use ($app) {
         echo Reader::flag();
     }
 );
 
 $app->get(
     // Called when not a single article has been loaded
-    '/nothing/:filter', function ($filter) use ($app) {
+    '/nothing/:filter',
+    function ($filter) use ($app) {
         $app->render('nothing.snippet.tpl.html', Reader::nothing($filter));
     }
 );
 
 $app->post(
     // Loaded regularly to check for new posts
-    '/poll/:filter', function ($filter) use ($app) {
+    '/poll/:filter',
+    function ($filter) use ($app) {
         echo Reader::poll($filter);
     }
 );
@@ -96,7 +101,8 @@ $app->post(
 /* ######### Access to the image cache #################### */
 $app->get(
     // get an image from cache and display
-    '/image', function () use ($app) {
+    '/image',
+    function () use ($app) {
         echo Reader::image();
     }
 );
@@ -108,7 +114,8 @@ if (Feeds::option('enable_gallery') == true) {
 
     $app->get(
         // Gallery Mainpage
-        '/gallery', function () use ($app) {
+        '/gallery',
+        function () use ($app) {
             $app->render('gallery.tpl.html', array('title' => 'Image Gallery'));
 
         }
@@ -116,9 +123,10 @@ if (Feeds::option('enable_gallery') == true) {
 
     $app->post(
         // Gallery single Page
-        '/gallery_page/:page', function ($page) use ($app) {
+        '/gallery_page/:page',
+        function ($page) use ($app) {
             $app->render(
-                'gallery.snippet.tpl.html', 
+                'gallery.snippet.tpl.html',
                 Reader::galleryPage($page)
             );
         }
@@ -129,7 +137,8 @@ if (Feeds::option('enable_gallery') == true) {
 /* ######### Archives ##################################### */
 $app->get(
     // Load Archives
-    '/archive', function () use ($app) {
+    '/archive',
+    function () use ($app) {
         $app->render('archive.tpl.html', Reader::archive());
     }
 );
@@ -137,28 +146,32 @@ $app->get(
 /* ######### Config Stuff ################################# */
 $app->get(
     // Show Current Subscriptions
-    '/manage', function () use ($app) {
+    '/manage',
+    function () use ($app) {
         $app->render('manage.tpl.html', Manage::feedlist());
     }
 );
 
 $app->get(
     // Export opml
-    '/opml', function () use ($app) {
+    '/opml',
+    function () use ($app) {
         $app->render('opml.export.tpl.xml', Manage::opml());
     }
 );
 
 $app->put(
     // Add a feed
-    '/add_feed', function () use ($app) {
+    '/add_feed',
+    function () use ($app) {
         echo Manage::add();
     }
 );
 
 $app->delete(
     // Remove a feed
-    '/remove_feed', function () use ($app) {
+    '/remove_feed',
+    function () use ($app) {
         echo Manage::remove();
     }
 );
@@ -166,7 +179,8 @@ $app->delete(
 /* ######### The Main Page ################################ */
 $app->get(
     // Get the Main Page
-    '/', function () use ($app) {
+    '/',
+    function () use ($app) {
         $app->render('index.tpl.html');
     }
 );

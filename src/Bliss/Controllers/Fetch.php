@@ -39,11 +39,6 @@ use \Bliss\Store;
 use \Bliss\Helpers;
 use \DateTime;
 
-if ( PHP_SAPI != 'cli' ) {
-    // dont do anything if we're not a cli php
-    return;
-}
-
 /**
 * Fetch
 *
@@ -58,7 +53,7 @@ class Fetch
     /**
     * Cling
     **/
-    private $_cling = null;
+    private $cling = null;
 
     /**
     * Constructor
@@ -79,7 +74,7 @@ class Fetch
     *
     * @return book
     **/
-    private function _isFiltered($title)
+    private function isFiltered($title)
     {
         foreach (Feeds::option('filters') as $filter) {
         
@@ -97,7 +92,7 @@ class Fetch
     *
     * @return array
     **/
-    private function _findPlugins()
+    private function findPlugins()
     {
         $glob = glob(BLISS_BASE_DIR . '/src/Bliss_Plugin/Content/*.php');
         
@@ -145,7 +140,7 @@ class Fetch
         **/
         $rss = new \SimplePie();
         $rss->set_useragent(
-            'Mozilla/4.0 (Bliss: ' 
+            'Mozilla/4.0 (Bliss: '
             . BLISS_VERSION
             . '; https://github.com/CBeerta/Bliss'
             . '; Allow like Gecko)'
@@ -155,7 +150,7 @@ class Fetch
         $rss->set_image_handler('image', 'i');
         $rss->set_timeout(30);
         $rss->set_autodiscovery_level(
-            SIMPLEPIE_LOCATOR_AUTODISCOVERY 
+            SIMPLEPIE_LOCATOR_AUTODISCOVERY
             | SIMPLEPIE_LOCATOR_LOCAL_BODY
             | SIMPLEPIE_LOCATOR_LOCAL_EXTENSION
         );
@@ -173,7 +168,7 @@ class Fetch
             die($e->getMessage()."\n");
         }
         
-        $plugins = $this->_findPlugins();
+        $plugins = $this->findPlugins();
         $unread = array();
         $errors = array();
 
@@ -211,13 +206,13 @@ class Fetch
                 'feed_type' => $rss->get_type(),
                 'feed_encoding' => $rss->get_encoding(),
                 'description' => $rss->get_description(),
-                'author_name' => 
-                    isset($rss->get_author()->name) 
-                    ? $rss->get_author()->name 
-                    : 'na' ,
-                'author_email' => 
-                    isset($rss->get_author()->email) 
-                    ? $rss->get_author()->email 
+                'author_name' =>
+                    isset($rss->get_author()->name)
+                    ? $rss->get_author()->name
+                    : 'na',
+                'author_email' =>
+                    isset($rss->get_author()->email)
+                    ? $rss->get_author()->email
                     : 'na',
             );
             
@@ -240,7 +235,7 @@ class Fetch
                     break;
                 }
                 
-                if ($this->_isFiltered($item->get_title())) {
+                if ($this->isFiltered($item->get_title())) {
                     // Skip articles that are filtered
                     $this->_cling->log()->info(
                         "Filtered Item: " . $item->get_title()
@@ -271,17 +266,20 @@ class Fetch
 
                 /**
                 * Apply Content Plugins
-                **/                
+                **/
                 foreach ($plugins as $plugin) {
                     $p = new $plugin();
-                    if ($p->match($feed_uri)) {
-                        $content = $p->apply($content);
+                    if (!$p->match($feed_uri)) {
+                        continue;
+                    }
+                    $content = $p->apply($content);
+
+                    if ($p->template()) {
+                        $this->_cling->view()->set('data', $content);
+                        $content->content .=
+                            $this->_cling->view()->fetch($p->template());
                     }
 
-                    if ($content === false) {
-                        // Skip Item
-                        continue 2;
-                    }
                     unset($p);
                 }
 
@@ -306,7 +304,7 @@ class Fetch
                     * This is a freshly added feed that we can skip for dupe
                     * check alltogether
                     **/
-                } else if (is_array($glob) && count($glob) == 2) {
+                } elseif (is_array($glob) && count($glob) == 2) {
                     /**
                     * Remove The Older File.
                     **/
@@ -315,7 +313,7 @@ class Fetch
                     continue;
                 }
                 
-            } // items foreach 
+            } // items foreach
 
             // Save feed info
             Store::save("{$dir}/feed.info", $feed_info);
@@ -359,7 +357,7 @@ class Fetch
                 continue;
             }
             
-            if ($article_time <= $expire_before 
+            if ($article_time <= $expire_before
                 && !in_array($item['relative'], $flagged)
             ) {
                 $this->_cling->log()->info("Removing: " . $item['file']);
@@ -370,7 +368,7 @@ class Fetch
         
         if ($total > 1000) {
             $this->_cling->log()->error(
-                "You have {$total} Articles stored." . 
+                "You have {$total} Articles stored." .
                 "Consider Tuning the Expire of Articles."
             );
         }
@@ -400,8 +398,7 @@ class Fetch
             Store::toggle('flagged', $name);
         }
         
-        $this->_cling->log()->info("Expired {$count} Articles.");    
-        //error_log(print_r($errors, true));
+        $this->_cling->log()->info("Expired {$count} Articles.");
     }
 
     /**
@@ -450,7 +447,7 @@ class Fetch
             
             if ($w >= $h && $w <= $min_size) {
                 continue;
-            } else if ($h >= $w && $h <= $min_size) {
+            } elseif ($h >= $w && $h <= $min_size) {
                 continue;
             }
 
@@ -474,8 +471,8 @@ class Fetch
             $dst_center = array($w/2, $h/2);
             
             imagecopyresampled(
-                $canvas, 
-                $dst, 
+                $canvas,
+                $dst,
                 $canvas_center[0] - $dst_center[0],
                 $canvas_center[1] - $dst_center[1],
                 0,
@@ -485,13 +482,10 @@ class Fetch
                 $w,
                 $h
             );
-                        
+
             imagepng($canvas, $dst_fname, 6);
             $count++;
         }
-        $this->_cling->log()->info("Created {$count} Thumbnails.");    
+        $this->_cling->log()->info("Created {$count} Thumbnails.");
     }
-    
-
 }
-

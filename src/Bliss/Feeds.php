@@ -36,11 +36,6 @@ namespace Bliss;
 use \DateTime;
 use \Bliss\Store;
 
-if ( !defined('BLISS_VERSION') ) {
-    die('No direct Script Access Allowed!');
-}
-
-
 /**
 * Feeds
 *
@@ -103,7 +98,7 @@ class Feeds
         }
 
         // Second: Feeds from opml source
-        $opml = array();        
+        $opml = array();
         if (self::$config['opml'] && is_file(self::$config['opml'])) {
             $fh = file_get_contents(self::$config['opml']);
             preg_match_all("=<outline (.+)/>=sU", $fh, $items);
@@ -140,7 +135,7 @@ class Feeds
         $data_dir = rtrim(self::$config['data_dir'], '/');
         $feedinfo = array();
          
-        foreach (glob($data_dir . '/*/feed.info') as $file) {        
+        foreach (glob($data_dir . '/*/feed.info') as $file) {
             $ret = Store::load($file);
             
             if (!is_object($ret)) {
@@ -183,8 +178,7 @@ class Feeds
             );
         }
         
-        //ksort($feedinfo, SORT_STRING);
-        return $feedinfo;        
+        return $feedinfo;
     }
 
     /**
@@ -205,7 +199,7 @@ class Feeds
             // Cache the glob for multiple iterations
             self::$glob = glob($data_dir . '/*/*.item');
             arsort(self::$glob);
-        }  
+        }
         
         foreach (self::$glob as $file) {
             
@@ -252,12 +246,12 @@ class Feeds
                     'fname' => $fname,
                     'guid' => $guid,
                     'relative' => $relative,
-                ), 
+                ),
                 (array) $feed_infos[$dir]
             );
         }
         krsort($files);
-        $errors = array_unique($errors);        
+        $errors = array_unique($errors);
         
         return $files;
     }
@@ -275,12 +269,12 @@ class Feeds
         $titles = array();
         
 
-        foreach ($filelist as $item) {  
+        foreach ($filelist as $item) {
             $article = Store::load($item['file']);
             $titles[$item['dir']][$item['fname']] = $article->title;
         }
         
-        return $titles;    
+        return $titles;
     }
     
     /**
@@ -301,52 +295,52 @@ class Feeds
 
             switch ($matches[1]) {
             
-            case 'flagged':
-                if (in_array($item['relative'], Store::toggle('flagged'))) {
-                    break 2;
-                }
-                array_shift($filelist);
-                break;
-
-            case 'feed':
-                if ($item['feed'] == $matches[2]) {
-                    break 2;
-                }
-                array_shift($filelist);
-                break;
-
-            case 'unread':
-                if (in_array($item['relative'], Store::toggle('unread'))) {
-                    break 2;
-                }
-                array_shift($filelist);
-                break;
-
-            case 'article':
-                if ($item['fname'] == $matches[2]) {
-                    break 2;
-                }
-                array_shift($filelist);
-                break;
-                
-            case 'day':
-                try {
-                    $today = new DateTime(urldecode($matches[2]));
-                    $itemdate = new DateTime("@" . $item['timestamp']);
-                } catch (Exception $e) {
+                case 'flagged':
+                    if (in_array($item['relative'], Store::toggle('flagged'))) {
+                        break 2;
+                    }
+                    array_shift($filelist);
                     break;
-                }
-        
-                if ($today->format('Y-z') == $itemdate->format('Y-z')) {
-                    break 2;
-                }
-                array_shift($filelist);
-                break;
 
-            default:
-                break 2;
+                case 'feed':
+                    if ($item['feed'] == $matches[2]) {
+                        break 2;
+                    }
+                    array_shift($filelist);
+                    break;
+
+                case 'unread':
+                    if (in_array($item['relative'], Store::toggle('unread'))) {
+                        break 2;
+                    }
+                    array_shift($filelist);
+                    break;
+
+                case 'article':
+                    if ($item['fname'] == $matches[2]) {
+                        break 2;
+                    }
+                    array_shift($filelist);
+                    break;
+                    
+                case 'day':
+                    try {
+                        $today = new DateTime(urldecode($matches[2]));
+                        $itemdate = new DateTime("@" . $item['timestamp']);
+                    } catch (Exception $e) {
+                        break;
+                    }
             
-            }                                
+                    if ($today->format('Y-z') == $itemdate->format('Y-z')) {
+                        break 2;
+                    }
+                    array_shift($filelist);
+                    break;
+
+                default:
+                    break 2;
+                
+            }
 
         }
 
@@ -361,5 +355,4 @@ class Feeds
         
         return $item;
     }
-
 }

@@ -36,10 +36,6 @@ namespace Bliss\Controllers;
 use \Bliss\Feeds;
 use \Bliss\Store;
 
-if ( !defined('BLISS_VERSION') ) {
-    die('No direct Script Access Allowed!');
-}
-
 /**
 * Reader
 *
@@ -89,24 +85,24 @@ class Reader
         $text = null;
                 
         switch ($matches[1]) {
-        case 'flagged':
-            $text = "You have no Flagged Articles";
-            break;
-        case 'feed':
-            $text = "This Feed has no Articles";
-            break;
-        case 'unread':
-            $text = "No Unread Articles";
-            break;
-        case 'article':
-            $text = "The Selected Article can't be found";
-            break;
-        case 'day':
-            $text = "This Day has no Articles";
-            break;
-        default:
-            break;
-        }        
+            case 'flagged':
+                $text = "You have no Flagged Articles";
+                break;
+            case 'feed':
+                $text = "This Feed has no Articles";
+                break;
+            case 'unread':
+                $text = "No Unread Articles";
+                break;
+            case 'article':
+                $text = "The Selected Article can't be found";
+                break;
+            case 'day':
+                $text = "This Day has no Articles";
+                break;
+            default:
+                break;
+        }
 
         $data = array(
             'text' => $text,
@@ -153,7 +149,7 @@ class Reader
                 $matches
             )) {
                 continue;
-            }   
+            }
 
             $images[] = array(
                 'thumb' => basename($matches[0]),
@@ -205,7 +201,7 @@ class Reader
             header('content-type: image/png');
             echo file_get_contents($file);
             return;
-        } else if (!isset($_GET['i'])) {
+        } elseif (!isset($_GET['i'])) {
             return false;
         }
         
@@ -215,7 +211,7 @@ class Reader
         }
         
         if (preg_match(
-            '#enclosures/(.*?)%2F(\w{32,32})-(.*?).spi#i', 
+            '#enclosures/(.*?)%2F(\w{32,32})-(.*?).spi#i',
             $file,
             $matches
         )) {
@@ -228,14 +224,12 @@ class Reader
         * Load headers from file
          * FIXME: Keep this? or force our own caching headers?
         **/
-        foreach (
-            array(
-                'content-type', 
-                'expires', 
+        foreach (array(
+                'content-type',
+                'expires',
                 'pragma',
                 'content-disposition',
-                'cache-control',
-            ) as $header ) {
+                'cache-control',) as $header) {
             
             if (isset($img['headers'][$header])) {
                 header($header . ':' . $img['headers'][$header]);
@@ -351,8 +345,6 @@ class Reader
             return json_encode(array('updates_available' => true));
         }
 
-        return json_encode(array('updates_available' => false));   
+        return json_encode(array('updates_available' => false));
     }
-    
 }
-
