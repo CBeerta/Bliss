@@ -50,7 +50,9 @@ $app = new \Cling\Cling(
     )
 );
 
-$blah = new \Bliss_Plugin\Content_Empty_Plugin;
+$blah = new \Bliss_Plugin\Content\Generator();
+$blah = new \Bliss_Plugin\Content\Nzb();
+$blah = new \Bliss_Plugin\Content\Enclosures();
 
 $fetch = new \Bliss\Controllers\Fetch($app);
 

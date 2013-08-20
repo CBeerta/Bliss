@@ -53,7 +53,7 @@
     "autoload": {
         "psr-0": {
             "Bliss": "src/",
-            "Bliss_Plugin": "plugins/"
+            "Bliss_Plugin": "src/"
 
         }
     }

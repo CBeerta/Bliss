@@ -31,9 +31,9 @@
 * @link     http://claus.beerta.de/
 **/
 
-namespace Bliss_Plugin;
+namespace Bliss_Plugin\Content;
 
-use \Bliss\Content_Plugin;
+use \Bliss\Plugin;
 
 if ( !defined('BLISS_VERSION') ) {
     die('No direct Script Access Allowed!');
@@ -48,7 +48,7 @@ if ( !defined('BLISS_VERSION') ) {
 * @license  http://www.opensource.org/licenses/mit-license.php MIT License
 * @link     http://claus.beerta.de/
 **/
-class Content_Nzb_Plugin implements Content_Plugin
+class Nzb implements Plugin
 {
     /**
     * The constructor

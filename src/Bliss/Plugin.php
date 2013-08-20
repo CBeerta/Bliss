@@ -47,7 +47,7 @@ if ( !defined('BLISS_VERSION') ) {
 * @license  http://www.opensource.org/licenses/mit-license.php MIT License
 * @link     http://claus.beerta.de/
 **/
-interface Content_Plugin
+interface Plugin
 {
     /**
     * The constructor

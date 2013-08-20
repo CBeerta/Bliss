@@ -99,18 +99,18 @@ class Fetch
     **/
     private function _findPlugins()
     {
-        $glob = glob(BLISS_BASE_DIR . '/plugins/*_Plugin.php');
+        $glob = glob(BLISS_BASE_DIR . '/src/Bliss_Plugin/Content/*.php');
         
         $plugins = array();
         
         foreach ($glob as $file) {
 
-            if (!preg_match('#.*/((.*?)_Plugin).php$#i', $file, $matches)) {
+            if (!preg_match('#.*Content/(.*?).php$#i', $file, $matches)) {
                 continue;
             }
-
+            
             $class = ucwords(str_replace('.', ' ', $matches[1]));
-            $class = '\\Bliss_Plugin\\' . str_replace(' ', '_', $class);
+            $class = '\\Bliss_Plugin\\Content\\' . str_replace(' ', '_', $class);
             
             if (!class_exists($class, true)) {
                 $this->_cling->log()->error("Tried loading {$class}, but failed.");
