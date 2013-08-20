@@ -5,7 +5,7 @@ html{
 }
 body{
 	color: #555555;
-	font: 77% 'Maven Pro', arial, serif;
+	font: 'Maven Pro', arial, serif;
 }
 h1, h2, h3, h4, h5, h6, ol, ul, dl, p, blockquote, form{ margin: 0 0 20px 0; }
 sup, sub{

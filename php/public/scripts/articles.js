@@ -1,3 +1,5 @@
+
+
 /**
 * Figure out what articles we have, and load the next available after that
 *
@@ -13,9 +15,7 @@ function loadNext() {
     if ( !last_id ) {
         last_id = Math.round(Date.now() / 1000);
     }
-    
-    var filter = unescape(self.document.location.hash.substring(1));
-    
+
     if (document.there_is_no_more != undefined) {   
         // prevent going back any further without having anything
         return false;
@@ -28,7 +28,7 @@ function loadNext() {
 
     var response = $.ajax({
         type: "POST",
-        url: "load_next/" + filter,
+        url: "load_next/" + getFilter(),
         async: false,
         data: { 'last_id': last_id, 'idlist': idlist },
         success: function(data) {
@@ -61,6 +61,19 @@ function loadNext() {
 }
 
 /**
+* Find a Filter to use to get new articles
+* Defaults to unread items if none was used
+**/
+function getFilter() {
+    var filter = unescape(self.document.location.hash.substring(1));
+
+    if (filter != "") {
+        return filter;
+    }
+    return "select-unread-articles";
+}
+
+/**
 * Lets initially load the first items
 * Halt at 20 items to prevent an endless loop
 *
@@ -87,8 +100,7 @@ function fillPage() {
     
     if (i == 0) {
         // Nothing Loaded
-        var filter = unescape(self.document.location.hash.substring(1));
-        $.get('nothing/' + filter, function(data) {
+        $.get('nothing/' + getFilter(), function(data) {
             $("#content").html(data);
         });
     } else {
@@ -145,11 +157,9 @@ function poll() {
         first_id = 0;
     }
 
-    var filter = unescape(self.document.location.hash.substring(1));
-
     $.ajax({
         type: "POST",
-        url: "poll/" + filter,
+        url: "poll/" + getFilter(),
         async: true,
         dataType: 'json',
         data: { 'first_id': first_id },
