@@ -31,11 +31,12 @@
 * @link     http://claus.beerta.de/
 **/
 
+namespace Bliss;
+
 if ( !defined('BLISS_VERSION') ) {
     die('No direct Script Access Allowed!');
 }
 
-namespace Bliss;
 
 /**
 * Base Plugin Interface
@@ -46,7 +47,7 @@ namespace Bliss;
 * @license  http://www.opensource.org/licenses/mit-license.php MIT License
 * @link     http://claus.beerta.de/
 **/
-interface Bliss_Content_Plugin
+interface Content_Plugin
 {
     /**
     * The constructor

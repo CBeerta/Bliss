@@ -98,7 +98,7 @@ class Feeds
 
         // First: Feeds from config.ini
         foreach (self::$config['sources'] as $source) {
-            $feeds[] = $source;
+            $feeds[] = trim($source);
             $sources[] = 'config';
         }
 

@@ -1,4 +1,4 @@
-SOURCES = php/index.php src/Bliss/Controllers/*.php src/Bliss/*.php plugins/*.php setup.php
+SOURCES = php/index.php src/Bliss/Controllers/*.php src/Bliss/*.php plugins/*.php setup.php manage.php
 
 all: phpcs update
 
@@ -8,7 +8,7 @@ phpcs:
 phpunit: 
 	rm -f data/*json
 	tar xzf tests/testdata.tar.gz
-	./vendor/bin/phpunit --strict tests
+	./vendor/bin/phpunit --stderr --strict tests
 
 lint:
 	for source in $(SOURCES) ; do php -l $$source || exit 1 ; done

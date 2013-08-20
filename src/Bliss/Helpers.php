@@ -77,44 +77,6 @@ class Helpers
     }
 
     /**
-    * Find Available Plugins
-    *
-    * @return array
-    **/
-    public static function findPlugins()
-    {
-        $glob = glob(BLISS_BASE_DIR . '/plugins/*.plugin.php');
-        
-        $plugins = array();
-        
-        foreach ($glob as $file) {
-
-            if (!preg_match('#.*/((.*?).plugin).php$#i', $file, $matches)) {
-                continue;
-            }
-
-            $class = ucwords(str_replace('.', ' ', $matches[1]));
-            $class = str_replace(' ', '_', $class);
-            
-            if (!class_exists($class, true)) {
-                continue;
-            }
-
-            $p = new $class();
-            $prio = $p->priority();
-            if (in_array($prio, array_keys($plugins))) {
-                error_log("Skipping {$class} because of Duplicate Priority");
-                continue;
-            }
-            $plugins[$prio] = $class;
-            unset($p);
-
-        }
-        ksort($plugins);
-        return $plugins;
-    }
-
-    /**
     * Resize an image, keep aspect ratio
     *
     * @param img  $src           Source Image (GD)

@@ -31,7 +31,13 @@
 * @link     http://claus.beerta.de/
 **/
 
-namespace \Bliss\Controllers;
+namespace Bliss\Controllers;
+
+use \SimplePie;
+use \Bliss\Feeds;
+use \Bliss\Store;
+use \Bliss\Helpers;
+use \DateTime;
 
 if ( PHP_SAPI != 'cli' ) {
     // dont do anything if we're not a cli php
@@ -50,83 +56,20 @@ if ( PHP_SAPI != 'cli' ) {
 class Fetch
 {
     /**
-    * Commands that we understand
+    * Cling
     **/
-    private static $_commands = array(
-            'update' => 'Load new Items from feeds',
-            'expire' => 'Expire old Articles',
-            'thumbs' => 'Build Thumbnails for all SPI files in the cache',
-            'help' => 'This Help',
-    );
-        
+    private $_cling = null;
+
     /**
-    * Print help
+    * Constructor
+    *
+    * @param object $cling Cling app
     *
     * @return void
     **/
-    private static function _help()
+    public function __construct($cling)
     {
-        print "Usage: {$_SERVER['argv'][0]} [OPTIONS]\n";
-        foreach (self::$_commands as $h => $t) {
-            printf("\t--%-16s\t%s\n", $h, $t);
-        }
-    }
-
-    /**
-    * Parse CLI Args
-    *
-    * @return void
-    **/
-    public static function parseArgs()
-    {
-        $options = getopt('h', array_keys(self::$_commands));
-        
-        $call = false;
-        
-        foreach ($options as $k => $v) {
-            switch ($k) {
-            case 'h':
-            case 'help':
-            default:
-                self::_help();
-                exit;
-            case 'update':
-                self::update();
-                self::expire();
-                if (Feeds::option('enable_gallery') != false) {
-                    self::thumbs();
-                }
-                exit;
-            case 'expire':
-                self::expire();
-                exit;
-            case 'thumbs':
-                self::thumbs();
-                exit;
-            }
-        }
-        
-        self::_help();
-    }
-
-    /**
-    * Encode a $url for simplepie to a cache file name
-    *
-    * @param string $url Url to encode to filename
-    *
-    * @return encoded
-    **/
-    public static function cacheName($url)
-    {
-        $current_feed = Feeds::option('_current_feed');
-    
-        list($fname) = explode('?', basename($url));
-
-        if (!empty($current_feed)) {
-            return urlencode("{$current_feed}/" . md5($url) . '-' . $fname);
-        }
-
-        return md5($url);
+        $this->_cling = $cling;
     }
 
     /**
@@ -136,7 +79,7 @@ class Fetch
     *
     * @return book
     **/
-    public static function isFiltered($title)
+    private function _isFiltered($title)
     {
         foreach (Feeds::option('filters') as $filter) {
         
@@ -148,17 +91,59 @@ class Fetch
         return false;
     }
     
+
+    /**
+    * Find Available Plugins
+    *
+    * @return array
+    **/
+    private function _findPlugins()
+    {
+        $glob = glob(BLISS_BASE_DIR . '/plugins/*_Plugin.php');
+        
+        $plugins = array();
+        
+        foreach ($glob as $file) {
+
+            if (!preg_match('#.*/((.*?)_Plugin).php$#i', $file, $matches)) {
+                continue;
+            }
+
+            $class = ucwords(str_replace('.', ' ', $matches[1]));
+            $class = '\\Bliss_Plugin\\' . str_replace(' ', '_', $class);
+            
+            if (!class_exists($class, true)) {
+                $this->_cling->log()->error("Tried loading {$class}, but failed.");
+                continue;
+            }
+
+            $p = new $class();
+            $prio = $p->priority();
+            if (in_array($prio, array_keys($plugins))) {
+                $this->_cling->log()->error(
+                    "Skipping {$class} because of Duplicate Priority"
+                );
+                continue;
+            }
+            $plugins[$prio] = $class;
+            unset($p);
+
+        }
+        ksort($plugins);
+        return $plugins;
+    }
+
     /**
     * Update Feeds
     *
     * @return void
     **/
-    public static function update()
+    public function update()
     {
         /**
         * Setup SimplePie
         **/
-        $rss = new SimplePie();
+        $rss = new \SimplePie();
         $rss->set_useragent(
             'Mozilla/4.0 (Bliss: ' 
             . BLISS_VERSION
@@ -168,8 +153,6 @@ class Fetch
         $rss->set_cache_location(Feeds::option('cache_dir'));
         $rss->set_cache_duration(Feeds::option('simplepie_cache_duration'));
         $rss->set_image_handler('image', 'i');
-        //$rss->set_cache_name_function('Fetch::cacheName');
-        //$rss->set_cache_class('BlissPie_Cache');
         $rss->set_timeout(30);
         $rss->set_autodiscovery_level(
             SIMPLEPIE_LOCATOR_AUTODISCOVERY 
@@ -190,18 +173,12 @@ class Fetch
             die($e->getMessage()."\n");
         }
         
-        $plugins = Helpers::findPlugins();
+        $plugins = $this->_findPlugins();
         $unread = array();
         $errors = array();
 
         foreach (Feeds::feedlist()->feeds as $feed_uri) {
-            error_log("Fetching: {$feed_uri}");
-            
-
-            // Set _current_feed here, which is later used by cacheName
-            // and the blisscache stuff
-            // Very "through the eye"
-            //Feeds::option('_current_feed', $feed);
+            $this->_cling->log()->info("Fetching: {$feed_uri}");
 
             $rss->set_feed_url($feed_uri);
 
@@ -214,7 +191,7 @@ class Fetch
             );
              
             if ($rss->error()) {
-                error_log($rss->error());
+                $this->_cling->log()->error($rss->error());
                 continue;
             }
                 
@@ -251,8 +228,10 @@ class Fetch
                 try {
                     $article_time = new DateTime($item->get_date());
                 } catch (Exception $e) {
-                    error_log("Can't parse timestamp for : " . $item['file']);
-                    error_log($e->getMessage());
+                    $this->_cling->log()->error(
+                        "Can't parse timestamp for : " . $item['file']
+                    );
+                    $this->_cling->log()->error($e->getMessage());
                     continue;
                 }
     
@@ -261,9 +240,11 @@ class Fetch
                     break;
                 }
                 
-                if (self::isFiltered($item->get_title())) {
+                if ($this->_isFiltered($item->get_title())) {
                     // Skip articles that are filtered
-                    error_log("Filtered Item: " . $item->get_title());
+                    $this->_cling->log()->info(
+                        "Filtered Item: " . $item->get_title()
+                    );
                     continue;
                 }
 
@@ -351,7 +332,7 @@ class Fetch
     *
     * @return void
     **/
-    public static function expire()
+    public function expire()
     {
         $errors = array();
 
@@ -371,22 +352,24 @@ class Fetch
             try {
                 $article_time = new DateTime("@" . $item['timestamp']);
             } catch (Exception $e) {
-                error_log("Can't parse timestamp for : " . $item['file']);
-                error_log($e->getMessage());
+                $this->_cling->log()->error(
+                    "Can't parse timestamp for : " . $item['file']
+                );
+                $this->_cling->log()->error($e->getMessage());
                 continue;
             }
             
             if ($article_time <= $expire_before 
                 && !in_array($item['relative'], $flagged)
             ) {
-                error_log("Removing: " . $item['file']);
+                $this->_cling->log()->info("Removing: " . $item['file']);
                 unlink($item['file']);
                 $count++;
             }
         }
         
         if ($total > 1000) {
-            error_log(
+            $this->_cling->log()->error(
                 "You have {$total} Articles stored." . 
                 "Consider Tuning the Expire of Articles."
             );
@@ -417,7 +400,7 @@ class Fetch
             Store::toggle('flagged', $name);
         }
         
-        error_log("Expired {$count} Articles.");    
+        $this->_cling->log()->info("Expired {$count} Articles.");    
         //error_log(print_r($errors, true));
     }
 
@@ -426,7 +409,7 @@ class Fetch
     *
     * @return void
     **/
-    public static function thumbs()
+    public function thumbs()
     {
         $cache_dir = rtrim(Feeds::option('cache_dir'), '/');
         $thumb_size = Feeds::option('thumb_size');
@@ -456,7 +439,7 @@ class Fetch
             
             $src = imagecreatefromstring($content['body']);
             if (!$src) {
-                error_log(
+                $this->_cling->log()->error(
                     "Can't read {$img}.\n"
                     . print_r($content['headers'], true)
                 );
@@ -506,7 +489,7 @@ class Fetch
             imagepng($canvas, $dst_fname, 6);
             $count++;
         }
-        error_log("Created {$count} Thumbnails.");    
+        $this->_cling->log()->info("Created {$count} Thumbnails.");    
     }
     
 

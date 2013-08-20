@@ -4,8 +4,8 @@
 # it could be python, php, ruby, etc.
 
 unset GIT_DIR
-cd $OPENSHIFT_REPO_DIR/libs
+cd $OPENSHIFT_REPO_DIR
 wget -qN http://getcomposer.org/composer.phar
-php composer.phar install -d ../php/
+php composer.phar install
 
 

@@ -18,7 +18,7 @@
     <div class="content">
         {$entry->content}
     <div class="clearfix"></div>
-        {$entry->attachements}
+        {$entry->attachements|default:''}
     </div>
 </article>
 {/if}

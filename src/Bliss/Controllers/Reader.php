@@ -204,7 +204,7 @@ class Reader
 
             header('content-type: image/png');
             echo file_get_contents($file);
-            exit;
+            return;
         } else if (!isset($_GET['i'])) {
             return false;
         }
@@ -292,14 +292,14 @@ class Reader
             : null;
             
         if (is_null($name)) {
-            exit ("Invalid POST");
+            return "Invalid POST";
         }
         
         $unread = Store::toggle('unread');
         $found = array_search($name, $unread);
         
         if ($found === false) {
-            exit ("Can't Find Your Article!");
+            return "Can't Find Your Article!";
         }
         Store::toggle('unread', $name);
         
@@ -342,7 +342,7 @@ class Reader
             : null;
             
         if (is_null($first_id)) {
-            exit ("Invalid POST");
+            return "Invalid POST";
         }
         
         $first = Feeds::next(time(), $filter);

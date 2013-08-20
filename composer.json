@@ -1,6 +1,7 @@
 {
-    "name": "cbeerta/Bliss",
+    "name": "cbeerta/bliss",
     "description": "A web-based RSS/ATOM aggregator",
+    "license": "MIT",
     "authors": [
         {
             "name": "Claus Beerta",
@@ -51,7 +52,9 @@
     },
     "autoload": {
         "psr-0": {
-            "Bliss": "src/"
+            "Bliss": "src/",
+            "Bliss_Plugin": "plugins/"
+
         }
     }
 

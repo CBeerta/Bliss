@@ -36,7 +36,6 @@ require_once __DIR__ . '/../setup.php';
 use \Bliss\Feeds;
 use \Bliss\Controllers\Reader;
 use \Bliss\Controllers\Manage;
-use \Flight;
 
 $app = new \Slim\Slim(
     array(
@@ -153,14 +152,14 @@ $app->get(
 $app->put(
     // Add a feed
     '/add_feed', function () use ($app) {
-        Manage::add();
+        echo Manage::add();
     }
 );
 
 $app->delete(
     // Remove a feed
     '/remove_feed', function () use ($app) {
-        Manage::remove();
+        echo Manage::remove();
     }
 );
 

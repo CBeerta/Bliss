@@ -82,7 +82,7 @@ class Manage
             
         if (is_null($uri)) {        
             $reply['message'] = 'Feed URI not Parseable!';
-            exit(json_encode($reply));
+            return json_encode($reply);
         }
         
         // Do a quick test request, to check if the url is valid.
@@ -97,14 +97,14 @@ class Manage
         
         if ($info['http_code'] != 200) {
             $reply['message'] = 'There is nothing at that URL';
-            exit(json_encode($reply));
+            return json_encode($reply);
         }
 
         // Check if the feed is already beeing pulled
         $feedlist = Feeds::feedlist();
         if (in_array($uri, $feedlist->feeds)) {
             $reply['message'] = 'Already pulling that feed.';
-            exit(json_encode($reply));
+            return json_encode($reply);
         }
 
         $feeds = Store::load('feeds.json');
@@ -116,7 +116,7 @@ class Manage
         
         if (Store::save('feeds.json', $feeds) === false) {
             $reply['message'] = 'Unable to save feed info.';
-            exit(json_encode($reply));
+            return json_encode($reply);
         }
         
         $reply['status'] = 'OK';
@@ -124,7 +124,7 @@ class Manage
             = 'Feed Added Successfully!<br>
             New items will be pulled on the next regular run.';
             
-        exit(json_encode($reply));
+        return json_encode($reply);
     }
 
     /**
@@ -145,14 +145,14 @@ class Manage
             
         if (is_null($uri)) {        
             $reply['message'] = 'Not a Valid Feed to Remove!';
-            exit(json_encode($reply));
+            return json_encode($reply);
         }
         
         $feeds = Store::load('feeds.json');
         
         if (!$feeds) {
             $reply['message'] = 'Can not load feeds.json file!';
-            exit(json_encode($reply));
+            return json_encode($reply);
         }
         
         if (($found = array_search($uri, $feeds)) === false) {
@@ -160,7 +160,7 @@ class Manage
                 = 'Can not Delete that Feed!<br/>
                 This can happen if the feed has been added to the `config.ini`
                 or part of an OPML file.';
-            exit(json_encode($reply));
+            return json_encode($reply);
         }
         
         unset($feeds[$found]);
@@ -168,13 +168,13 @@ class Manage
 
         if (Store::save('feeds.json', $feeds) === false) { 
             $reply['message'] = 'Unable to save feed info.';
-            exit(json_encode($reply));
+            return json_encode($reply);
         }
 
         $reply['status'] = 'OK';
         $reply['message'] = 'Feed removed!';
             
-        exit(json_encode($reply));
+        return json_encode($reply);
     }
 
     /**

@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "604f0bc35fabed0b379026e24e9976dd",
+    "hash": "56fe2107c1462a3f21ded9532ba904c9",
     "packages": [
         {
             "name": "cbeerta/cling",
@@ -11,12 +11,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/CBeerta/Cling.git",
-                "reference": "0.2.1"
+                "reference": "9de5966f62fbcb44ef086aed35ba2cc13c3bef0b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/CBeerta/Cling/zipball/0.2.1",
-                "reference": "0.2.1",
+                "url": "https://api.github.com/repos/CBeerta/Cling/zipball/9de5966f62fbcb44ef086aed35ba2cc13c3bef0b",
+                "reference": "9de5966f62fbcb44ef086aed35ba2cc13c3bef0b",
                 "shasum": ""
             },
             "require": {
@@ -39,10 +39,10 @@
             ],
             "description": "Cling is a Micro Framework for building Command Line Applications",
             "support": {
-                "source": "https://github.com/CBeerta/Cling/tree/0.2.1",
+                "source": "https://github.com/CBeerta/Cling/tree/master",
                 "issues": "https://github.com/CBeerta/Cling/issues"
             },
-            "time": "2013-08-02 08:31:46"
+            "time": "2013-08-20 04:49:06"
         },
         {
             "name": "simplepie/simplepie",
