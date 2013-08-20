@@ -1,16 +1,21 @@
+<?php echo $data->content; ?>
 <?php foreach ($data->enclosures as $k => $e): ?>
 <?php if ($k == 0): ?>
 <div class="enclosures">
     <h1>Attachements:</h1>
     <p>
 <?php endif; ?>
-<?php if ($e['medium'] == 'image'): ?>
+<?php if ($e['medium'] == 'image' && isset($e['image_url'])): ?>
         <a class="fancyme" href="<?php echo $e['image_url']; ?>">
             <img src="<?php echo $e['image_url']; ?>" width="64" name="<?php echo $e['title']; ?>" title="<?php echo $e['title']; ?>">
         </a>
+<?php elseif ($e['medium'] == 'image' && isset($e['link'])): ?>
+        <a class="fancyme" href="<?php echo $e['link']; ?>">
+            <img src="<?php echo $e['link']; ?>" width="64" name="<?php echo $e['title']; ?>" title="<?php echo $e['title']; ?>">
+        </a>
 <?php else: ?>
         <a href="<?php echo $e['link']; ?>">
-            <img src="public/mime_images/{$enclosure.medium}.png" width="32" height="32" name="{$enclosure.title}" title="{$enclosure.title}">
+            <img src="public/mime_images/<?php echo $e['medium']; ?>.png" width="32" height="32" name="<?php echo $e['title']; ?>" title="<?php echo $e['title']; ?>">
         </a>
 <?php endif; ?>
 <?php if (count($data->enclosures) - 1 == $k): ?>

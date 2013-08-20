@@ -276,7 +276,7 @@ class Fetch
 
                     if ($p->template()) {
                         $this->_cling->view()->set('data', $content);
-                        $content->content .=
+                        $content->content =
                             $this->_cling->view()->fetch($p->template());
                     }
 
