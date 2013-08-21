@@ -434,13 +434,16 @@ class Fetch
                 continue;
             }
             
-            $src = imagecreatefromstring($content['body']);
-            if (!$src) {
+            try {
+                $src = imagecreatefromstring($content['body']);
+            } catch (\ErrorException $e) {
                 $this->_cling->log()->error(
                     "Can't read {$img}.\n"
                     . print_r($content['headers'], true)
                 );
+                continue;
             }
+
 
             $w = imagesx($src);
             $h = imagesy($src);
