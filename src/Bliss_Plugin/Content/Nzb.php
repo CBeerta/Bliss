@@ -34,6 +34,8 @@
 namespace Bliss_Plugin\Content;
 
 use \Bliss\Plugin;
+use \Bliss\Feeds;
+use \Bliss\Store;
 
 /**
 * Plugin that tries to generate content on empty articles
@@ -90,8 +92,7 @@ class Nzb implements Plugin
         }
 
         $api = Feeds::option('tmdb_plugin_api');
-        if (strlen($api) != 32) {
-            error_log("Not a Valid TMDb API Key");
+        if (!isset($api) || strlen($api) != 32) {
             return false;
         }
 
@@ -118,14 +119,13 @@ class Nzb implements Plugin
         $api = Feeds::option('tmdb_plugin_api');
         $req = "http://api.themoviedb.org/2.1/Movie.imdbLookup/en/json/".$api."/";
 
-        error_log("Loading: {$req}{$imdb}");
-
-        if (($ret = file_get_contents("{$req}{$imdb}")) === false) {
-            // Api call Failed
+        try {
+            $ret = file_get_contents("{$req}{$imdb}");
+            $json = json_decode($ret);
+        } catch (\ErrorException $e) {
             return false;
         }
 
-        $json = json_decode($ret);
         if (is_null($json) || !is_array($json) || !is_object($json[0])) {
             // Nothing Found, Store title for future checks
             Store::save('tmdb_not_found.json', array(md5($title)), true);
@@ -148,9 +148,10 @@ class Nzb implements Plugin
     **/
     public function apply($item)
     {
-        if (in_array(md5($item->title), Store::load('tmdb_not_found.json'))) {
+        if (is_array(Store::load('tmdb_not_found.json')) &&
+            in_array(md5($item->title), Store::load('tmdb_not_found.json'))) {
             // Item wasnt found on tmdb previously, no sense looking again
-            return false;
+            return $item;
         }
 
         $tmdb = $this->loadTmdb($item->title);
@@ -159,14 +160,13 @@ class Nzb implements Plugin
             preg_match("|.*\"(http://.*/nfo/.*?)\".*|mi", $item->content, $matches);
             if (!isset($matches[1])) {
                 // No NFO Link
-                return false;
+                return $item;
             }
-            error_log("Loading: {$matches[1]}");
             $nfo = file_get_contents($matches[1]);
 
             if (!$nfo) {
                 // nfo could not be loaded
-                return false;
+                return $false;
             }
 
             preg_match(
@@ -178,14 +178,14 @@ class Nzb implements Plugin
             if (!isset($matches[2])) {
                 // no imdb link in the nfo, store for later checks
                 Store::save('tmdb_not_found.json', array(md5($item->title)), true);
-                return false;
+                return $item;
             }
 
             $tmdb = $this->loadTmdb($item->title, $matches[2]);
         }
 
         if (empty($tmdb->name)) {
-            return false;
+            return $item;
         }
 
         $images = array();
@@ -194,16 +194,8 @@ class Nzb implements Plugin
             $images[$img->image->id][$img->image->size] = (array) $img->image;
         }
 
-        Flight::view()->assign(
-            array(
-                'json' => $tmdb,
-                'item' => $item,
-                'images' => $images
-            )
-        );
-        
-        $item->content = Flight::view()->fetch('plugins/tmdb.tpl.html');
-        $item->title = $tmdb->name;
+        $item->tmdb = $tmdb;
+        $item->tmdb->images = $images;
 
         return $item;
     }

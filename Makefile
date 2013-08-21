@@ -16,7 +16,7 @@ lint:
 build: phpcs lint phpunit
 
 update:
-	php index.php --update
+	php manage.php --update --expire --thumbs
 
 
 # vim: set tabstop=4 shiftwidth=4 noexpandtab:

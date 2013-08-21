@@ -132,7 +132,6 @@ class Enclosures implements Plugin
             }
 
             $thumbnails = array_unique($thumbnails);
-            
         }
 
         /**
@@ -148,10 +147,7 @@ class Enclosures implements Plugin
             );
         }
 
-        //$enclosures = BlissPie_Cache::cacheEnclosures($enclosures);
-        
         $item->enclosures = $enclosures;
-
         return $item;
     }
 }

@@ -1,28 +1,31 @@
-<?php echo $data->content; ?>
+<?php if (isset($data->tmdb)): ?>
 <div class="nzbmovie">
-    <a href="{$json->posters[5]->image->url}">
-        <img src="{$json->posters[1]->image->url}">
+    <a href="<?php echo $data->tmdb->posters[5]->image->url; ?>">
+        <img src="<?php echo $data->tmdb->posters[1]->image->url; ?>">
     </a>
-    <p>{$json->overview}</p>
+    <p><?php echo $data->tmdb->overview; ?>{$json->overview}</p>
     <ul>
-        <li><a href="{$json->url}">TheMovie DB</a>
-        <li><a href="http://www.imdb.com/title/{$json->imdb_id}">IMDB</a>
-        <li>Released : {$json->released|date_format:"%a, %b %e, %Y"}
-        <li>Popularity : {$json->popularity}
-        <li>Rating : {$json->rating}
-        <li>Votes: {$json->votes}
-        <li>NZB Title: {$item->title}
-        <li>Genres: {foreach $json->genres as $genre}{$genre->name} {/foreach}
+        <li><a href="<?php echo $data->tmdb->url; ?>">TheMovie DB</a>
+        <li><a href="http://www.imdb.com/title/<?php echo $data->tmdb->imdb_id; ?>">IMDB</a>
+        <li>Released : <?php echo $data->tmdb->released; ?>
+        <li>Popularity : <?php echo $data->tmdb->popularity; ?>
+        <li>Rating : <?php echo $data->tmdb->rating; ?>
+        <li>Votes: <?php echo $data->tmdb->votes; ?>
+        <li>NZB Title: <?php echo $data->title; ?>
+        <li>Genres: <?php foreach ($data->tmdb->genres as $g) echo $g->name . ' '; ?>
     </ul>
     <h1>Backdrops from TheMovieDB:</h1>
     <div>
-    {foreach $json->backdrops as $img}
-    {if $img->image->height == '169'}
-    <a href="{$images[$img->image->id]['original']['url']}">
-        <img src="{$images[$img->image->id]['thumb']['url']}">
+    <?php foreach($data->tmdb->backdrops as $img): ?>
+    <?php if ($img->image->height == '169'): ?>
+    <a href="<?php echo $data->tmdb->images[$img->image->id]['original']['url']; ?>">
+        <img src="<?php echo $data->tmdb->images[$img->image->id]['thumb']['url']; ?>">
     </a>
-    {/if}
-    {/foreach}
+    <?php endif; ?>
+    <?php endforeach; ?>
     </div>
 </div>
 <div class="clearfix"></div>
+<?php else: ?>
+<?php echo $data->content; ?>
+<?php endif; ?>

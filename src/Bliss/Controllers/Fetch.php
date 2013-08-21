@@ -321,7 +321,6 @@ class Fetch
         }
         // Sanity Check, load all files, anc check them
         Feeds::filelist(time(), $errors);
-        //error_log(print_r($errors, true));
     } // end update()
 
 
