@@ -1,0 +1,43 @@
+;Point this to the datadirectory. The fetch script needs write access here.
+;This best be outside of your Document Root
+data_dir = /data/feeds
+
+; Point this to a directory where the HTTP/PHP process can put files into 
+; This should preferably also be outside of your Document Root
+cache_dir = /data/cache
+
+; SimplePie Cache Duration in seconds
+;simplepie_cache_duration = 7200
+
+; After how Long should Articles be expired
+; Read http://de.php.net/manual/en/datetime.formats.relative.php for possible formats
+expire_before = 6 month ago
+
+
+; Enable or Disable the Gallery. 
+; Creating the thumbnails is CPU and memory hungry, so it is disabled by default
+enable_gallery = true
+
+; Minumum size of a picture to consider for the gallery (longest edge)
+;gallery_minimum_image_size = 600
+
+
+; You can add feeds in here, but those will not be manageable through
+; the manage interface. 
+
+; If you have an opml file, put it in here
+;opml = feeds.opml
+
+[feeds]
+;sources[] = http://claus.beerta.net/blog/feed
+;sources[] = https://github.com/CBeerta.atom
+;sources[] = http://kniebes.net/API/rss
+;sources[] = http://linuxart.com/sitenews.xml
+;sources[] = http://www.kerneltrap.org/node/feed
+;sources[] = http://www.php.net/news.rss
+
+
+[filters]
+; List of filters to apply to Article Titles to ignore
+;filter[] = .*Blah[0-9]+
+;filter[] = Monitoring

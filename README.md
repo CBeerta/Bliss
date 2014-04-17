@@ -39,33 +39,13 @@ Recently it got a slight update (as in complete rewrite) to something a bit more
 * Then run `manage.php --update` from the commandline
 * After you've run the update you can open the page in your browser.
 
-# Running on OpenShift
+# Running on Docker
 
-Create an account at http://openshift.redhat.com/
+Create the Container by runnint `docker build -t bliss .`
 
-Create a PHP application
+Then create the Directories `data/cache` and data/feeds` somewhere, and chown them to uid 48.
 
-	rhc app create -a bliss -t php-5.3
-
-Add cron support to your application
-    
-	rhc cartridge add -a bliss -c cron-1.4
-
-Add this upstream quickstart repo
-
-	cd bliss/php
-	rm -rf *
-	git remote add upstream -m master https://github.com/CBeerta/Bliss.git
-	git pull -s recursive -X theirs upstream master
-
-Then push the repo upstream to OpenShift
-
-	git push
-
-That's it, you can now checkout your application at:
-
-	http://bliss-$yournamespace.rhcloud.com
-
+Run the container with `docker run -v <local data>:/data -p <local port>:80 -d bliss
 
 # ADDING FEEDS:
 

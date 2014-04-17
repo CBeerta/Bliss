@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
- 
-
-cd "${OPENSHIFT_REPO_DIR}"
-
-php manage.php -u -e -t
-
